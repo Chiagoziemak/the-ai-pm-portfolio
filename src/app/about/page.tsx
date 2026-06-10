@@ -1,22 +1,24 @@
-"use client";
 import React from "react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { getAboutData } from "@/sanity/queries";
+import { mockAboutData } from "@/data/mockData";
 
-export default function AboutPage() {
-  const skills = [
-    { label: "AI PM Specialization", level: 95 },
-    { label: "Advanced Python (ML)", level: 82 },
-    { label: "AI Engineering Core", level: 68 },
-  ];
+export default async function AboutPage() {
+  const data = await getAboutData();
+  const aboutData = data || mockAboutData;
 
-  const tools = [
+  // For the learning vector, show the items from the AI PM / AI Engineering skills group
+  const skills = aboutData.skills.find((g) => g.category.toLowerCase().includes("ai"))?.items || 
+                 aboutData.skills[0]?.items || [];
+
+  const tools = aboutData.skills.flatMap((g) => g.items.map((i) => i.name));
+  const defaultTools = [
     "PyTorch", "OpenAI API", "LangChain", "Python",
-    "TensorFlow", "Docker", "Jira", "Figma", "PostgreSQL",
-    "PyTorch", "OpenAI API", "LangChain", "Python",
-    "TensorFlow", "Docker", "Jira", "Figma", "PostgreSQL",
+    "TensorFlow", "Docker", "Jira", "Figma", "PostgreSQL"
   ];
+  const marqueeTools = tools.length > 0 ? [...tools, ...tools] : [...defaultTools, ...defaultTools];
 
   return (
     <div className="min-h-screen bg-[#0a0c1f] text-[#e4e2db] overflow-x-hidden">
@@ -52,25 +54,9 @@ export default function AboutPage() {
             </div>
 
             <div className="space-y-6 text-[#c7c5d0] leading-relaxed">
-              <p>
-                My journey began in the high-stakes world of SaaS Product Management, 
-                where I mastered the art of aligning market needs with technical roadmaps. 
-                As a Senior PM, I didn't just manage backlogs; I architected experiences 
-                for thousands of users, learning that the best products are built at the 
-                intersection of empathy and data.
-              </p>
-              <p>
-                The rise of Large Language Models marked a turning point. Moving into AI PM 
-                roles, I realized that to truly push the boundaries of what's possible, I 
-                needed to get under the hood. I transitioned from defining the "what" to 
-                engineering the "how."
-              </p>
-              <p>
-                Today, as an AI Engineer, I bridge the gap between strategic foresight and 
-                technical execution. I spend my days building RAG pipelines, fine-tuning 
-                models, and designing agentic workflows that solve complex problems with 
-                mathematical precision.
-              </p>
+              {aboutData.bio.split("\n").map((para, pIdx) => (
+                <p key={pIdx}>{para}</p>
+              ))}
             </div>
 
             <div className="flex flex-wrap gap-4">
@@ -98,28 +84,30 @@ export default function AboutPage() {
                   Technical Proficiency
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                  {[
-                    { label: "AI PM", desc: "Roadmapping, Prompt Eng, Data Strategy, UX for AI" },
-                    { label: "PRODUCT", desc: "SaaS Lifecycle, Agile, GTM, Market Analysis" },
-                    { label: "CODING", desc: "Python, PyTorch, LangChain, React, SQL" },
-                  ].map((item) => (
-                    <div key={item.label} className="space-y-2">
-                      <p className="text-xs font-mono text-[#47f0f4] tracking-widest">{item.label}</p>
-                      <p className="text-[#c7c5d0] text-sm leading-relaxed">{item.desc}</p>
+                  {aboutData.skills.map((group) => (
+                    <div key={group.category} className="space-y-2">
+                      <p className="text-xs font-mono text-[#47f0f4] tracking-widest uppercase">{group.category}</p>
+                      <p className="text-[#c7c5d0] text-sm leading-relaxed">
+                        {group.items.map((i) => i.name).join(", ")}
+                      </p>
                     </div>
                   ))}
                 </div>
               </div>
-              <div className="mt-12 pt-8 border-t border-white/10 flex gap-8">
-                {["CSPO", "CSM"].map((cert) => (
-                  <div key={cert} className="flex items-center gap-3">
-                    <span className="text-[#ffb955] text-xl">✓</span>
-                    <div>
-                      <p className="text-[10px] font-mono text-[#91909a] uppercase tracking-widest">Certified</p>
-                      <p className="font-bold text-[#e4e2db]">{cert}</p>
+              <div className="mt-12 pt-8 border-t border-white/10 flex flex-wrap gap-8">
+                {aboutData.certifications.map((cert, certIdx) => {
+                  const match = cert.match(/\(([^)]+)\)/);
+                  const shortName = match ? match[1] : cert.split(" - ")[0];
+                  return (
+                    <div key={certIdx} className="flex items-center gap-3">
+                      <span className="text-[#ffb955] text-xl">✓</span>
+                      <div>
+                        <p className="text-[10px] font-mono text-[#91909a] uppercase tracking-widest">Credential</p>
+                        <p className="font-bold text-[#e4e2db] text-sm">{shortName}</p>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
@@ -130,9 +118,9 @@ export default function AboutPage() {
               </h3>
               <div className="space-y-8">
                 {skills.map((skill) => (
-                  <div key={skill.label} className="space-y-2">
+                  <div key={skill.name} className="space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span className="font-mono text-xs tracking-widest">{skill.label}</span>
+                      <span className="font-mono text-xs tracking-widest">{skill.name}</span>
                       <span className="text-[#47f0f4] font-mono text-xs">{skill.level}%</span>
                     </div>
                     <div className="h-1 w-full bg-[#2a2a25] rounded-full overflow-hidden">
@@ -170,62 +158,46 @@ export default function AboutPage() {
             ></div>
 
             {/* Timeline Events */}
-            {[
-              {
-                period: "2018 - 2020",
-                title: "SaaS Product Foundation",
-                desc: "Developing core PM skills, user research frameworks, and high-growth SaaS strategies.",
-                side: "left",
-                color: "#47f0f4",
-                size: "w-4 h-4",
-              },
-              {
-                period: "2021 - 2023",
-                title: "The AI PM Shift",
-                desc: "Integrating ML models into user-facing products. Translating complex model behavior into business value.",
-                side: "right",
-                color: "#bec2fc",
-                size: "w-4 h-4",
-              },
-              {
-                period: "2024 - PRESENT",
-                title: "AI Engineering Frontier",
-                desc: "Hands-on model development, optimization, and deploying resilient AI agents at scale.",
-                side: "left",
-                color: "#47f0f4",
-                size: "w-6 h-6",
-                pulse: true,
-              },
-            ].map((event, idx) => (
-              <div key={idx} className="relative grid grid-cols-1 md:grid-cols-2 gap-12 mb-20">
-                {event.side === "left" ? (
-                  <>
-                    <div className="md:text-right flex flex-col items-center md:items-end justify-center">
-                      <span className="text-xs font-mono text-[#47f0f4] mb-2 tracking-widest">{event.period}</span>
-                      <h4 className="text-xl font-semibold text-[#e4e2db] mb-2">{event.title}</h4>
-                      <p className="text-[#c7c5d0] text-sm max-w-xs md:ml-auto leading-relaxed">{event.desc}</p>
-                    </div>
-                    <div className="hidden md:block"></div>
-                  </>
-                ) : (
-                  <>
-                    <div className="hidden md:block"></div>
-                    <div className="flex flex-col items-center md:items-start justify-center">
-                      <span className="text-xs font-mono text-[#47f0f4] mb-2 tracking-widest">{event.period}</span>
-                      <h4 className="text-xl font-semibold text-[#e4e2db] mb-2">{event.title}</h4>
-                      <p className="text-[#c7c5d0] text-sm max-w-xs leading-relaxed">{event.desc}</p>
-                    </div>
-                  </>
-                )}
-                <div
-                  className={`absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 ${event.size} rounded-full border-4 border-[#0a0c1f] ${event.pulse ? "animate-pulse" : ""}`}
-                  style={{
-                    backgroundColor: event.color,
-                    boxShadow: `0 0 ${event.pulse ? "25px" : "15px"} ${event.color}`,
-                  }}
-                ></div>
-              </div>
-            ))}
+            {aboutData.journey.map((event, idx) => {
+              const side = idx % 2 === 0 ? "left" : "right";
+              const color = idx % 2 === 0 ? "#47f0f4" : "#bec2fc";
+              const isLatest = idx === 0;
+              const size = isLatest ? "w-6 h-6" : "w-4 h-4";
+              const pulse = isLatest;
+
+              return (
+                <div key={idx} className="relative grid grid-cols-1 md:grid-cols-2 gap-12 mb-20">
+                  {side === "left" ? (
+                    <>
+                      <div className="md:text-right flex flex-col items-center md:items-end justify-center">
+                        <span className="text-xs font-mono text-[#47f0f4] mb-2 tracking-widest">{event.year}</span>
+                        <h4 className="text-xl font-semibold text-[#e4e2db] mb-2">{event.title}</h4>
+                        <p className="text-[#91909a] text-xs font-mono mb-2">{event.company}</p>
+                        <p className="text-[#c7c5d0] text-sm max-w-xs md:ml-auto leading-relaxed">{event.description}</p>
+                      </div>
+                      <div className="hidden md:block"></div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="hidden md:block"></div>
+                      <div className="flex flex-col items-center md:items-start justify-center">
+                        <span className="text-xs font-mono text-[#47f0f4] mb-2 tracking-widest">{event.year}</span>
+                        <h4 className="text-xl font-semibold text-[#e4e2db] mb-2">{event.title}</h4>
+                        <p className="text-[#91909a] text-xs font-mono mb-2">{event.company}</p>
+                        <p className="text-[#c7c5d0] text-sm max-w-xs leading-relaxed">{event.description}</p>
+                      </div>
+                    </>
+                  )}
+                  <div
+                    className={`absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 ${size} rounded-full border-4 border-[#0a0c1f] ${pulse ? "animate-pulse" : ""}`}
+                    style={{
+                      backgroundColor: color,
+                      boxShadow: `0 0 ${pulse ? "25px" : "15px"} ${color}`,
+                    }}
+                  ></div>
+                </div>
+              );
+            })}
           </div>
         </section>
 
@@ -233,7 +205,7 @@ export default function AboutPage() {
         <section className="mb-32">
           <div className="rounded-2xl border-y border-white/10 bg-[#13140f66] backdrop-blur-xl py-12 overflow-hidden relative">
             <div className="flex whitespace-nowrap gap-12 animate-marquee">
-              {tools.map((tool, idx) => (
+              {marqueeTools.map((tool, idx) => (
                 <span
                   key={idx}
                   className="text-3xl font-semibold text-[#91909a] opacity-40 hover:opacity-100 hover:text-[#47f0f4] cursor-default transition-all tracking-tight"

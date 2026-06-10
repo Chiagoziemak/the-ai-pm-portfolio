@@ -1,20 +1,23 @@
-"use client";
-import React, { use } from "react";
+import React from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { mockTeardowns } from "@/data/mockData";
+import { getTeardownBySlug, getTeardowns } from "@/sanity/queries";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-export default function SingleTeardownPage({ params }: PageProps) {
-  const { slug } = use(params);
-  const teardown = mockTeardowns.find((t) => t.slug === slug);
+export default async function SingleTeardownPage({ params }: PageProps) {
+  const { slug } = await params;
+  const teardown = await getTeardownBySlug(slug);
   if (!teardown) notFound();
-  const relatedTeardowns = mockTeardowns.filter((t) => t.slug !== slug).slice(0, 3);
+
+  const allTeardowns = await getTeardowns();
+  const relatedTeardowns = allTeardowns
+    .filter((t) => t.slug !== slug)
+    .slice(0, 3);
 
   return (
     <div className="min-h-screen bg-[#0a0c1f] text-[#e4e2db]">
@@ -43,7 +46,11 @@ export default function SingleTeardownPage({ params }: PageProps) {
         {/* Hero Image */}
         <section className="max-w-[1280px] mx-auto px-5 md:px-16 mb-16">
           <div className="relative w-full aspect-[21/9] rounded-2xl overflow-hidden border border-white/10 bg-[#bec2fc0d] backdrop-blur-xl flex items-center justify-center bg-gradient-to-br from-[#1a1f4e] via-[#0a0c1f] to-[#13140f]">
-            <span className="text-[#47f0f4]/10 text-[200px]">✦</span>
+            {teardown.coverImage ? (
+              <img src={teardown.coverImage} alt={teardown.title} className="absolute inset-0 w-full h-full object-cover" />
+            ) : (
+              <span className="text-[#47f0f4]/10 text-[200px]">✦</span>
+            )}
             <div className="absolute inset-0 bg-gradient-to-t from-[#0a0c1f] to-transparent opacity-60"></div>
           </div>
         </section>
@@ -130,7 +137,11 @@ export default function SingleTeardownPage({ params }: PageProps) {
                   className="group block rounded-2xl overflow-hidden border border-white/10 bg-[#bec2fc0d] backdrop-blur-xl transition-all hover:-translate-y-2"
                 >
                   <div className="aspect-video relative overflow-hidden bg-gradient-to-br from-[#1a1f4e] via-[#0a0c1f] to-[#13140f] flex items-center justify-center">
-                    <span className="text-[#47f0f4]/20 text-6xl">✦</span>
+                    {item.coverImage ? (
+                      <img src={item.coverImage} alt={item.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    ) : (
+                      <span className="text-[#47f0f4]/20 text-6xl">✦</span>
+                    )}
                   </div>
                   <div className="p-6">
                     <span className="text-xs font-mono text-[#47f0f4] mb-3 block tracking-widest uppercase">

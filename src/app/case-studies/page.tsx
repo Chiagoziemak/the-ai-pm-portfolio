@@ -1,15 +1,17 @@
-"use client";
-
 import React from "react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { getCaseStudies } from "@/sanity/queries";
 import { mockCaseStudies } from "@/data/mockData";
 import { ArrowUpRight, Sparkles, BookOpen, Layers } from "lucide-react";
 
-export default function CaseStudiesPage() {
-  const featuredCaseStudy = mockCaseStudies[0];
-  const otherCaseStudies = mockCaseStudies.slice(1);
+export default async function CaseStudiesPage() {
+  const data = await getCaseStudies();
+  const caseStudies = data.length > 0 ? data : mockCaseStudies;
+
+  const featuredCaseStudy = caseStudies[0];
+  const otherCaseStudies = caseStudies.slice(1);
 
   return (
     <div className="flex flex-col min-h-screen relative overflow-hidden bg-background text-foreground transition-colors duration-300">
@@ -30,65 +32,75 @@ export default function CaseStudiesPage() {
         </div>
 
         {/* Featured ResumeGenie Banner */}
-        <section className="mb-16">
-          <div className="rounded-3xl overflow-hidden glass-panel border-card-border/60 hover:border-accent-teal/40 hover:-translate-y-1 hover:shadow-2xl transition-all duration-500 group relative">
-            <div className="absolute top-0 right-0 w-[40%] h-[40%] rounded-full blur-[80px] bg-accent-teal/5 pointer-events-none"></div>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 p-6 sm:p-10 lg:p-12 items-center">
-              {/* Image Placeholder on left for larger screen, or top on small */}
-              <div className="lg:col-span-5 h-[200px] sm:h-[300px] rounded-2xl overflow-hidden bg-gradient-to-br from-indigo-950/80 via-slate-900 to-slate-950 border border-card-border/40 flex items-center justify-center relative shadow-inner">
-                <Sparkles size={64} className="text-accent-teal/15 group-hover:scale-110 transition-transform duration-500" />
-                <div className="absolute inset-0 bg-gradient-to-tr from-accent-cyan/10 to-transparent pointer-events-none"></div>
-              </div>
-
-              {/* Content on right */}
-              <div className="lg:col-span-7 flex flex-col justify-between">
-                <div>
-                  <div className="flex flex-wrap gap-2 items-center mb-4">
-                    <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-accent-teal text-background">
-                      Featured Case Study
-                    </span>
-                    <span className="text-xs font-semibold rounded-md bg-card-border/30 px-2 py-1 text-foreground/80">
-                      {featuredCaseStudy.category}
-                    </span>
-                    <span className="text-xs text-foreground/50 ml-auto">{featuredCaseStudy.date}</span>
-                  </div>
-
-                  <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight group-hover:text-accent-teal transition-colors mt-2 mb-4 leading-tight">
-                    {featuredCaseStudy.title}
-                  </h2>
-
-                  <p className="text-sm sm:text-base text-foreground/85 leading-relaxed mb-6">
-                    {featuredCaseStudy.summary}
-                  </p>
-
-                  {/* Tool List */}
-                  <div className="flex flex-wrap gap-2 mb-8">
-                    {featuredCaseStudy.tools.map((tool) => (
-                      <span key={tool} className="text-xs px-2.5 py-1 rounded-md bg-card-border/20 border border-card-border/40 font-medium">
-                        {tool}
-                      </span>
-                    ))}
-                  </div>
+        {featuredCaseStudy && (
+          <section className="mb-16">
+            <div className="rounded-3xl overflow-hidden glass-panel border-card-border/60 hover:border-accent-teal/40 hover:-translate-y-1 hover:shadow-2xl transition-all duration-500 group relative">
+              <div className="absolute top-0 right-0 w-[40%] h-[40%] rounded-full blur-[80px] bg-accent-teal/5 pointer-events-none"></div>
+              
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 p-6 sm:p-10 lg:p-12 items-center">
+                {/* Image side */}
+                <div className="lg:col-span-5 h-[200px] sm:h-[300px] rounded-2xl overflow-hidden bg-gradient-to-br from-indigo-950/80 via-slate-900 to-slate-950 border border-card-border/40 flex items-center justify-center relative shadow-inner">
+                  {featuredCaseStudy.coverImage ? (
+                    <img 
+                      src={featuredCaseStudy.coverImage} 
+                      alt={featuredCaseStudy.title} 
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-750" 
+                    />
+                  ) : (
+                    <Sparkles size={64} className="text-accent-teal/15 group-hover:scale-110 transition-transform duration-500" />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-tr from-accent-cyan/10 to-transparent pointer-events-none"></div>
                 </div>
 
-                <div className="flex items-center justify-between border-t border-card-border/60 pt-6">
-                  <span className="text-xs text-foreground/60 flex items-center gap-1">
-                    <BookOpen size={14} className="text-accent-cyan" />
-                    8 min read
-                  </span>
-                  <Link
-                    href={`/case-studies/${featuredCaseStudy.slug}`}
-                    className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-semibold rounded-lg bg-accent-cyan text-white hover:bg-accent-cyan/90 hover:scale-102 hover:shadow-md transition-all duration-300 cursor-pointer"
-                  >
-                    Read Case Study
-                    <ArrowUpRight size={16} />
-                  </Link>
+                {/* Content on right */}
+                <div className="lg:col-span-7 flex flex-col justify-between">
+                  <div>
+                    <div className="flex flex-wrap gap-2 items-center mb-4">
+                      <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-accent-teal text-background">
+                        Featured Case Study
+                      </span>
+                      <span className="text-xs font-semibold rounded-md bg-card-border/30 px-2 py-1 text-foreground/80">
+                        {featuredCaseStudy.category}
+                      </span>
+                      <span className="text-xs text-foreground/50 ml-auto">{featuredCaseStudy.date}</span>
+                    </div>
+
+                    <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight group-hover:text-accent-teal transition-colors mt-2 mb-4 leading-tight">
+                      {featuredCaseStudy.title}
+                    </h2>
+
+                    <p className="text-sm sm:text-base text-foreground/85 leading-relaxed mb-6">
+                      {featuredCaseStudy.summary}
+                    </p>
+
+                    {/* Tool List */}
+                    <div className="flex flex-wrap gap-2 mb-8">
+                      {featuredCaseStudy.tools.map((tool) => (
+                        <span key={tool} className="text-xs px-2.5 py-1 rounded-md bg-card-border/20 border border-card-border/40 font-medium">
+                          {tool}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between border-t border-card-border/60 pt-6">
+                    <span className="text-xs text-foreground/60 flex items-center gap-1">
+                      <BookOpen size={14} className="text-accent-cyan" />
+                      8 min read
+                    </span>
+                    <Link
+                      href={`/case-studies/${featuredCaseStudy.slug}`}
+                      className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-semibold rounded-lg bg-accent-cyan text-white hover:bg-accent-cyan/90 hover:scale-102 hover:shadow-md transition-all duration-300 cursor-pointer"
+                    >
+                      Read Case Study
+                      <ArrowUpRight size={16} />
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         {/* Other Case Studies Grid */}
         <section>

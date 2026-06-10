@@ -62,7 +62,7 @@ export default {
       name: "body",
       title: "Body Text",
       type: "array",
-      of: [{ type: "block" }],
+      of: [{ type: "text" }],
       validation: (Rule: any) => Rule.required(),
     },
     {

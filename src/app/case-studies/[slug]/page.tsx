@@ -1,21 +1,21 @@
-"use client";
-import React, { use } from "react";
+import React from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { mockCaseStudies } from "@/data/mockData";
+import { getCaseStudyBySlug, getCaseStudies } from "@/sanity/queries";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-export default function SingleCaseStudyPage({ params }: PageProps) {
-  const { slug } = use(params);
-  const study = mockCaseStudies.find((s) => s.slug === slug);
+export default async function SingleCaseStudyPage({ params }: PageProps) {
+  const { slug } = await params;
+  const study = await getCaseStudyBySlug(slug);
   if (!study) notFound();
 
-  const relatedStudies = mockCaseStudies
+  const allStudies = await getCaseStudies();
+  const relatedStudies = allStudies
     .filter((s) => s.slug !== slug)
     .slice(0, 2);
 
@@ -50,7 +50,11 @@ export default function SingleCaseStudyPage({ params }: PageProps) {
 
         {/* Cover Image */}
         <div className="w-full h-[400px] md:h-[614px] relative mb-20 overflow-hidden bg-gradient-to-br from-[#1a1f4e] via-[#0a0c1f] to-[#13140f] flex items-center justify-center">
-          <span className="text-[#47f0f4]/10 text-[300px]">✦</span>
+          {study.coverImage ? (
+            <img src={study.coverImage} alt={study.title} className="absolute inset-0 w-full h-full object-cover" />
+          ) : (
+            <span className="text-[#47f0f4]/10 text-[300px]">✦</span>
+          )}
           <div className="absolute inset-0 bg-gradient-to-t from-[#0a0c1f] via-transparent to-transparent"></div>
         </div>
 
@@ -187,8 +191,12 @@ export default function SingleCaseStudyPage({ params }: PageProps) {
                   href={`/case-studies/${item.slug}`}
                   className="group block rounded-2xl overflow-hidden border border-white/10 bg-[#1a1f4e66] backdrop-blur-xl transition-all hover:-translate-y-2 hover:shadow-[0_0_25px_rgba(0,212,216,0.2)]"
                 >
-                  <div className="aspect-video bg-gradient-to-br from-[#1a1f4e] via-[#0a0c1f] to-[#13140f] flex items-center justify-center">
-                    <span className="text-[#47f0f4]/20 text-6xl">✦</span>
+                  <div className="aspect-video relative overflow-hidden bg-gradient-to-br from-[#1a1f4e] via-[#0a0c1f] to-[#13140f] flex items-center justify-center">
+                    {item.coverImage ? (
+                      <img src={item.coverImage} alt={item.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    ) : (
+                      <span className="text-[#47f0f4]/20 text-6xl">✦</span>
+                    )}
                   </div>
                   <div className="p-6">
                     <span className="text-xs font-mono text-[#47f0f4] mb-3 block tracking-widest uppercase">

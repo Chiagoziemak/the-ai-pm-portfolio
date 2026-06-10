@@ -1,17 +1,19 @@
-"use client";
-
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { mockTeardowns, mockCaseStudies, mockProducts } from "@/data/mockData";
+import { getTeardowns, getCaseStudies } from "@/sanity/queries";
+import { mockTeardowns, mockCaseStudies } from "@/data/mockData";
 import { ArrowUpRight, Award, Brain, Compass, Sparkles } from "lucide-react";
 
-export default function HomePage() {
-  const featuredTeardowns = mockTeardowns.slice(0, 3);
-  const featuredCaseStudy = mockCaseStudies[0];
-  const otherCaseStudy = mockCaseStudies[1];
+export default async function HomePage() {
+  const teardowns = await getTeardowns();
+  const caseStudies = await getCaseStudies();
+
+  const featuredTeardowns = teardowns.length > 0 ? teardowns.slice(0, 3) : mockTeardowns.slice(0, 3);
+  const featuredCaseStudy = caseStudies[0] || mockCaseStudies[0];
+  const otherCaseStudy = caseStudies[1] || mockCaseStudies[1];
 
   // Marquee items: combination of products and teardowns
   const marqueeItems = [
