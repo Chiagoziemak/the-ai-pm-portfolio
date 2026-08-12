@@ -12,7 +12,8 @@ interface TeardownsListProps {
 export default function TeardownsList({ initialTeardowns }: TeardownsListProps) {
   const [activeFilter, setActiveFilter] = useState<string>("All");
 
-  const categories = ["All", "LLMs", "SaaS", "Job Tech"];
+  const uniqueCategories = Array.from(new Set(initialTeardowns.map((item) => item.category)));
+  const categories = ["All", ...uniqueCategories];
 
   const filteredTeardowns = activeFilter === "All"
     ? initialTeardowns
@@ -25,7 +26,7 @@ export default function TeardownsList({ initialTeardowns }: TeardownsListProps) 
         <span className="text-xs uppercase tracking-widest text-accent-teal font-extrabold">Product Deconstructions</span>
         <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black mt-2 tracking-tight">Product Teardowns</h1>
         <p className="text-foreground/70 mt-3 max-w-2xl text-base sm:text-lg">
-          Analytical teardowns evaluating LLM interfaces, SaaS architecture shifts, and Job-Tech platforms. Focused on product design, user experience bottlenecks, and engineering constraints.
+          In-depth product teardowns evaluating user research, market opportunities, RICE prioritization, and strategic recommendations for top SaaS, AI, and consumer platforms.
         </p>
       </div>
 

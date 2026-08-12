@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { getTeardownBySlug, getTeardowns } from "@/sanity/queries";
+import { ArrowUpRight, ExternalLink, Calendar, Clock, Tag, UserCheck, Search, Key, Lightbulb, Layers } from "lucide-react";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -15,118 +16,261 @@ export default async function SingleTeardownPage({ params }: PageProps) {
   if (!teardown) notFound();
 
   const allTeardowns = await getTeardowns();
-  const relatedTeardowns = allTeardowns
-    .filter((t) => t.slug !== slug)
-    .slice(0, 3);
+  const relatedTeardowns = allTeardowns.filter((t) => t.slug !== slug);
 
   return (
-    <div className="min-h-screen bg-[#0a0c1f] text-[#e4e2db]">
+    <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors duration-300">
       <Navbar />
 
       {/* Reading Progress Bar */}
-      <div className="fixed top-0 left-0 h-1 bg-[#47f0f4] z-[60] w-0" id="progress-bar"></div>
+      <div className="fixed top-0 left-0 h-1 bg-accent-teal z-[60] w-0" id="progress-bar"></div>
 
-      <main className="pt-24 pb-20">
-
+      <main className="flex-grow pt-12 pb-20">
         {/* Article Header */}
-        <header className="max-w-4xl mx-auto px-5 md:px-0 text-center mb-16">
-          <div className="inline-block bg-[#1a1f4e] text-[#8287bd] px-3 py-1 rounded-full text-xs font-mono mb-6 tracking-widest uppercase">
+        <header className="max-w-4xl mx-auto px-4 sm:px-6 text-center mb-12">
+          <div className="inline-block glass-panel text-accent-teal px-4 py-1.5 rounded-full text-xs font-mono mb-6 tracking-widest uppercase border border-accent-teal/30">
             {teardown.category}
           </div>
-          <h1 className="font-bold text-4xl md:text-5xl mb-6 text-[#e4e2db] tracking-tight leading-tight">
+          <h1 className="font-extrabold text-3xl sm:text-4xl md:text-5xl mb-6 text-foreground tracking-tight leading-tight">
             {teardown.title}
           </h1>
-          <div className="flex items-center justify-center gap-6 text-[#c7c5d0] text-sm">
-            <span className="flex items-center gap-1">📅 {teardown.date}</span>
-            <span className="flex items-center gap-1">⏱ {teardown.readTime}</span>
-            <span className="flex items-center gap-1">⚡ {teardown.category}</span>
+          <div className="flex flex-wrap items-center justify-center gap-6 text-foreground/60 text-sm font-medium">
+            <span className="flex items-center gap-1.5">
+              <Calendar size={15} className="text-accent-cyan" /> {teardown.date}
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Clock size={15} className="text-accent-teal" /> {teardown.readTime}
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Tag size={15} className="text-accent-cyan" /> {teardown.category}
+            </span>
           </div>
         </header>
 
         {/* Hero Image */}
-        <section className="max-w-[1280px] mx-auto px-5 md:px-16 mb-16">
-          <div className="relative w-full aspect-[21/9] rounded-2xl overflow-hidden border border-white/10 bg-[#bec2fc0d] backdrop-blur-xl flex items-center justify-center bg-gradient-to-br from-[#1a1f4e] via-[#0a0c1f] to-[#13140f]">
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+          <div className="relative w-full aspect-[21/9] rounded-2xl overflow-hidden glass-panel border border-card-border shadow-xl">
             {teardown.coverImage ? (
-              <img src={teardown.coverImage} alt={teardown.title} className="absolute inset-0 w-full h-full object-cover" />
+              <img src={teardown.coverImage} alt={teardown.title} className="w-full h-full object-cover" />
             ) : (
-              <span className="text-[#47f0f4]/10 text-[200px]">✦</span>
+              <div className="w-full h-full bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 flex items-center justify-center">
+                <span className="text-accent-teal/20 text-9xl">✦</span>
+              </div>
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0a0c1f] to-transparent opacity-60"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-40"></div>
           </div>
         </section>
 
-        {/* Article Content */}
-        <div className="max-w-4xl mx-auto px-5 md:px-0">
+        {/* Article Content Container */}
+        <div className="max-w-4xl mx-auto px-4 sm:px-6">
 
           {/* Summary Box */}
-          <div className="rounded-xl p-8 mb-12 border-l-4 border-l-[#47f0f4] border border-white/10 bg-[#bec2fc0d] backdrop-blur-xl">
-            <h3 className="text-xl font-semibold mb-4 text-[#47f0f4]">Summary</h3>
-            <p className="text-base text-[#c7c5d0] italic leading-relaxed">
+          <div className="rounded-2xl p-6 sm:p-8 mb-10 border-l-4 border-l-accent-cyan glass-panel border-card-border shadow-sm">
+            <h3 className="text-lg font-bold mb-3 text-accent-cyan uppercase tracking-wider text-xs">Summary</h3>
+            <p className="text-base sm:text-lg text-foreground/90 italic leading-relaxed">
               {teardown.summary}
             </p>
           </div>
 
-          {/* Article Body */}
-          <article className="space-y-6 mb-16">
-            {teardown.body.map((para, index) => (
-              <p key={index} className="text-lg text-[#c7c5d0] leading-relaxed">
-                {para}
+          {/* My Role Section */}
+          {teardown.myRole && (
+            <section className="mb-10 p-6 rounded-2xl glass-panel border border-card-border bg-card/40">
+              <h2 className="text-sm uppercase tracking-widest font-extrabold text-accent-teal mb-2 flex items-center gap-2">
+                <UserCheck size={18} />
+                My Role &amp; Responsibilities
+              </h2>
+              <p className="text-base text-foreground/85 leading-relaxed font-medium">
+                {teardown.myRole}
               </p>
+            </section>
+          )}
+
+          {/* Research & Evidence Section */}
+          {teardown.researchDetails && (
+            <section className="mb-12 p-6 sm:p-8 rounded-2xl glass-panel border border-card-border">
+              <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+                <Search size={20} className="text-accent-cyan" />
+                Research &amp; Evidence
+              </h2>
+              <p className="text-base text-foreground/80 leading-relaxed mb-6">
+                {teardown.researchDetails.overview}
+              </p>
+
+              {teardown.researchDetails.metrics && teardown.researchDetails.metrics.length > 0 && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                  {teardown.researchDetails.metrics.map((metric, idx) => (
+                    <div key={idx} className="p-4 rounded-xl bg-card-border/15 border border-card-border/40 text-sm font-semibold text-foreground/90 flex items-start gap-2.5">
+                      <span className="text-accent-teal font-extrabold text-base">•</span>
+                      <span>{metric}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+          )}
+
+          {/* Article Narrative Body */}
+          <article className="prose prose-invert max-w-none text-foreground/85 text-base sm:text-lg leading-relaxed space-y-6 mb-14">
+            {teardown.body.map((para, index) => (
+              <p key={index}>{para}</p>
             ))}
           </article>
 
-          {/* Key Findings Bento */}
-          <section className="my-16">
-            <h2 className="text-2xl font-bold mb-8 text-[#e4e2db]">Key Engineering Findings</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Key Product Findings */}
+          <section className="my-12 p-6 sm:p-8 rounded-2xl glass-panel border border-card-border">
+            <h2 className="text-xl sm:text-2xl font-extrabold mb-6 text-foreground flex items-center gap-2">
+              <Key size={22} className="text-accent-teal" />
+              Key Product Findings
+            </h2>
+            <div className="grid grid-cols-1 gap-4">
               {teardown.keyFindings.map((finding, idx) => (
                 <div
                   key={idx}
-                  className="p-6 rounded-xl flex flex-col gap-4 border border-white/10 bg-[#bec2fc0d] backdrop-blur-xl hover:shadow-[0_0_25px_rgba(0,212,216,0.2)] transition-all"
+                  className="p-5 rounded-xl flex items-start gap-4 border border-card-border/60 bg-card/30 hover:border-accent-teal/40 transition-all duration-300"
                 >
-                  <span className="text-[#47f0f4] text-3xl font-bold font-mono">
+                  <span className="text-accent-teal text-xl font-black font-mono flex-shrink-0">
                     {String(idx + 1).padStart(2, "0")}
                   </span>
-                  <p className="text-sm text-[#91909a] leading-relaxed">{finding}</p>
+                  <p className="text-sm sm:text-base text-foreground/90 leading-relaxed">{finding}</p>
                 </div>
               ))}
             </div>
           </section>
 
-          {/* Recommendations */}
-          <section className="mt-20 pt-10 border-t border-white/10">
-            <div className="flex items-center gap-3 mb-8">
-              <span className="text-[#D97757] text-xl">💡</span>
-              <h2 className="text-3xl font-semibold text-[#e4e2db] tracking-tight">
+          {/* Key Pain Points (if present) */}
+          {teardown.keyPainPoints && teardown.keyPainPoints.length > 0 && (
+            <section className="my-12 p-6 sm:p-8 rounded-2xl glass-panel border border-amber-500/30 bg-amber-500/5">
+              <h2 className="text-xl font-bold mb-4 text-amber-500 flex items-center gap-2">
+                ⚠️ Key User Pain Points
+              </h2>
+              <ul className="space-y-3">
+                {teardown.keyPainPoints.map((point, idx) => (
+                  <li key={idx} className="flex items-start gap-3 text-sm sm:text-base text-foreground/90">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 mt-2 flex-shrink-0"></span>
+                    <span>{point}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {/* RICE Prioritization Table (if present) */}
+          {teardown.riceScores && teardown.riceScores.length > 0 && (
+            <section className="my-12 p-6 sm:p-8 rounded-2xl glass-panel border border-card-border">
+              <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+                📊 RICE Prioritization Model
+              </h2>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm text-foreground/80 border-collapse">
+                  <thead>
+                    <tr className="border-b border-card-border text-xs uppercase tracking-wider text-accent-cyan">
+                      <th className="py-3 px-4">Feature / Opportunity</th>
+                      {teardown.riceScores.some(r => r.reach !== undefined) && <th className="py-3 px-3">Reach</th>}
+                      {teardown.riceScores.some(r => r.impact !== undefined) && <th className="py-3 px-3">Impact</th>}
+                      {teardown.riceScores.some(r => r.confidence !== undefined) && <th className="py-3 px-3">Confidence</th>}
+                      {teardown.riceScores.some(r => r.effort !== undefined) && <th className="py-3 px-3">Effort</th>}
+                      <th className="py-3 px-4 text-right">RICE Score</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {teardown.riceScores.map((scoreItem, idx) => (
+                      <tr key={idx} className="border-b border-card-border/40 hover:bg-card-border/10 transition-colors">
+                        <td className="py-3 px-4 font-semibold text-foreground">{scoreItem.feature}</td>
+                        {scoreItem.reach !== undefined && <td className="py-3 px-3">{scoreItem.reach}</td>}
+                        {scoreItem.impact !== undefined && <td className="py-3 px-3">{scoreItem.impact}</td>}
+                        {scoreItem.confidence !== undefined && <td className="py-3 px-3">{scoreItem.confidence}</td>}
+                        {scoreItem.effort !== undefined && <td className="py-3 px-3">{scoreItem.effort}</td>}
+                        <td className="py-3 px-4 text-right font-mono font-bold text-accent-teal text-base">
+                          {scoreItem.rice.toFixed(1)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          )}
+
+          {/* Strategic Recommendations */}
+          <section className="my-12 p-6 sm:p-8 rounded-2xl glass-panel border border-card-border">
+            <div className="flex items-center gap-3 mb-6">
+              <Lightbulb size={24} className="text-accent-teal" />
+              <h2 className="text-2xl font-extrabold text-foreground tracking-tight">
                 Strategic Recommendations
               </h2>
             </div>
             <div className="space-y-4">
-              {teardown.recommendations.map((rec, idx) => (
-                <div
-                  key={idx}
-                  className="bg-[#1b1c17] p-6 rounded-xl border border-white/5"
-                >
-                  <div className="flex justify-between items-start mb-2">
-                    <h4 className="font-bold text-[#e4e2db]">
-                      Recommendation {idx + 1}
-                    </h4>
-                    <span className="text-[#47f0f4] text-xs font-mono tracking-widest uppercase">
-                      {idx === 0 ? "High Priority" : idx === 1 ? "Medium Priority" : "Low Priority"}
-                    </span>
+              {teardown.recommendations.map((rec, idx) => {
+                const title = typeof rec === "string" ? `Recommendation ${idx + 1}` : rec.title;
+                const desc = typeof rec === "string" ? rec : rec.description;
+                const priority = typeof rec === "string" ? undefined : rec.priority;
+                return (
+                  <div
+                    key={idx}
+                    className="p-6 rounded-xl border border-card-border/60 bg-card/40 shadow-sm"
+                  >
+                    <div className="flex flex-wrap justify-between items-center mb-2 gap-2">
+                      <h4 className="font-bold text-base sm:text-lg text-foreground">
+                        {title}
+                      </h4>
+                      {priority && (
+                        <span className="text-accent-teal text-xs font-mono tracking-wider uppercase font-semibold px-2.5 py-1 rounded-md bg-accent-teal/10 border border-accent-teal/20">
+                          {priority}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-sm sm:text-base text-foreground/80 leading-relaxed">{desc}</p>
                   </div>
-                  <p className="text-base text-[#c7c5d0] leading-relaxed">{rec}</p>
-                </div>
-              ))}
+                );
+              })}
+            </div>
+          </section>
+
+          {/* Dedicated Project Links Section */}
+          <section className="my-14 p-6 sm:p-8 rounded-2xl glass-panel border border-accent-cyan/30 bg-accent-cyan/5">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-extrabold text-foreground flex items-center gap-2">
+                <ExternalLink size={20} className="text-accent-cyan" />
+                Project Links &amp; Documentation
+              </h2>
+              <span className="text-xs text-foreground/50 font-mono">Explore the Artifacts</span>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {teardown.projectLinks.map((linkItem, idx) => {
+                const isPlaceholder = linkItem.url === "ADD_LINK_HERE" || !linkItem.url;
+                return isPlaceholder ? (
+                  <div
+                    key={idx}
+                    className="flex items-center gap-2 p-3.5 rounded-xl border border-card-border/40 bg-card-border/10 text-foreground/40 text-sm font-medium cursor-not-allowed opacity-60"
+                  >
+                    <span className="font-mono text-xs text-foreground/30">↗</span>
+                    <span>{linkItem.label}</span>
+                    <span className="ml-auto text-[10px] uppercase font-mono tracking-widest text-foreground/30">(Link Coming Soon)</span>
+                  </div>
+                ) : (
+                  <a
+                    key={idx}
+                    href={linkItem.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 p-3.5 rounded-xl border border-card-border/60 glass-panel text-accent-cyan font-semibold text-sm hover:border-accent-teal hover:text-accent-teal hover:-translate-y-0.5 transition-all duration-300 shadow-sm group"
+                  >
+                    <span className="font-mono text-base group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300">↗</span>
+                    <span>{linkItem.label}</span>
+                  </a>
+                );
+              })}
             </div>
           </section>
 
         </div>
 
-        {/* Related Teardowns */}
+        {/* Continue Reading (Other Teardowns) */}
         {relatedTeardowns.length > 0 && (
-          <section className="max-w-[1280px] mx-auto px-5 md:px-16 mt-32">
-            <h3 className="text-3xl font-semibold mb-10 text-center tracking-tight">
+          <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-24 pt-12 border-t border-card-border">
+            <h3 className="text-2xl sm:text-3xl font-extrabold mb-10 text-center tracking-tight flex items-center justify-center gap-2">
+              <Layers size={24} className="text-accent-teal" />
               Continue Reading
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -134,23 +278,31 @@ export default async function SingleTeardownPage({ params }: PageProps) {
                 <Link
                   key={item.slug}
                   href={`/teardowns/${item.slug}`}
-                  className="group block rounded-2xl overflow-hidden border border-white/10 bg-[#bec2fc0d] backdrop-blur-xl transition-all hover:-translate-y-2"
+                  className="group block rounded-2xl overflow-hidden border border-card-border glass-panel hover:border-accent-teal/40 hover:-translate-y-2 hover:shadow-lg transition-all duration-300"
                 >
-                  <div className="aspect-video relative overflow-hidden bg-gradient-to-br from-[#1a1f4e] via-[#0a0c1f] to-[#13140f] flex items-center justify-center">
+                  <div className="aspect-video relative overflow-hidden bg-slate-900">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                    <div className="absolute bottom-3 left-3 z-20">
+                      <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-md bg-accent-teal text-background">
+                        {item.category}
+                      </span>
+                    </div>
                     {item.coverImage ? (
                       <img src={item.coverImage} alt={item.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     ) : (
-                      <span className="text-[#47f0f4]/20 text-6xl">✦</span>
+                      <div className="w-full h-full bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 flex items-center justify-center text-accent-teal/20 text-6xl">
+                        ✦
+                      </div>
                     )}
                   </div>
                   <div className="p-6">
-                    <span className="text-xs font-mono text-[#47f0f4] mb-3 block tracking-widest uppercase">
-                      {item.category}
+                    <span className="text-xs text-foreground/50 font-semibold mb-2 block">
+                      {item.date} • {item.readTime}
                     </span>
-                    <h4 className="text-xl font-semibold text-[#e4e2db] group-hover:text-[#47f0f4] transition-colors leading-snug">
+                    <h4 className="text-base sm:text-lg font-bold text-foreground group-hover:text-accent-teal transition-colors leading-snug">
                       {item.title}
                     </h4>
-                    <p className="text-sm text-[#91909a] mt-3 line-clamp-2">
+                    <p className="text-xs sm:text-sm text-foreground/75 mt-2 line-clamp-2">
                       {item.summary}
                     </p>
                   </div>

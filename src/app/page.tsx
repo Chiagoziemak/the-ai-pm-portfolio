@@ -18,11 +18,11 @@ export default async function HomePage() {
   // Marquee items: combination of products and teardowns
   const marqueeItems = [
     { title: "ResumeGenie AI Agent", desc: "AI Autopilot", color: "from-cyan-500/20 to-teal-500/20" },
-    { title: "GPT-4o Voice Mode UX", desc: "Teardown", color: "from-blue-500/20 to-indigo-500/20" },
-    { title: "SaaS Agentic Workflows", desc: "Analysis", color: "from-purple-500/20 to-pink-500/20" },
-    { title: "SaaS Schema Validator", desc: "Developer Tool", color: "from-emerald-500/20 to-teal-500/20" },
-    { title: "Job-Tech Disruption Study", desc: "Teardown", color: "from-amber-500/20 to-orange-500/20" },
-    { title: "Voice UX Builder", desc: "UI Harness", color: "from-cyan-500/20 to-blue-500/20" },
+    { title: "Netflix Localization & Pricing", desc: "Teardown", color: "from-red-500/20 to-pink-500/20" },
+    { title: "Claude AI Strategy Teardown", desc: "Teardown", color: "from-purple-500/20 to-indigo-500/20" },
+    { title: "Canva Creator Workflows", desc: "Teardown", color: "from-blue-500/20 to-cyan-500/20" },
+    { title: "Chowdeck Marketplace Study", desc: "Teardown", color: "from-amber-500/20 to-orange-500/20" },
+    { title: "WhatsApp Media & Status Controls", desc: "Teardown", color: "from-emerald-500/20 to-teal-500/20" },
   ];
 
   return (
@@ -42,7 +42,7 @@ export default async function HomePage() {
               {/* Badge */}
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold glass-panel text-accent-teal border-accent-teal/20 mb-6 shadow-sm hover:scale-105 transition-all duration-300">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                Available for Roles & Opportunities
+                Available for Roles &amp; Opportunities
               </div>
 
               {/* Name & Title */}
@@ -191,10 +191,13 @@ export default async function HomePage() {
                       {teardown.readTime}
                     </span>
                   </div>
-                  {/* Simple CSS placeholder image with CSS gradients for high aesthetic, blending nicely */}
-                  <div className="w-full h-full bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 flex items-center justify-center text-slate-700 font-extrabold group-hover:scale-105 transition-transform duration-500">
-                    <Sparkles size={48} className="text-accent-teal/20" />
-                  </div>
+                  {teardown.coverImage ? (
+                    <img src={teardown.coverImage} alt={teardown.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 flex items-center justify-center text-slate-700 font-extrabold group-hover:scale-105 transition-transform duration-500">
+                      <Sparkles size={48} className="text-accent-teal/20" />
+                    </div>
+                  )}
                 </div>
 
                 {/* Card Body */}
