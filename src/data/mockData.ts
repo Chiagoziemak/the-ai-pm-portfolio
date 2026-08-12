@@ -198,12 +198,7 @@ export const mockTeardowns: Teardown[] = [
         riceScore: 2.4
       }
     ],
-    projectLinks: [
-      { label: "View User Research & Survey Data", url: "ADD_LINK_HERE" },
-      { label: "View Competitive Analysis Matrix", url: "ADD_LINK_HERE" },
-      { label: "View RICE Prioritization Model", url: "ADD_LINK_HERE" },
-      { label: "View Feature Wireframes", url: "ADD_LINK_HERE" }
-    ]
+    projectLinks: []
   },
   {
     title: "Chowdeck Delivery Teardown: Three-Sided Marketplace Optimization",
@@ -258,12 +253,7 @@ export const mockTeardowns: Teardown[] = [
         riceScore: 6.0
       }
     ],
-    projectLinks: [
-      { label: "View Conditional Survey Findings", url: "ADD_LINK_HERE" },
-      { label: "View Competitive Benchmarking", url: "ADD_LINK_HERE" },
-      { label: "View RICE Prioritization Table", url: "ADD_LINK_HERE" },
-      { label: "View Product Roadmap & Launch Plan", url: "ADD_LINK_HERE" }
-    ]
+    projectLinks: []
   },
   {
     title: "Facebook Reactions Teardown: Evolving Beyond the Like Button",
@@ -322,9 +312,8 @@ export const mockTeardowns: Teardown[] = [
       }
     ],
     projectLinks: [
-      { label: "View Interaction Flow Analysis", url: "ADD_LINK_HERE" },
-      { label: "View Heuristic UX Evaluation", url: "ADD_LINK_HERE" },
-      { label: "View Proposed UI Redesign Wireframe", url: "ADD_LINK_HERE" }
+      { label: "View Survey Responses & Research Document", url: "https://docs.google.com/document/d/1vLimjyI1kXlkSIpUNGr-a8I5nTwC_K6AC9Aplmg-TQk/edit?usp=sharing" },
+      { label: "View User Flow & Interaction Board", url: "https://www.figma.com/board/me13ZYkcaaRxKmO6q56HWH/Facebook-reactions?node-id=0-1&t=vWlDm0hPu2i3GdiL-1" }
     ]
   },
   {
@@ -382,10 +371,11 @@ export const mockTeardowns: Teardown[] = [
       }
     ],
     projectLinks: [
-      { label: "View User Survey Results", url: "ADD_LINK_HERE" },
-      { label: "View Competitor Feature Matrix", url: "ADD_LINK_HERE" },
-      { label: "View RICE Prioritization Framework", url: "ADD_LINK_HERE" },
-      { label: "View Status Edit Wireframes", url: "ADD_LINK_HERE" }
+      { label: "View Research & Survey Document", url: "https://docs.google.com/document/d/1qv9FLOYwgHrND69pEAhaAGr80-CsqA7oBpiy9wXKCFo/edit?tab=t.o5qzbi1qr69n" },
+      { label: "View Customer Journey Map", url: "https://www.figma.com/board/jRf8cUkM0gCcdyraz9FTTQ/Customer-journey-map--Whatsapp-?node-id=0-1&t=iPg1DXKgdmUwT94t-1" },
+      { label: "View Wireframes", url: "https://www.figma.com/design/hYir0ECTYQR7RIuiOwBm6I/Whatsapp-teardown-wireframe?node-id=0-1&t=s919w347SykHv9jH-1" },
+      { label: "View User Flows", url: "https://www.figma.com/board/VMxChBwLtjFMhu96dBgr9X/WhatsApp-Teardown?node-id=0-1&t=CvXWi42K0YuL6u88-1" },
+      { label: "View Launch Plan", url: "https://canva.link/8xqt4fevs4fm4se" }
     ]
   },
   {
@@ -443,12 +433,7 @@ export const mockTeardowns: Teardown[] = [
         riceScore: 4.2
       }
     ],
-    projectLinks: [
-      { label: "View Strategic Research Brief", url: "ADD_LINK_HERE" },
-      { label: "View Competitive Landscape Matrix", url: "ADD_LINK_HERE" },
-      { label: "View Full RICE Prioritization Table", url: "ADD_LINK_HERE" },
-      { label: "View Product Strategy Roadmap", url: "ADD_LINK_HERE" }
-    ]
+    projectLinks: []
   }
 ];
 

@@ -227,28 +227,18 @@ export default async function SingleTeardownPage({ params }: PageProps) {
           </section>
 
           {/* Dedicated Project Links Section */}
-          <section className="my-14 p-6 sm:p-8 rounded-2xl glass-panel border border-accent-cyan/30 bg-accent-cyan/5">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-extrabold text-foreground flex items-center gap-2">
-                <ExternalLink size={20} className="text-accent-cyan" />
-                Project Links &amp; Documentation
-              </h2>
-              <span className="text-xs text-foreground/50 font-mono">Explore the Artifacts</span>
-            </div>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {teardown.projectLinks.map((linkItem, idx) => {
-                const isPlaceholder = linkItem.url === "ADD_LINK_HERE" || !linkItem.url;
-                return isPlaceholder ? (
-                  <div
-                    key={idx}
-                    className="flex items-center gap-2 p-3.5 rounded-xl border border-card-border/40 bg-card-border/10 text-foreground/40 text-sm font-medium cursor-not-allowed opacity-60"
-                  >
-                    <span className="font-mono text-xs text-foreground/30">↗</span>
-                    <span>{linkItem.label}</span>
-                    <span className="ml-auto text-[10px] uppercase font-mono tracking-widest text-foreground/30">(Link Coming Soon)</span>
-                  </div>
-                ) : (
+          {teardown.projectLinks && teardown.projectLinks.length > 0 && (
+            <section className="my-14 p-6 sm:p-8 rounded-2xl glass-panel border border-accent-cyan/30 bg-accent-cyan/5">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-extrabold text-foreground flex items-center gap-2">
+                  <ExternalLink size={20} className="text-accent-cyan" />
+                  Project Links &amp; Documentation
+                </h2>
+                <span className="text-xs text-foreground/50 font-mono">Explore the Artifacts</span>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {teardown.projectLinks.map((linkItem, idx) => (
                   <a
                     key={idx}
                     href={linkItem.url}
@@ -259,10 +249,10 @@ export default async function SingleTeardownPage({ params }: PageProps) {
                     <span className="font-mono text-base group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300">↗</span>
                     <span>{linkItem.label}</span>
                   </a>
-                );
-              })}
-            </div>
-          </section>
+                ))}
+              </div>
+            </section>
+          )}
 
         </div>
 
