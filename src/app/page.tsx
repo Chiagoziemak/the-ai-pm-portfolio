@@ -3,17 +3,27 @@ import Link from "next/link";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { getTeardowns, getCaseStudies } from "@/sanity/queries";
+import { getTeardowns, getCaseStudies, getHomePageData, getSiteSettings } from "@/sanity/queries";
 import { mockTeardowns, mockCaseStudies } from "@/data/mockData";
 import { ArrowUpRight, Award, Brain, Compass, Sparkles } from "lucide-react";
 
 export default async function HomePage() {
+  const homeData = await getHomePageData();
+  const siteSettings = await getSiteSettings();
   const teardowns = await getTeardowns();
   const caseStudies = await getCaseStudies();
 
-  const featuredTeardowns = teardowns.length > 0 ? teardowns.slice(0, 3) : mockTeardowns.slice(0, 3);
-  const featuredCaseStudy = caseStudies[0] || mockCaseStudies[0];
-  const otherCaseStudy = caseStudies[1] || mockCaseStudies[1];
+  const featuredTeardowns = homeData.featuredTeardowns && homeData.featuredTeardowns.length > 0 
+    ? homeData.featuredTeardowns 
+    : (teardowns.length > 0 ? teardowns.slice(0, 3) : mockTeardowns.slice(0, 3));
+    
+  const featuredCaseStudy = (homeData.featuredCaseStudies && homeData.featuredCaseStudies[0]) || caseStudies[0] || mockCaseStudies[0];
+  const otherCaseStudy = (homeData.featuredCaseStudies && homeData.featuredCaseStudies[1]) || caseStudies[1] || mockCaseStudies[1];
+
+  const heroHeading = homeData.heroHeading || "Chiagoziem Melvin Akobundu";
+  const heroSubheading = homeData.heroSubheading || "SaaS PM & Certified PO transitioning to AI Product Management & AI Engineering";
+  const introText = homeData.introText || "Experienced SaaS Product Manager with CSPO and CSM credentials. Pivoting to AI Engineering and AI PM, currently building ResumeGenie—an agentic job application platform. Specialized in bridging high-level product strategy with hands-on AI engineering.";
+  const availabilityBadge = homeData.availabilityBadge || "Available for Roles & Opportunities";
 
   // Marquee items: combination of products and teardowns
   const marqueeItems = [
@@ -42,20 +52,20 @@ export default async function HomePage() {
               {/* Badge */}
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold glass-panel text-accent-teal border-accent-teal/20 mb-6 shadow-sm hover:scale-105 transition-all duration-300">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                Available for Roles &amp; Opportunities
+                {availabilityBadge}
               </div>
 
               {/* Name & Title */}
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
-                Chiagoziem Melvin Akobundu
+                {heroHeading}
               </h1>
               <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-accent-cyan via-accent-teal to-teal-400 bg-clip-text text-transparent mt-3 mb-6">
-                SaaS PM &amp; Certified PO transitioning to AI Product Management &amp; AI Engineering
+                {heroSubheading}
               </h2>
 
               {/* Bio */}
               <p className="text-base sm:text-lg text-foreground/80 max-w-xl leading-relaxed mb-8">
-                Experienced SaaS Product Manager with **CSPO** and **CSM** credentials. Pivoting to AI Engineering and AI PM, currently building <strong className="text-accent-teal">ResumeGenie</strong>—an agentic job application platform. Specialized in bridging high-level product strategy with hands-on AI engineering.
+                {introText}
               </p>
 
               {/* CTAs */}

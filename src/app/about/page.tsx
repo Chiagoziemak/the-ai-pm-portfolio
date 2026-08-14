@@ -2,12 +2,16 @@ import React from "react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { getAboutData } from "@/sanity/queries";
+import { getAboutPageData, getSiteSettings } from "@/sanity/queries";
 import { mockAboutData } from "@/data/mockData";
 
 export default async function AboutPage() {
-  const data = await getAboutData();
-  const aboutData = data || mockAboutData;
+  const aboutData = await getAboutPageData();
+  const siteSettings = await getSiteSettings();
+
+  const headshotUrl = aboutData.headshotUrl || siteSettings.faviconUrl;
+  const headline = aboutData.headline || "From Strategy to Synthesis.";
+  const bioText = aboutData.bio || mockAboutData.bio;
 
   // For the learning vector, show the items from the AI PM / AI Engineering skills group
   const skills = aboutData.skills.find((g) => g.category.toLowerCase().includes("ai"))?.items || 
@@ -33,11 +37,16 @@ export default async function AboutPage() {
           <div className="md:col-span-5 relative group">
             <div className="absolute -inset-1 bg-gradient-to-r from-[#47f0f4] to-[#bec2fc] rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
             <div className="relative overflow-hidden rounded-xl border border-white/10 aspect-[4/5] bg-gradient-to-br from-[#1a1f4e] via-[#0a0c1f] to-[#13140f] flex items-center justify-center">
-              {/* Replace with real photo later */}
-              <span className="text-[#47f0f4]/20 text-[200px]">✦</span>
-              <p className="absolute bottom-6 text-xs text-[#91909a] font-mono tracking-widest uppercase">
-                Photo Coming Soon
-              </p>
+              {headshotUrl ? (
+                <img src={headshotUrl} alt="Chiagoziem Headshot" className="w-full h-full object-cover" />
+              ) : (
+                <>
+                  <span className="text-[#47f0f4]/20 text-[200px]">✦</span>
+                  <p className="absolute bottom-6 text-xs text-[#91909a] font-mono tracking-widest uppercase">
+                    Photo Coming Soon
+                  </p>
+                </>
+              )}
             </div>
           </div>
 
@@ -47,14 +56,13 @@ export default async function AboutPage() {
               <h2 className="text-xs font-mono text-[#47f0f4] tracking-[0.2em] uppercase">
                 The Architectural Evolution
               </h2>
-              <h1 className="font-bold text-5xl text-[#e4e2db] tracking-tight leading-tight">
-                From Strategy to{" "}
-                <span className="text-[#47f0f4]">Synthesis</span>.
+              <h1 className="font-bold text-4xl sm:text-5xl text-[#e4e2db] tracking-tight leading-tight">
+                {headline}
               </h1>
             </div>
 
             <div className="space-y-6 text-[#c7c5d0] leading-relaxed">
-              {aboutData.bio.split("\n").map((para, pIdx) => (
+              {bioText.split("\n").map((para, pIdx) => (
                 <p key={pIdx}>{para}</p>
               ))}
             </div>

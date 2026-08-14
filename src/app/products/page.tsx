@@ -68,15 +68,33 @@ export default async function ProductsPage() {
                 </p>
 
                 <div className="flex flex-wrap gap-4">
-                  <Link
-                    href="/case-studies/resumegenie-ai-agent"
-                    className="bg-[#47f0f4] text-[#003738] px-8 py-3 rounded-lg font-bold transition-all hover:bg-[#53f8fc] active:scale-95 flex items-center gap-2"
-                  >
-                    View Case Study →
-                  </Link>
-                  <button className="border border-white/10 bg-white/5 text-[#e4e2db] px-8 py-3 rounded-lg font-semibold hover:bg-white/10 transition-all">
+                  {featuredProduct.linkType === "Case Study" && (featuredProduct as any).caseStudySlug ? (
+                    <Link
+                      href={`/case-studies/${(featuredProduct as any).caseStudySlug}`}
+                      className="bg-[#47f0f4] text-[#003738] px-8 py-3 rounded-lg font-bold transition-all hover:bg-[#53f8fc] active:scale-95 flex items-center gap-2"
+                    >
+                      {featuredProduct.linkLabel || "View Case Study →"}
+                    </Link>
+                  ) : featuredProduct.externalUrl ? (
+                    <a
+                      href={featuredProduct.externalUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-[#47f0f4] text-[#003738] px-8 py-3 rounded-lg font-bold transition-all hover:bg-[#53f8fc] active:scale-95 flex items-center gap-2"
+                    >
+                      {featuredProduct.linkLabel || "View Product →"}
+                    </a>
+                  ) : (
+                    <Link
+                      href="/case-studies/resumegenie-ai-agent"
+                      className="bg-[#47f0f4] text-[#003738] px-8 py-3 rounded-lg font-bold transition-all hover:bg-[#53f8fc] active:scale-95 flex items-center gap-2"
+                    >
+                      {featuredProduct.linkLabel || "View Case Study →"}
+                    </Link>
+                  )}
+                  <Link href="/contact" className="border border-white/10 bg-white/5 text-[#e4e2db] px-8 py-3 rounded-lg font-semibold hover:bg-white/10 transition-all">
                     Technical Spec
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -100,7 +118,7 @@ export default async function ProductsPage() {
                 <div className="relative z-10 h-full flex flex-col">
                   <div className="flex items-center justify-between mb-8">
                     <div className="w-12 h-12 rounded-lg bg-[#1a1f4e] flex items-center justify-center border border-[#bec2fc]/20">
-                      <span className="text-[#bec2fc] text-2xl">⬡</span>
+                      <span className="text-[#bec2fc] text-2xl">{product.icon || "⬡"}</span>
                     </div>
                     <span className="text-xs text-[#91909a] uppercase tracking-widest font-mono">
                       {product.status}
@@ -112,9 +130,23 @@ export default async function ProductsPage() {
                     {product.description}
                   </p>
                   <div className="mt-8 pt-6 border-t border-white/10">
-                    <span className="text-[#21dce0] text-xs flex items-center gap-2 cursor-pointer hover:translate-x-1 transition-transform font-mono tracking-widest uppercase">
-                      GET NOTIFIED →
-                    </span>
+                    {product.externalUrl ? (
+                      <a
+                        href={product.externalUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[#21dce0] text-xs flex items-center gap-2 hover:translate-x-1 transition-transform font-mono tracking-widest uppercase font-bold"
+                      >
+                        {product.linkLabel || "EXPLORE PRODUCT →"}
+                      </a>
+                    ) : (
+                      <Link
+                        href="/contact"
+                        className="text-[#21dce0] text-xs flex items-center gap-2 hover:translate-x-1 transition-transform font-mono tracking-widest uppercase font-bold"
+                      >
+                        {product.linkLabel || "GET NOTIFIED →"}
+                      </Link>
+                    )}
                   </div>
                 </div>
               </div>

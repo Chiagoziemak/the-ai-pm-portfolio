@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -11,6 +12,7 @@ export default function ContactPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -19,15 +21,34 @@ export default function ContactPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setTimeout(() => {
+    setErrorMessage("");
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        setIsSuccess(true);
+        setFormData({ name: "", email: "", message: "" });
+      } else {
+        setErrorMessage(data.error || "Failed to send message. Please try again.");
+      }
+    } catch (err: any) {
+      console.error("Error submitting contact form:", err);
+      setErrorMessage("A network error occurred. Please try again.");
+    } finally {
       setIsSubmitting(false);
-      setIsSuccess(true);
-      setFormData({ name: "", email: "", message: "" });
-      setTimeout(() => setIsSuccess(false), 3000);
-    }, 1500);
+    }
   };
 
   return (
@@ -62,12 +83,11 @@ export default function ContactPage() {
             </div>
 
             {/* Contact Links */}
-              <div className="space-y-6">
-
-                <a
-                  href="mailto:hello@chiagoziem.ai"
-                  className="flex items-center gap-4 group cursor-pointer"
-                >
+            <div className="space-y-6">
+              <a
+                href="mailto:hello@chiagoziem.ai"
+                className="flex items-center gap-4 group cursor-pointer"
+              >
                 <div className="w-12 h-12 rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl flex items-center justify-center text-[#47f0f4] group-hover:bg-[#47f0f4]/10 transition-colors text-lg">
                   <span role="img" aria-label="email">@</span>
                 </div>
@@ -79,16 +99,14 @@ export default function ContactPage() {
                     hello@chiagoziem.ai
                   </span>
                 </div>
+              </a>
 
-                </a>
-
-              
-                <a
-                  href="https://linkedin.com/in/chiagoziem"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-4 group cursor-pointer"
-                >
+              <a
+                href="https://www.linkedin.com/in/chiagoziem-melvin-akobundu-cspo%E2%93%A1-b546b4206"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-4 group cursor-pointer"
+              >
                 <div className="w-12 h-12 rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl flex items-center justify-center text-[#47f0f4] group-hover:bg-[#47f0f4]/10 transition-colors font-bold text-sm">
                   <span>in</span>
                 </div>
@@ -97,10 +115,10 @@ export default function ContactPage() {
                     LinkedIn Network
                   </p>
                   <span className="text-[#e4e2db] font-semibold hover:text-[#47f0f4] transition-colors">
-                    linkedin.com/in/chiagoziem
+                    Chiagoziem Melvin Akobundu
                   </span>
                 </div>
-                </a>
+              </a>
             </div>
 
             {/* Status Badge */}
@@ -131,11 +149,23 @@ export default function ContactPage() {
                     Message Sent!
                   </h3>
                   <p className="text-[#c7c5d0] text-base">
-                    Thank you for reaching out. I will get back to you within 24-48 hours.
+                    Thank you for reaching out. Your inquiry has been transmitted successfully.
                   </p>
+                  <button
+                    onClick={() => setIsSuccess(false)}
+                    className="mt-4 px-6 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-[#e4e2db] text-sm font-semibold transition-all"
+                  >
+                    Send Another Message
+                  </button>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-8 relative z-10">
+                  {errorMessage && (
+                    <div className="p-4 rounded-xl border border-red-500/30 bg-red-500/10 text-red-300 text-sm">
+                      {errorMessage}
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <label
@@ -200,7 +230,7 @@ export default function ContactPage() {
                     className="w-full bg-[#47f0f4] text-[#003738] font-bold text-lg py-5 rounded-2xl hover:shadow-[0_0_20px_rgba(0,212,216,0.4)] transition-all duration-300 active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-70"
                   >
                     {isSubmitting ? (
-                      <span>Processing...</span>
+                      <span>Sending Message...</span>
                     ) : (
                       <span>Initiate Contact</span>
                     )}

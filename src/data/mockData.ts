@@ -46,6 +46,8 @@ export interface CaseStudy {
   summary: string;
   tools: string[];
   coverImage: string;
+  featured?: boolean;
+  isPlaceholder?: boolean;
   body: string[];
   results: string[];
   lessons: string[];
@@ -55,8 +57,13 @@ export interface Product {
   name: string;
   tagline: string;
   description: string;
-  status: "In Development" | "Coming Soon";
+  status: "In Development" | "Coming Soon" | "Live" | string;
   coverImage: string;
+  icon?: string;
+  linkType?: string;
+  caseStudySlug?: string;
+  externalUrl?: string;
+  linkLabel?: string;
 }
 
 export interface AboutData {
