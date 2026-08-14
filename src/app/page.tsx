@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 import { getTeardowns, getCaseStudies, getHomePageData, getSiteSettings } from "@/sanity/queries";
 import { urlForImage } from "@/sanity/image";
 import { mockTeardowns, mockCaseStudies } from "@/data/mockData";
-import { ArrowUpRight, Award, Brain, Compass, Sparkles } from "lucide-react";
+import { ArrowUpRight, Award, Brain, Compass, Sparkles, BookOpen, Layers, CheckCircle2 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -32,13 +32,16 @@ export default async function HomePage() {
   const introText = homeData.introText || "Experienced SaaS Product Manager with CSPO and CSM credentials. Pivoting to AI Engineering and AI PM, currently building ResumeGenie—an agentic job application platform. Specialized in bridging high-level product strategy with hands-on AI engineering.";
   const availabilityBadge = homeData.availabilityBadge || "Available for Roles & Opportunities";
 
-  // Hero Image URL built using hotspot builder or fallback
   const heroImageUrl = homeData.heroImage
     ? urlForImage(homeData.heroImage)?.width(800).height(1000).url() || homeData.heroImageUrl
     : homeData.heroImageUrl;
 
   const heroImageAlt = homeData.heroImageAlt || homeData.heroImage?.alt || heroHeading;
   const heroImagePosition = homeData.heroImagePosition === "left" ? "left" : "right";
+
+  const heroTagChips = Array.isArray(homeData.heroTagChips) ? homeData.heroTagChips : [];
+  const currentStack = Array.isArray(homeData.currentStack) ? homeData.currentStack : [];
+  const learningTrack = Array.isArray(homeData.learningTrack) ? homeData.learningTrack : [];
 
   // Marquee items: combination of products and teardowns
   const marqueeItems = [
@@ -65,10 +68,21 @@ export default async function HomePage() {
             
             {/* Text Content */}
             <div className={`lg:col-span-7 flex flex-col items-start text-left ${heroImagePosition === "left" ? "lg:order-2" : "lg:order-1"}`}>
-              {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold glass-panel text-accent-teal border-accent-teal/20 mb-6 shadow-sm hover:scale-105 transition-all duration-300">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                {availabilityBadge}
+              {/* Badge & Floating Tag Chips */}
+              <div className="flex flex-wrap items-center gap-2.5 mb-6">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold glass-panel text-accent-teal border-accent-teal/20 shadow-sm">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                  {availabilityBadge}
+                </div>
+
+                {heroTagChips.map((chip, idx) => (
+                  <span
+                    key={idx}
+                    className="px-3 py-1 rounded-full text-xs font-mono tracking-wider glass-panel text-accent-cyan border-accent-cyan/30 bg-accent-cyan/10"
+                  >
+                    ✦ {chip}
+                  </span>
+                ))}
               </div>
 
               {/* Name & Title */}
@@ -80,9 +94,25 @@ export default async function HomePage() {
               </h2>
 
               {/* Bio */}
-              <p className="text-base sm:text-lg text-foreground/80 max-w-xl leading-relaxed mb-8">
+              <p className="text-base sm:text-lg text-foreground/80 max-w-xl leading-relaxed mb-6">
                 {introText}
               </p>
+
+              {/* Current Stack List */}
+              {currentStack.length > 0 && (
+                <div className="mb-8 w-full max-w-xl p-3.5 rounded-2xl glass-panel border-card-border/60 bg-card/20">
+                  <span className="text-[11px] font-mono text-accent-teal uppercase tracking-widest block mb-2 font-bold">
+                    Current Stack
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {currentStack.map((tech, idx) => (
+                      <span key={idx} className="px-2.5 py-1 rounded-lg text-xs font-mono bg-card-border/30 text-foreground/90 border border-card-border/50">
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* CTAs */}
               <div className="flex flex-wrap gap-4 w-full sm:w-auto">
@@ -174,6 +204,11 @@ export default async function HomePage() {
                     <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-accent-teal text-background">
                       Featured AI Product
                     </span>
+                    {featuredCaseStudy.badgeLabel && (
+                      <span className="px-3 py-1 rounded-full text-[10px] font-mono tracking-wider bg-accent-cyan/20 text-accent-cyan border border-accent-cyan/30">
+                        {featuredCaseStudy.badgeLabel}
+                      </span>
+                    )}
                     <span className="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider glass-panel text-foreground/80 border-card-border">
                       {featuredCaseStudy.category}
                     </span>
@@ -189,16 +224,28 @@ export default async function HomePage() {
                 </div>
 
                 <div>
-                  {/* Results preview */}
-                  {Array.isArray(featuredCaseStudy.results) && featuredCaseStudy.results.length > 0 && (
-                    <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-2">
-                      {featuredCaseStudy.results.slice(0, 2).map((res, i) => (
-                        <div key={i} className="px-3 py-2 rounded-xl bg-card-border/20 border border-card-border/30 text-xs text-foreground/80 font-medium flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-accent-teal flex-shrink-0"></span>
-                          <span className="truncate">{res}</span>
+                  {/* Card Stat-Pair Blocks if present */}
+                  {Array.isArray(featuredCaseStudy.cardStats) && featuredCaseStudy.cardStats.length > 0 ? (
+                    <div className="mb-6 grid grid-cols-2 gap-3">
+                      {featuredCaseStudy.cardStats.map((stat, i) => (
+                        <div key={i} className="p-3.5 rounded-xl bg-accent-teal/10 border border-accent-teal/20 text-center">
+                          <span className="block text-xl font-extrabold text-accent-teal">{stat.value}</span>
+                          <span className="text-[10px] font-mono text-foreground/70 uppercase">{stat.label}</span>
                         </div>
                       ))}
                     </div>
+                  ) : (
+                    /* Fallback to results preview */
+                    Array.isArray(featuredCaseStudy.results) && featuredCaseStudy.results.length > 0 && (
+                      <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {featuredCaseStudy.results.slice(0, 2).map((res, i) => (
+                          <div key={i} className="px-3 py-2 rounded-xl bg-card-border/20 border border-card-border/30 text-xs text-foreground/80 font-medium flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-accent-teal flex-shrink-0"></span>
+                            <span className="truncate">{res}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )
                   )}
 
                   <Link
@@ -216,6 +263,11 @@ export default async function HomePage() {
               <div className="lg:col-span-5 group rounded-3xl overflow-hidden glass-panel border-card-border/60 hover:border-accent-teal/40 hover:-translate-y-1 hover:shadow-2xl transition-all duration-500 flex flex-col justify-between p-6 sm:p-8 relative">
                 <div>
                   <div className="flex flex-wrap gap-2 items-center mb-4">
+                    {otherCaseStudy.badgeLabel && (
+                      <span className="px-3 py-1 rounded-full text-[10px] font-mono tracking-wider bg-accent-cyan/20 text-accent-cyan border border-accent-cyan/30">
+                        {otherCaseStudy.badgeLabel}
+                      </span>
+                    )}
                     <span className="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider glass-panel text-foreground/80 border-card-border">
                       {otherCaseStudy.category}
                     </span>
@@ -230,6 +282,18 @@ export default async function HomePage() {
                   </p>
                 </div>
 
+                {/* Card Stat-Pair Blocks if present */}
+                {Array.isArray(otherCaseStudy.cardStats) && otherCaseStudy.cardStats.length > 0 && (
+                  <div className="mb-6 grid grid-cols-2 gap-3">
+                    {otherCaseStudy.cardStats.map((stat, i) => (
+                      <div key={i} className="p-3.5 rounded-xl bg-accent-teal/10 border border-accent-teal/20 text-center">
+                        <span className="block text-xl font-extrabold text-accent-teal">{stat.value}</span>
+                        <span className="text-[10px] font-mono text-foreground/70 uppercase">{stat.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
                 <Link
                   href={`/case-studies/${otherCaseStudy.slug}`}
                   className="inline-flex items-center gap-2 text-xs font-extrabold text-accent-cyan hover:text-accent-teal transition-colors group-hover:translate-x-1 duration-300"
@@ -240,6 +304,60 @@ export default async function HomePage() {
             )}
           </div>
         </section>
+
+        {/* LEARNING / TRANSITION TRACK SECTION */}
+        {learningTrack.length > 0 && (
+          <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mb-16">
+            <div className="mb-10">
+              <span className="text-xs uppercase tracking-widest text-accent-teal font-extrabold">Continuous Evolution</span>
+              <h2 className="text-3xl sm:text-4xl font-extrabold mt-2 tracking-tight">AI &amp; Engineering Learning Track</h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {learningTrack.map((item, idx) => (
+                <div
+                  key={idx}
+                  className="p-6 rounded-2xl glass-panel border-card-border/60 bg-card/30 flex flex-col justify-between hover:border-accent-teal/40 transition-all duration-300"
+                >
+                  <div>
+                    <div className="flex items-center justify-between gap-2 mb-3">
+                      {item.provider && (
+                        <span className="text-xs font-mono text-accent-cyan tracking-wider font-semibold">
+                          {item.provider}
+                        </span>
+                      )}
+                      {item.status && (
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-accent-teal/15 text-accent-teal border border-accent-teal/30">
+                          {item.status}
+                        </span>
+                      )}
+                    </div>
+
+                    <h3 className="text-lg font-bold text-foreground mb-2 leading-snug">
+                      {item.title}
+                    </h3>
+
+                    {item.description && (
+                      <p className="text-xs sm:text-sm text-foreground/75 leading-relaxed mb-4">
+                        {item.description}
+                      </p>
+                    )}
+                  </div>
+
+                  {Array.isArray(item.tags) && item.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 pt-4 border-t border-card-border/30">
+                      {item.tags.map((tag, tIdx) => (
+                        <span key={tIdx} className="text-[10px] font-mono px-2 py-0.5 rounded bg-card-border/30 text-foreground/70">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* STRATEGIC TEARDOWNS GRID */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mb-16">
@@ -303,7 +421,7 @@ export default async function HomePage() {
         </section>
       </main>
 
-      <Footer />
+      <Footer location={siteSettings.location} socialLinks={siteSettings.socialLinks} footerText={siteSettings.footerText} />
     </div>
   );
 }

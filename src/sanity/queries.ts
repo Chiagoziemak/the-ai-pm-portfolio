@@ -15,6 +15,7 @@ export interface SiteSettings {
   siteTitle?: string;
   metaDescription?: string;
   metaKeywords?: string[];
+  location?: string;
   navLabels?: {
     home?: string;
     about?: string;
@@ -34,6 +35,14 @@ export interface SiteSettings {
   contactEmail?: string;
 }
 
+export interface LearningTrackItem {
+  title: string;
+  provider?: string;
+  status?: string;
+  tags?: string[];
+  description?: string;
+}
+
 export interface HomePageData {
   heroHeading?: string;
   heroSubheading?: string;
@@ -42,6 +51,9 @@ export interface HomePageData {
   heroImageUrl?: string;
   heroImageAlt?: string;
   heroImagePosition?: "left" | "right" | string;
+  heroTagChips?: string[];
+  currentStack?: string[];
+  learningTrack?: LearningTrackItem[];
   availabilityBadge?: string;
   ctaButtons?: { label: string; url: string }[];
   featuredCaseStudies?: CaseStudy[];
@@ -72,6 +84,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     return {
       siteTitle: "Chiagoziem Melvin Akobundu | AI Product Manager Portfolio",
       metaDescription: "Experienced SaaS Product Manager & Certified Scrum Master transitioning to AI Product Management and AI Engineering.",
+      location: "Lagos, Nigeria",
       contactEmail: "hello@chiagoziem.ai",
       socialLinks: {
         linkedin: "https://www.linkedin.com/in/chiagoziem-melvin-akobundu-cspo%E2%93%A1-b546b4206",
@@ -86,6 +99,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
         siteTitle,
         metaDescription,
         metaKeywords,
+        location,
         navLabels,
         socialLinks,
         "resumeUrl": resumeFile.asset->url,
@@ -98,12 +112,12 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     );
     if (!res) {
       console.warn("[Sanity Fallback] Site settings document 'siteSettings' not found in Sanity. Using fallback values.");
-      return { contactEmail: "hello@chiagoziem.ai" };
+      return { contactEmail: "hello@chiagoziem.ai", location: "Lagos, Nigeria" };
     }
     return res;
   } catch (error) {
     console.error("Error fetching site settings from Sanity:", error);
-    return { contactEmail: "hello@chiagoziem.ai" };
+    return { contactEmail: "hello@chiagoziem.ai", location: "Lagos, Nigeria" };
   }
 }
 
@@ -127,6 +141,9 @@ export async function getHomePageData(): Promise<HomePageData> {
         "heroImageUrl": heroImage.asset->url,
         "heroImageAlt": heroImage.alt,
         heroImagePosition,
+        heroTagChips,
+        currentStack,
+        learningTrack,
         availabilityBadge,
         ctaButtons,
         credentialsShown,
@@ -137,6 +154,8 @@ export async function getHomePageData(): Promise<HomePageData> {
           category,
           summary,
           readTime,
+          badgeLabel,
+          cardStats,
           "coverImage": coverImage.asset->url,
           featured,
           isPlaceholder,
@@ -340,10 +359,8 @@ export async function getTeardownBySlug(slug: string): Promise<Teardown | null> 
       return mockTeardowns.find((t) => t.slug === slug) || null;
     }
 
-    // Normalize teardown fields so all array properties are guaranteed non-null
     const mockMatch = mockTeardowns.find((t) => t.slug === slug);
 
-    // Normalize body paragraphs
     let body: string[] = [];
     if (Array.isArray(teardown.body) && teardown.body.length > 0) {
       body = teardown.body;
@@ -355,7 +372,6 @@ export async function getTeardownBySlug(slug: string): Promise<Teardown | null> 
       body = [teardown.summary];
     }
 
-    // Normalize keyFindings
     let keyFindings: string[] = [];
     if (Array.isArray(teardown.keyFindings) && teardown.keyFindings.length > 0) {
       keyFindings = teardown.keyFindings.map((item: any) =>
@@ -365,7 +381,6 @@ export async function getTeardownBySlug(slug: string): Promise<Teardown | null> 
       keyFindings = mockMatch.keyFindings;
     }
 
-    // Normalize researchDetails
     let researchDetails = teardown.researchDetails;
     if (!researchDetails) {
       if (teardown.researchEvidence || (Array.isArray(teardown.researchStats) && teardown.researchStats.length > 0)) {
@@ -384,7 +399,6 @@ export async function getTeardownBySlug(slug: string): Promise<Teardown | null> 
       }
     }
 
-    // Normalize riceScores
     let riceScores = teardown.riceScores;
     if (!Array.isArray(riceScores) || riceScores.length === 0) {
       if (Array.isArray(teardown.riceTable) && teardown.riceTable.length > 0) {
@@ -401,7 +415,6 @@ export async function getTeardownBySlug(slug: string): Promise<Teardown | null> 
       }
     }
 
-    // Normalize recommendations
     let recommendations = teardown.recommendations;
     if (!Array.isArray(recommendations) || recommendations.length === 0) {
       if (mockMatch?.recommendations) {
@@ -411,7 +424,6 @@ export async function getTeardownBySlug(slug: string): Promise<Teardown | null> 
       }
     }
 
-    // Normalize projectLinks
     let projectLinks = teardown.projectLinks;
     if (!Array.isArray(projectLinks) || projectLinks.length === 0) {
       if (mockMatch?.projectLinks) {
@@ -456,6 +468,8 @@ export async function getCaseStudies(): Promise<CaseStudy[]> {
         category,
         summary,
         readTime,
+        badgeLabel,
+        cardStats,
         featured,
         isPlaceholder,
         "tools": stackMethods,
@@ -491,6 +505,8 @@ export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null
         category,
         summary,
         readTime,
+        badgeLabel,
+        cardStats,
         featured,
         isPlaceholder,
         "tools": stackMethods,
@@ -502,6 +518,8 @@ export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null
           title,
           "slug": slug.current,
           category,
+          badgeLabel,
+          cardStats,
           "coverImage": coverImage.asset->url
         }
       }`,
@@ -516,7 +534,6 @@ export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null
 
     const mockMatch = mockCaseStudies.find((s) => s.slug === slug);
 
-    // Normalize tools
     let tools: string[] = [];
     if (Array.isArray(caseStudy.tools) && caseStudy.tools.length > 0) {
       tools = caseStudy.tools;
@@ -524,7 +541,6 @@ export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null
       tools = mockMatch.tools;
     }
 
-    // Normalize body
     let body: string[] = [];
     if (Array.isArray(caseStudy.body) && caseStudy.body.length > 0) {
       body = caseStudy.body;
@@ -536,15 +552,13 @@ export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null
       body = [caseStudy.summary];
     }
 
-    // Normalize results
     let results: string[] = [];
     if (Array.isArray(caseStudy.results) && caseStudy.results.length > 0) {
       results = caseStudy.results;
-    } else if (mockMatch && Array.isArray(mockMatch.results)) {
+    } else if (mockMatch && Array.isArray(mockMatch.body)) {
       results = mockMatch.results;
     }
 
-    // Normalize lessons
     let lessons: string[] = [];
     if (Array.isArray(caseStudy.lessons) && caseStudy.lessons.length > 0) {
       lessons = caseStudy.lessons;

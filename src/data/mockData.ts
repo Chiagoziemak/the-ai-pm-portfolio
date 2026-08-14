@@ -45,6 +45,8 @@ export interface CaseStudy {
   category: string;
   summary: string;
   readTime?: string;
+  badgeLabel?: string;
+  cardStats?: { value: string; label?: string }[];
   tools: string[];
   coverImage: string;
   featured?: boolean;

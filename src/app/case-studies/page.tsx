@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { getCaseStudies } from "@/sanity/queries";
+import { getCaseStudies, getSiteSettings } from "@/sanity/queries";
 import { mockCaseStudies } from "@/data/mockData";
 import { ArrowUpRight, Sparkles, BookOpen, Layers } from "lucide-react";
 
@@ -11,6 +11,7 @@ export const revalidate = 0;
 
 export default async function CaseStudiesPage() {
   const data = await getCaseStudies();
+  const siteSettings = await getSiteSettings();
   const caseStudies = Array.isArray(data) && data.length > 0 ? data : mockCaseStudies;
 
   const featuredCaseStudy = caseStudies[0] || mockCaseStudies[0];
@@ -62,6 +63,11 @@ export default async function CaseStudiesPage() {
                       <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-accent-teal text-background">
                         Featured Case Study
                       </span>
+                      {featuredCaseStudy.badgeLabel && (
+                        <span className="px-3 py-1 rounded-full text-[10px] font-mono tracking-wider bg-accent-cyan/20 text-accent-cyan border border-accent-cyan/30">
+                          {featuredCaseStudy.badgeLabel}
+                        </span>
+                      )}
                       {featuredCaseStudy.isPlaceholder && (
                         <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30">
                           Placeholder Content
@@ -83,16 +89,28 @@ export default async function CaseStudiesPage() {
                   </div>
 
                   <div>
-                    {/* Results badges */}
-                    {Array.isArray(featuredCaseStudy.results) && featuredCaseStudy.results.length > 0 && (
-                      <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        {featuredCaseStudy.results.map((res, i) => (
-                          <div key={i} className="px-3.5 py-2.5 rounded-xl bg-card-border/20 border border-card-border/40 text-xs text-foreground/90 font-medium flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-accent-teal flex-shrink-0"></span>
-                            <span>{res}</span>
+                    {/* Card Stat-Pair Blocks if present */}
+                    {Array.isArray(featuredCaseStudy.cardStats) && featuredCaseStudy.cardStats.length > 0 ? (
+                      <div className="mb-6 grid grid-cols-2 gap-3">
+                        {featuredCaseStudy.cardStats.map((stat, i) => (
+                          <div key={i} className="p-3.5 rounded-xl bg-accent-teal/10 border border-accent-teal/20 text-center">
+                            <span className="block text-xl font-extrabold text-accent-teal">{stat.value}</span>
+                            <span className="text-[10px] font-mono text-foreground/70 uppercase">{stat.label}</span>
                           </div>
                         ))}
                       </div>
+                    ) : (
+                      /* Results badges */
+                      Array.isArray(featuredCaseStudy.results) && featuredCaseStudy.results.length > 0 && (
+                        <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          {featuredCaseStudy.results.map((res, i) => (
+                            <div key={i} className="px-3.5 py-2.5 rounded-xl bg-card-border/20 border border-card-border/40 text-xs text-foreground/90 font-medium flex items-center gap-2">
+                              <span className="w-1.5 h-1.5 rounded-full bg-accent-teal flex-shrink-0"></span>
+                              <span>{res}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )
                     )}
 
                     <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-card-border/30">
@@ -129,7 +147,14 @@ export default async function CaseStudiesPage() {
               >
                 <div>
                   <div className="flex items-center justify-between text-[11px] font-mono text-foreground/50 mb-4">
-                    <span className="px-2.5 py-1 rounded-md bg-card-border/30 text-foreground/80 font-bold">{study.category}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="px-2.5 py-1 rounded-md bg-card-border/30 text-foreground/80 font-bold">{study.category}</span>
+                      {study.badgeLabel && (
+                        <span className="px-2 py-0.5 rounded-md bg-accent-cyan/20 text-accent-cyan text-[10px]">
+                          {study.badgeLabel}
+                        </span>
+                      )}
+                    </div>
                     <span>{study.date}</span>
                   </div>
 
@@ -140,6 +165,18 @@ export default async function CaseStudiesPage() {
                   <p className="text-xs sm:text-sm text-foreground/70 line-clamp-3 leading-relaxed mb-6">
                     {study.summary}
                   </p>
+
+                  {/* Card Stat-Pair Blocks if present */}
+                  {Array.isArray(study.cardStats) && study.cardStats.length > 0 && (
+                    <div className="mb-6 grid grid-cols-2 gap-3">
+                      {study.cardStats.map((stat, i) => (
+                        <div key={i} className="p-3 rounded-xl bg-accent-teal/10 border border-accent-teal/20 text-center">
+                          <span className="block text-lg font-extrabold text-accent-teal">{stat.value}</span>
+                          <span className="text-[10px] font-mono text-foreground/70 uppercase">{stat.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex items-center justify-between pt-4 border-t border-card-border/30 text-xs font-semibold text-accent-teal group-hover:text-accent-cyan">
@@ -152,7 +189,7 @@ export default async function CaseStudiesPage() {
         )}
       </main>
 
-      <Footer />
+      <Footer location={siteSettings.location} socialLinks={siteSettings.socialLinks} footerText={siteSettings.footerText} />
     </div>
   );
 }
