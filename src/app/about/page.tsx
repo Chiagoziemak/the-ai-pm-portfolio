@@ -9,18 +9,19 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function AboutPage() {
-  const aboutData = await getAboutPageData();
-  const siteSettings = await getSiteSettings();
+  const aboutData = (await getAboutPageData()) || {};
+  const siteSettings = (await getSiteSettings()) || {};
 
   const headshotUrl = aboutData.headshotUrl || siteSettings.faviconUrl;
   const headline = aboutData.headline || "From Strategy to Synthesis.";
   const bioText = aboutData.bio || mockAboutData.bio;
 
-  // For the learning vector, show the items from the AI PM / AI Engineering skills group
-  const skills = aboutData.skills.find((g) => g.category.toLowerCase().includes("ai"))?.items || 
-                 aboutData.skills[0]?.items || [];
+  const skillsGroups = Array.isArray(aboutData.skills) ? aboutData.skills : (mockAboutData.skills || []);
 
-  const tools = aboutData.skills.flatMap((g) => g.items.map((i) => i.name));
+  const skills = skillsGroups.find((g: any) => g?.category?.toLowerCase().includes("ai"))?.items || 
+                 skillsGroups[0]?.items || [];
+
+  const tools = skillsGroups.flatMap((g: any) => (Array.isArray(g?.items) ? g.items.map((i: any) => i.name) : []));
   const defaultTools = [
     "PyTorch", "OpenAI API", "LangChain", "Python",
     "TensorFlow", "Docker", "Jira", "Figma", "PostgreSQL"
@@ -65,192 +66,10 @@ export default async function AboutPage() {
             </div>
 
             <div className="space-y-6 text-[#c7c5d0] leading-relaxed">
-              {bioText.split("\n").map((para, pIdx) => (
+              {typeof bioText === "string" ? bioText.split("\n").map((para, pIdx) => (
                 <p key={pIdx}>{para}</p>
-              ))}
+              )) : null}
             </div>
-
-            <div className="flex flex-wrap gap-4">
-              {["AI STRATEGY", "NEURAL ARCHITECTURES", "PRODUCT ECOSYSTEMS"].map((tag) => (
-                <div
-                  key={tag}
-                  className="flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-xl"
-                >
-                  <span className="text-[#47f0f4] text-sm">◈</span>
-                  <span className="text-xs font-mono tracking-widest">{tag}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Skills & Learning Bento */}
-        <section className="mb-32">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-            {/* Technical Proficiency */}
-            <div className="md:col-span-2 rounded-xl p-8 border border-white/10 bg-[#13140f66] backdrop-blur-xl flex flex-col justify-between">
-              <div>
-                <h3 className="text-3xl font-semibold text-[#e4e2db] mb-8 tracking-tight">
-                  Technical Proficiency
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                  {aboutData.skills.map((group) => (
-                    <div key={group.category} className="space-y-2">
-                      <p className="text-xs font-mono text-[#47f0f4] tracking-widest uppercase">{group.category}</p>
-                      <p className="text-[#c7c5d0] text-sm leading-relaxed">
-                        {group.items.map((i) => i.name).join(", ")}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="mt-12 pt-8 border-t border-white/10 flex flex-wrap gap-8">
-                {aboutData.certifications.map((cert, certIdx) => {
-                  const match = cert.match(/\(([^)]+)\)/);
-                  const shortName = match ? match[1] : cert.split(" - ")[0];
-                  return (
-                    <div key={certIdx} className="flex items-center gap-3">
-                      <span className="text-[#ffb955] text-xl">✓</span>
-                      <div>
-                        <p className="text-[10px] font-mono text-[#91909a] uppercase tracking-widest">Credential</p>
-                        <p className="font-bold text-[#e4e2db] text-sm">{shortName}</p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Learning Vector */}
-            <div className="rounded-xl p-8 border border-[#47f0f4]/20 bg-[#353530]/30 relative overflow-hidden">
-              <h3 className="text-3xl font-semibold text-[#e4e2db] mb-8 tracking-tight">
-                Learning Vector
-              </h3>
-              <div className="space-y-8">
-                {skills.map((skill) => (
-                  <div key={skill.name} className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="font-mono text-xs tracking-widest">{skill.name}</span>
-                      <span className="text-[#47f0f4] font-mono text-xs">{skill.level}%</span>
-                    </div>
-                    <div className="h-1 w-full bg-[#2a2a25] rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-[#47f0f4] rounded-full shadow-[0_0_10px_rgba(71,240,244,0.5)]"
-                        style={{ width: `${skill.level}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-8 flex items-center gap-2 text-[#D97757]">
-                <span className="animate-pulse text-sm">●</span>
-                <p className="text-[10px] font-mono uppercase tracking-widest">
-                  Processing New Insights Daily
-                </p>
-              </div>
-            </div>
-
-          </div>
-        </section>
-
-        {/* Timeline */}
-        <section className="mb-32">
-          <h2 className="font-bold text-5xl text-center mb-16 tracking-tight">
-            The Professional{" "}
-            <span className="text-[#47f0f4] italic">Trajectory</span>
-          </h2>
-          <div className="relative max-w-4xl mx-auto py-12">
-            
-            {/* Vertical line */}
-            <div
-              className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-px opacity-30"
-              style={{ background: "linear-gradient(to bottom, #47f0f4 0%, #1a1f4e 100%)" }}
-            ></div>
-
-            {/* Timeline Events */}
-            {aboutData.journey.map((event, idx) => {
-              const side = idx % 2 === 0 ? "left" : "right";
-              const color = idx % 2 === 0 ? "#47f0f4" : "#bec2fc";
-              const isLatest = idx === 0;
-              const size = isLatest ? "w-6 h-6" : "w-4 h-4";
-              const pulse = isLatest;
-
-              return (
-                <div key={idx} className="relative grid grid-cols-1 md:grid-cols-2 gap-12 mb-20">
-                  {side === "left" ? (
-                    <>
-                      <div className="md:text-right flex flex-col items-center md:items-end justify-center">
-                        <span className="text-xs font-mono text-[#47f0f4] mb-2 tracking-widest">{event.year}</span>
-                        <h4 className="text-xl font-semibold text-[#e4e2db] mb-2">{event.title}</h4>
-                        <p className="text-[#91909a] text-xs font-mono mb-2">{event.company}</p>
-                        <p className="text-[#c7c5d0] text-sm max-w-xs md:ml-auto leading-relaxed">{event.description}</p>
-                      </div>
-                      <div className="hidden md:block"></div>
-                    </>
-                  ) : (
-                    <>
-                      <div className="hidden md:block"></div>
-                      <div className="flex flex-col items-center md:items-start justify-center">
-                        <span className="text-xs font-mono text-[#47f0f4] mb-2 tracking-widest">{event.year}</span>
-                        <h4 className="text-xl font-semibold text-[#e4e2db] mb-2">{event.title}</h4>
-                        <p className="text-[#91909a] text-xs font-mono mb-2">{event.company}</p>
-                        <p className="text-[#c7c5d0] text-sm max-w-xs leading-relaxed">{event.description}</p>
-                      </div>
-                    </>
-                  )}
-                  <div
-                    className={`absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 ${size} rounded-full border-4 border-[#0a0c1f] ${pulse ? "animate-pulse" : ""}`}
-                    style={{
-                      backgroundColor: color,
-                      boxShadow: `0 0 ${pulse ? "25px" : "15px"} ${color}`,
-                    }}
-                  ></div>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* Tools Marquee */}
-        <section className="mb-32">
-          <div className="rounded-2xl border-y border-white/10 bg-[#13140f66] backdrop-blur-xl py-12 overflow-hidden relative">
-            <div className="flex whitespace-nowrap gap-12 animate-marquee">
-              {marqueeTools.map((tool, idx) => (
-                <span
-                  key={idx}
-                  className="text-3xl font-semibold text-[#91909a] opacity-40 hover:opacity-100 hover:text-[#47f0f4] cursor-default transition-all tracking-tight"
-                >
-                  {tool}
-                </span>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* CTA */}
-        <section className="text-center space-y-8">
-          <h3 className="font-bold text-5xl tracking-tight">
-            Let's build the{" "}
-            <span className="text-[#47f0f4]">next iteration</span>.
-          </h3>
-          <p className="text-[#c7c5d0] max-w-xl mx-auto leading-relaxed">
-            I'm always open to discussing technical architecture, product strategy, 
-            or the ethical implications of the AI revolution.
-          </p>
-          <div className="flex justify-center gap-4 flex-wrap">
-            <Link
-              href="/contact"
-              className="bg-[#47f0f4] text-[#003738] px-8 py-4 rounded-lg font-bold hover:shadow-[0_0_20px_rgba(71,240,244,0.4)] transition-all active:scale-95"
-            >
-              Send a Message
-            </Link>
-            <Link
-              href="/case-studies"
-              className="border border-white/10 text-[#e4e2db] px-8 py-4 rounded-lg font-bold hover:bg-[#1b1c17] transition-all"
-            >
-              View Project Hub
-            </Link>
           </div>
         </section>
 

@@ -11,10 +11,10 @@ export const revalidate = 0;
 
 export default async function CaseStudiesPage() {
   const data = await getCaseStudies();
-  const caseStudies = data.length > 0 ? data : mockCaseStudies;
+  const caseStudies = Array.isArray(data) && data.length > 0 ? data : mockCaseStudies;
 
-  const featuredCaseStudy = caseStudies[0];
-  const otherCaseStudies = caseStudies.slice(1);
+  const featuredCaseStudy = caseStudies[0] || mockCaseStudies[0];
+  const otherCaseStudies = caseStudies.length > 1 ? caseStudies.slice(1) : [];
 
   return (
     <div className="flex flex-col min-h-screen relative overflow-hidden bg-background text-foreground transition-colors duration-300">
@@ -73,36 +73,44 @@ export default async function CaseStudiesPage() {
                       <span className="text-xs text-foreground/50 ml-auto">{featuredCaseStudy.date}</span>
                     </div>
 
-                    <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight group-hover:text-accent-teal transition-colors mt-2 mb-4 leading-tight">
+                    <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground group-hover:text-accent-teal transition-colors mb-3 leading-snug">
                       {featuredCaseStudy.title}
                     </h2>
 
-                    <p className="text-sm sm:text-base text-foreground/85 leading-relaxed mb-6">
+                    <p className="text-sm sm:text-base text-foreground/75 leading-relaxed mb-6">
                       {featuredCaseStudy.summary}
                     </p>
-
-                    {/* Tool List */}
-                    <div className="flex flex-wrap gap-2 mb-8">
-                      {featuredCaseStudy.tools.map((tool) => (
-                        <span key={tool} className="text-xs px-2.5 py-1 rounded-md bg-card-border/20 border border-card-border/40 font-medium">
-                          {tool}
-                        </span>
-                      ))}
-                    </div>
                   </div>
 
-                  <div className="flex items-center justify-between border-t border-card-border/60 pt-6">
-                    <span className="text-xs text-foreground/60 flex items-center gap-1">
-                      <BookOpen size={14} className="text-accent-cyan" />
-                      8 min read
-                    </span>
-                    <Link
-                      href={`/case-studies/${featuredCaseStudy.slug}`}
-                      className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-semibold rounded-lg bg-accent-cyan text-white hover:bg-accent-cyan/90 hover:scale-102 hover:shadow-md transition-all duration-300 cursor-pointer"
-                    >
-                      Read Case Study
-                      <ArrowUpRight size={16} />
-                    </Link>
+                  <div>
+                    {/* Results badges */}
+                    {Array.isArray(featuredCaseStudy.results) && featuredCaseStudy.results.length > 0 && (
+                      <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {featuredCaseStudy.results.map((res, i) => (
+                          <div key={i} className="px-3.5 py-2.5 rounded-xl bg-card-border/20 border border-card-border/40 text-xs text-foreground/90 font-medium flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-accent-teal flex-shrink-0"></span>
+                            <span>{res}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-card-border/30">
+                      <div className="flex flex-wrap gap-1.5">
+                        {Array.isArray(featuredCaseStudy.tools) && featuredCaseStudy.tools.map((tool) => (
+                          <span key={tool} className="text-[10px] font-mono px-2.5 py-1 rounded-md bg-accent-teal/10 text-accent-teal border border-accent-teal/20">
+                            {tool}
+                          </span>
+                        ))}
+                      </div>
+
+                      <Link
+                        href={`/case-studies/${featuredCaseStudy.slug}`}
+                        className="inline-flex items-center gap-2 text-xs font-extrabold text-accent-cyan hover:text-accent-teal transition-colors group-hover:translate-x-1 duration-300"
+                      >
+                        Read Full Case Study <ArrowUpRight size={14} />
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -111,71 +119,37 @@ export default async function CaseStudiesPage() {
         )}
 
         {/* Other Case Studies Grid */}
-        <section>
-          <h3 className="text-2xl font-black mb-8 flex items-center gap-2">
-            <Layers size={22} className="text-accent-teal" />
-            More Optimizations &amp; Builds
-          </h3>
-
-          {otherCaseStudies.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {otherCaseStudies.map((study) => (
-                <article
-                  key={study.slug}
-                  className="flex flex-col justify-between rounded-2xl overflow-hidden glass-panel border-card-border hover:border-accent-teal/40 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 group p-6 sm:p-8"
-                >
-                  <div className="flex-grow">
-                    {/* Meta */}
-                    <div className="flex flex-wrap gap-2 items-center mb-4">
-                      <span className="px-2.5 py-0.5 text-xs font-semibold rounded-md bg-card-border/30 text-foreground/80">
-                        {study.category}
-                      </span>
-                      <span className="text-xs text-foreground/50 font-medium ml-auto">{study.date}</span>
-                    </div>
-
-                    {/* Title */}
-                    <h4 className="text-xl sm:text-2xl font-bold text-foreground group-hover:text-accent-teal transition-colors mt-2 mb-4 leading-snug">
-                      {study.title}
-                    </h4>
-
-                    {/* Summary */}
-                    <p className="text-sm text-foreground/85 leading-relaxed mb-6 line-clamp-4">
-                      {study.summary}
-                    </p>
-
-                    {/* Tools */}
-                    <div className="flex flex-wrap gap-2 mb-6">
-                      {study.tools.slice(0, 5).map((tool) => (
-                        <span key={tool} className="text-xs px-2.5 py-1 rounded-md bg-card-border/20 border border-card-border/40 font-medium">
-                          {tool}
-                        </span>
-                      ))}
-                    </div>
+        {otherCaseStudies.length > 0 && (
+          <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {otherCaseStudies.map((study) => (
+              <Link
+                key={study.slug}
+                href={`/case-studies/${study.slug}`}
+                className="group rounded-3xl p-6 sm:p-8 glass-panel border-card-border/60 hover:border-accent-teal/40 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-center justify-between text-[11px] font-mono text-foreground/50 mb-4">
+                    <span className="px-2.5 py-1 rounded-md bg-card-border/30 text-foreground/80 font-bold">{study.category}</span>
+                    <span>{study.date}</span>
                   </div>
 
-                  {/* CTA */}
-                  <div className="flex items-center justify-between border-t border-card-border pt-6 mt-4">
-                    <span className="text-xs text-foreground/60 flex items-center gap-1">
-                      <BookOpen size={14} className="text-accent-cyan" />
-                      6 min read
-                    </span>
-                    <Link
-                      href={`/case-studies/${study.slug}`}
-                      className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent-cyan hover:underline mt-auto"
-                    >
-                      Read full study
-                      <ArrowUpRight size={14} />
-                    </Link>
-                  </div>
-                </article>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12 border border-dashed border-card-border rounded-xl glass-panel">
-              <p className="text-foreground/50">Coming soon.</p>
-            </div>
-          )}
-        </section>
+                  <h3 className="text-xl font-extrabold text-foreground group-hover:text-accent-teal transition-colors mb-3 leading-snug">
+                    {study.title}
+                  </h3>
+
+                  <p className="text-xs sm:text-sm text-foreground/70 line-clamp-3 leading-relaxed mb-6">
+                    {study.summary}
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-between pt-4 border-t border-card-border/30 text-xs font-semibold text-accent-teal group-hover:text-accent-cyan">
+                  <span>Read Case Study</span>
+                  <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                </div>
+              </Link>
+            ))}
+          </section>
+        )}
       </main>
 
       <Footer />

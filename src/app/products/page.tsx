@@ -10,10 +10,10 @@ export const revalidate = 0;
 
 export default async function ProductsPage() {
   const data = await getProducts();
-  const products = data.length > 0 ? data : mockProducts;
+  const products = Array.isArray(data) && data.length > 0 ? data : mockProducts;
 
   // featured product is usually "In Development" (like ResumeGenie)
-  const featuredProduct = products.find((p) => p.status === "In Development") || products[0];
+  const featuredProduct = products.find((p) => p?.status === "In Development") || products[0] || mockProducts[0];
   const comingSoonProducts = products.filter((p) => p !== featuredProduct);
 
   return (
@@ -107,7 +107,7 @@ export default async function ProductsPage() {
         {/* Coming Soon Grid */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {comingSoonProducts.map((product) => {
-            const slug = product.name.toLowerCase().replace(/[^a-z0-9]/g, "-");
+            const slug = (product.name || "product").toLowerCase().replace(/[^a-z0-9]/g, "-");
             return (
               <div 
                 key={slug} 
