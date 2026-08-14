@@ -51,6 +51,20 @@ export const homePage = defineType({
       initialValue: "right",
     }),
     defineField({
+      name: "heroTagChips",
+      title: "Hero Tagline / Floating Chips",
+      type: "array",
+      of: [{ type: "string" }],
+      description: "Short phrase chips near hero (e.g. 'GPT-4 Integration', 'Agentic Workflows')",
+    }),
+    defineField({
+      name: "currentStack",
+      title: "Current Stack List",
+      type: "array",
+      of: [{ type: "string" }],
+      description: "Short current tech stack badges (e.g. Next.js, Python, LangChain, PyTorch)",
+    }),
+    defineField({
       name: "availabilityBadge",
       title: "Availability Badge Text",
       type: "string",
@@ -88,6 +102,13 @@ export const homePage = defineType({
       title: "Credentials Bar Badges",
       type: "array",
       of: [{ type: "credentialBlock" }],
+    }),
+    defineField({
+      name: "learningTrack",
+      title: "Learning / Transition Track",
+      type: "array",
+      of: [{ type: "learningItem" }],
+      description: "Learning items (title, provider, status, tags, description)",
     }),
   ],
 });

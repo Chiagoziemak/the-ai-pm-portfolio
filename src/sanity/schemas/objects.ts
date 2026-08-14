@@ -199,6 +199,41 @@ export const credentialBlock = defineType({
   ],
 });
 
+export const learningItem = defineType({
+  name: "learningItem",
+  title: "Learning Item",
+  type: "object",
+  fields: [
+    defineField({
+      name: "title",
+      title: "Title / Topic",
+      type: "string",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "provider",
+      title: "Provider / Institution",
+      type: "string",
+    }),
+    defineField({
+      name: "status",
+      title: "Status (e.g. In Progress, Ongoing, Active Learning)",
+      type: "string",
+    }),
+    defineField({
+      name: "tags",
+      title: "Tags",
+      type: "array",
+      of: [{ type: "string" }],
+    }),
+    defineField({
+      name: "description",
+      title: "Description",
+      type: "text",
+    }),
+  ],
+});
+
 export const reusableObjects = [
   statBlock,
   riceRow,
@@ -208,4 +243,5 @@ export const reusableObjects = [
   skillBlock,
   skillPercentBlock,
   credentialBlock,
+  learningItem,
 ];

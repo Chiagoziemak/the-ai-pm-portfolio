@@ -64,6 +64,12 @@ export default defineType({
       type: "string",
     }),
     defineField({
+      name: "location",
+      title: "Location (e.g. Lagos, Nigeria)",
+      type: "string",
+      description: "Location string shown in footer or hero",
+    }),
+    defineField({
       name: "contactEmail",
       title: "Contact Form Destination Email",
       type: "string",

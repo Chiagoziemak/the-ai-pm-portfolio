@@ -72,6 +72,19 @@ export default defineType({
       initialValue: false,
     }),
     defineField({
+      name: "badgeLabel",
+      title: "Badge Label (e.g. Most Recent, High Impact)",
+      type: "string",
+      description: "Optional short custom badge label shown on cards",
+    }),
+    defineField({
+      name: "cardStats",
+      title: "Card Stat-Pairs",
+      type: "array",
+      of: [{ type: "statBlock" }],
+      description: "Stat-pair blocks (e.g. '64% / Efficiency Gain', '1.2M / Monthly Users')",
+    }),
+    defineField({
       name: "stackMethods",
       title: "Tech Stack & Methods (Tags)",
       type: "array",
