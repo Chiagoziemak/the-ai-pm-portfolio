@@ -17,10 +17,17 @@ export default async function SingleCaseStudyPage({ params }: PageProps) {
   const study = await getCaseStudyBySlug(slug);
   if (!study) notFound();
 
-  const allStudies = await getCaseStudies();
-  const relatedStudies = allStudies
-    .filter((s) => s.slug !== slug)
-    .slice(0, 2);
+  const allStudies = (await getCaseStudies()) || [];
+  const relatedStudies = Array.isArray(allStudies)
+    ? allStudies.filter((s) => s.slug !== slug).slice(0, 2)
+    : [];
+
+  const tools = Array.isArray(study.tools) ? study.tools : [];
+  const bodyParagraphs = Array.isArray(study.body) && study.body.length > 0
+    ? study.body
+    : (study.summary ? [study.summary] : []);
+  const results = Array.isArray(study.results) ? study.results : [];
+  const lessons = Array.isArray(study.lessons) ? study.lessons : [];
 
   return (
     <div className="min-h-screen bg-[#0a0c1f] text-[#e4e2db]">
@@ -33,7 +40,7 @@ export default async function SingleCaseStudyPage({ params }: PageProps) {
           <div className="flex flex-col gap-6 max-w-4xl">
             <div className="flex items-center gap-3 text-[#47f0f4] text-xs font-mono tracking-widest uppercase">
               <span className="w-8 h-px bg-[#47f0f4]"></span>
-              <span>{study.category}</span>
+              <span>{study.category || "Case Study"}</span>
             </div>
             <h1
               className="font-bold text-4xl md:text-5xl leading-tight tracking-tight"
@@ -45,9 +52,11 @@ export default async function SingleCaseStudyPage({ params }: PageProps) {
             >
               {study.title}
             </h1>
-            <p className="text-[#c7c5d0] text-xl leading-relaxed">
-              {study.summary}
-            </p>
+            {study.summary && (
+              <p className="text-[#c7c5d0] text-xl leading-relaxed">
+                {study.summary}
+              </p>
+            )}
           </div>
         </header>
 
@@ -76,35 +85,37 @@ export default async function SingleCaseStudyPage({ params }: PageProps) {
               <div className="flex flex-col gap-4">
                 <div className="flex justify-between border-b border-white/10 pb-2">
                   <span className="text-[#91909a]">Category</span>
-                  <span className="text-[#e4e2db] font-semibold">{study.category}</span>
+                  <span className="text-[#e4e2db] font-semibold">{study.category || "AI PM"}</span>
                 </div>
                 <div className="flex justify-between border-b border-white/10 pb-2">
                   <span className="text-[#91909a]">Date</span>
-                  <span className="text-[#e4e2db] font-semibold">{study.date}</span>
+                  <span className="text-[#e4e2db] font-semibold">{study.date || "2024"}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#91909a]">Read Time</span>
-                  <span className="text-[#e4e2db] font-semibold">8 min read</span>
+                  <span className="text-[#e4e2db] font-semibold">{study.readTime || "8 min read"}</span>
                 </div>
               </div>
             </div>
 
             {/* Tools Card */}
-            <div className="rounded-xl p-8 border-l-4 border-l-[#47f0f4] border border-white/10 bg-[#1a1f4e66] backdrop-blur-xl">
-              <h3 className="text-xs font-mono text-[#47f0f4] mb-6 tracking-widest uppercase">
-                Stack & Methods
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {study.tools.map((tool) => (
-                  <span
-                    key={tool}
-                    className="px-3 py-1 bg-[#1a1f4e] text-[#8287bd] text-xs font-mono rounded"
-                  >
-                    {tool}
-                  </span>
-                ))}
+            {tools.length > 0 && (
+              <div className="rounded-xl p-8 border-l-4 border-l-[#47f0f4] border border-white/10 bg-[#1a1f4e66] backdrop-blur-xl">
+                <h3 className="text-xs font-mono text-[#47f0f4] mb-6 tracking-widest uppercase">
+                  Stack &amp; Methods
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {tools.map((tool) => (
+                    <span
+                      key={tool}
+                      className="px-3 py-1 bg-[#1a1f4e] text-[#8287bd] text-xs font-mono rounded"
+                    >
+                      {tool}
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
           </aside>
 
@@ -112,71 +123,77 @@ export default async function SingleCaseStudyPage({ params }: PageProps) {
           <article className="lg:col-span-8 flex flex-col gap-12">
 
             {/* Body */}
-            <section>
-              <h2 className="text-3xl font-semibold text-[#bec2fc] mb-6 tracking-tight">
-                The Challenge
-              </h2>
-              <div className="space-y-4 text-[#c7c5d0] leading-relaxed">
-                {study.body.map((para, idx) => (
-                  <p key={idx} className="text-base leading-relaxed">{para}</p>
-                ))}
-              </div>
-            </section>
+            {bodyParagraphs.length > 0 && (
+              <section>
+                <h2 className="text-3xl font-semibold text-[#bec2fc] mb-6 tracking-tight">
+                  The Challenge
+                </h2>
+                <div className="space-y-4 text-[#c7c5d0] leading-relaxed">
+                  {bodyParagraphs.map((para, idx) => (
+                    <p key={idx} className="text-base leading-relaxed">{para}</p>
+                  ))}
+                </div>
+              </section>
+            )}
 
             {/* Results Bento Grid */}
-            <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {study.results.map((result, idx) => {
-                const match = result.match(/^([0-9.]+[x%]|\d+)\s(.*)/);
-                if (match) {
-                  const [_, stat, desc] = match;
+            {results.length > 0 && (
+              <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {results.map((result, idx) => {
+                  const match = typeof result === "string" ? result.match(/^([0-9.]+[x%]|\d+)\s(.*)/) : null;
+                  if (match) {
+                    const [_, stat, desc] = match;
+                    return (
+                      <div
+                        key={idx}
+                        className="rounded-xl p-6 flex flex-col items-center justify-center text-center border border-white/10 bg-[#1a1f4e66] backdrop-blur-xl"
+                      >
+                        <span
+                          className="font-bold text-5xl mb-2"
+                          style={{
+                            background: "linear-gradient(135deg, #47f0f4 0%, #bec2fc 100%)",
+                            WebkitBackgroundClip: "text",
+                            WebkitTextFillColor: "transparent",
+                          }}
+                        >
+                          {stat}
+                        </span>
+                        <span className="text-[#91909a] text-xs font-mono tracking-widest uppercase">
+                          {desc}
+                        </span>
+                      </div>
+                    );
+                  }
                   return (
                     <div
                       key={idx}
-                      className="rounded-xl p-6 flex flex-col items-center justify-center text-center border border-white/10 bg-[#1a1f4e66] backdrop-blur-xl"
+                      className="rounded-xl p-6 border border-white/10 bg-[#1a1f4e66] backdrop-blur-xl col-span-1 md:col-span-2"
                     >
-                      <span
-                        className="font-bold text-5xl mb-2"
-                        style={{
-                          background: "linear-gradient(135deg, #47f0f4 0%, #bec2fc 100%)",
-                          WebkitBackgroundClip: "text",
-                          WebkitTextFillColor: "transparent",
-                        }}
-                      >
-                        {stat}
-                      </span>
-                      <span className="text-[#91909a] text-xs font-mono tracking-widest uppercase">
-                        {desc}
-                      </span>
+                      <p className="text-sm text-[#c7c5d0] leading-relaxed">{typeof result === "string" ? result : JSON.stringify(result)}</p>
                     </div>
                   );
-                }
-                return (
-                  <div
-                    key={idx}
-                    className="rounded-xl p-6 border border-white/10 bg-[#1a1f4e66] backdrop-blur-xl col-span-1 md:col-span-2"
-                  >
-                    <p className="text-sm text-[#c7c5d0] leading-relaxed">{result}</p>
-                  </div>
-                );
-              })}
-            </section>
+                })}
+              </section>
+            )}
 
             {/* Lessons Learned */}
-            <section className="p-8 bg-[#1b1c17] rounded-2xl border border-white/10">
-              <h2 className="text-3xl font-semibold text-[#ffb955] mb-6 tracking-tight">
-                Lessons Learned
-              </h2>
-              <ul className="space-y-6">
-                {study.lessons.map((lesson, idx) => (
-                  <li key={idx} className="flex gap-4">
-                    <span className="text-[#ffb955] text-xl flex-shrink-0">💡</span>
-                    <p className="text-base text-[#c7c5d0] leading-relaxed">
-                      {lesson}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            </section>
+            {lessons.length > 0 && (
+              <section className="p-8 bg-[#1b1c17] rounded-2xl border border-white/10">
+                <h2 className="text-3xl font-semibold text-[#ffb955] mb-6 tracking-tight">
+                  Lessons Learned
+                </h2>
+                <ul className="space-y-6">
+                  {lessons.map((lesson, idx) => (
+                    <li key={idx} className="flex gap-4">
+                      <span className="text-[#ffb955] text-xl flex-shrink-0">💡</span>
+                      <p className="text-base text-[#c7c5d0] leading-relaxed">
+                        {typeof lesson === "string" ? lesson : JSON.stringify(lesson)}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
 
           </article>
         </div>

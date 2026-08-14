@@ -326,11 +326,108 @@ export async function getTeardownBySlug(slug: string): Promise<Teardown | null> 
       { slug },
       fetchOptions
     );
+
     if (!teardown) {
       console.warn(`[Sanity Fallback] Teardown slug '${slug}' not found in Sanity. Searching mockTeardowns.`);
       return mockTeardowns.find((t) => t.slug === slug) || null;
     }
-    return teardown;
+
+    // Normalize teardown fields so all array properties are guaranteed non-null
+    const mockMatch = mockTeardowns.find((t) => t.slug === slug);
+
+    // Normalize body paragraphs
+    let body: string[] = [];
+    if (Array.isArray(teardown.body) && teardown.body.length > 0) {
+      body = teardown.body;
+    } else if (typeof teardown.researchEvidence === "string" && teardown.researchEvidence.trim() !== "") {
+      body = teardown.researchEvidence.split("\n").filter((p: string) => p.trim() !== "");
+    } else if (mockMatch && Array.isArray(mockMatch.body)) {
+      body = mockMatch.body;
+    } else if (typeof teardown.summary === "string") {
+      body = [teardown.summary];
+    }
+
+    // Normalize keyFindings
+    let keyFindings: string[] = [];
+    if (Array.isArray(teardown.keyFindings) && teardown.keyFindings.length > 0) {
+      keyFindings = teardown.keyFindings.map((item: any) =>
+        typeof item === "string" ? item : (item?.text || item?.finding || item?.title || JSON.stringify(item))
+      );
+    } else if (mockMatch && Array.isArray(mockMatch.keyFindings)) {
+      keyFindings = mockMatch.keyFindings;
+    }
+
+    // Normalize researchDetails
+    let researchDetails = teardown.researchDetails;
+    if (!researchDetails) {
+      if (teardown.researchEvidence || (Array.isArray(teardown.researchStats) && teardown.researchStats.length > 0)) {
+        researchDetails = {
+          overview: teardown.researchEvidence || teardown.summary || "",
+          metrics: Array.isArray(teardown.researchStats)
+            ? teardown.researchStats.map((s: any) =>
+                typeof s === "string"
+                  ? s
+                  : `${s.label || s.metric || ""}: ${s.value || s.stat || ""}`
+              )
+            : [],
+        };
+      } else if (mockMatch?.researchDetails) {
+        researchDetails = mockMatch.researchDetails;
+      }
+    }
+
+    // Normalize riceScores
+    let riceScores = teardown.riceScores;
+    if (!Array.isArray(riceScores) || riceScores.length === 0) {
+      if (Array.isArray(teardown.riceTable) && teardown.riceTable.length > 0) {
+        riceScores = teardown.riceTable.map((r: any) => ({
+          feature: r.feature || r.opportunity || r.title || "Feature",
+          reach: typeof r.reach === "number" ? r.reach : undefined,
+          impact: typeof r.impact === "number" ? r.impact : undefined,
+          confidence: typeof r.confidence === "number" ? r.confidence : undefined,
+          effort: typeof r.effort === "number" ? r.effort : undefined,
+          rice: typeof r.score === "number" ? r.score : (typeof r.rice === "number" ? r.rice : 0),
+        }));
+      } else if (mockMatch?.riceScores) {
+        riceScores = mockMatch.riceScores;
+      }
+    }
+
+    // Normalize recommendations
+    let recommendations = teardown.recommendations;
+    if (!Array.isArray(recommendations) || recommendations.length === 0) {
+      if (mockMatch?.recommendations) {
+        recommendations = mockMatch.recommendations;
+      } else {
+        recommendations = [];
+      }
+    }
+
+    // Normalize projectLinks
+    let projectLinks = teardown.projectLinks;
+    if (!Array.isArray(projectLinks) || projectLinks.length === 0) {
+      if (mockMatch?.projectLinks) {
+        projectLinks = mockMatch.projectLinks;
+      } else {
+        projectLinks = [];
+      }
+    }
+
+    return {
+      ...teardown,
+      body,
+      keyFindings,
+      researchDetails,
+      riceScores,
+      recommendations,
+      projectLinks,
+      myRole: teardown.myRole || mockMatch?.myRole || "",
+      category: teardown.category || mockMatch?.category || "Product Strategy",
+      readTime: teardown.readTime || mockMatch?.readTime || "8 min",
+      date: teardown.date || mockMatch?.date || "2024",
+      summary: teardown.summary || mockMatch?.summary || "",
+      coverImage: teardown.coverImage || mockMatch?.coverImage || "",
+    };
   } catch (error) {
     console.error(`Failed to fetch teardown for slug ${slug}:`, error);
     return mockTeardowns.find((t) => t.slug === slug) || null;
@@ -390,6 +487,7 @@ export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null
         isPlaceholder,
         "tools": stackMethods,
         "coverImage": coverImage.asset->url,
+        challenge,
         results,
         lessonsLearned,
         "relatedCaseStudies": relatedCaseStudies[]-> {
@@ -402,11 +500,64 @@ export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null
       { slug },
       fetchOptions
     );
+
     if (!caseStudy) {
       console.warn(`[Sanity Fallback] Case Study slug '${slug}' not found in Sanity. Searching mockCaseStudies.`);
       return mockCaseStudies.find((s) => s.slug === slug) || null;
     }
-    return caseStudy;
+
+    const mockMatch = mockCaseStudies.find((s) => s.slug === slug);
+
+    // Normalize tools
+    let tools: string[] = [];
+    if (Array.isArray(caseStudy.tools) && caseStudy.tools.length > 0) {
+      tools = caseStudy.tools;
+    } else if (mockMatch && Array.isArray(mockMatch.tools)) {
+      tools = mockMatch.tools;
+    }
+
+    // Normalize body
+    let body: string[] = [];
+    if (Array.isArray(caseStudy.body) && caseStudy.body.length > 0) {
+      body = caseStudy.body;
+    } else if (typeof caseStudy.challenge === "string" && caseStudy.challenge.trim() !== "") {
+      body = caseStudy.challenge.split("\n").filter((p: string) => p.trim() !== "");
+    } else if (mockMatch && Array.isArray(mockMatch.body)) {
+      body = mockMatch.body;
+    } else if (typeof caseStudy.summary === "string") {
+      body = [caseStudy.summary];
+    }
+
+    // Normalize results
+    let results: string[] = [];
+    if (Array.isArray(caseStudy.results) && caseStudy.results.length > 0) {
+      results = caseStudy.results;
+    } else if (mockMatch && Array.isArray(mockMatch.results)) {
+      results = mockMatch.results;
+    }
+
+    // Normalize lessons
+    let lessons: string[] = [];
+    if (Array.isArray(caseStudy.lessons) && caseStudy.lessons.length > 0) {
+      lessons = caseStudy.lessons;
+    } else if (Array.isArray(caseStudy.lessonsLearned) && caseStudy.lessonsLearned.length > 0) {
+      lessons = caseStudy.lessonsLearned;
+    } else if (mockMatch && Array.isArray(mockMatch.lessons)) {
+      lessons = mockMatch.lessons;
+    }
+
+    return {
+      ...caseStudy,
+      tools,
+      body,
+      results,
+      lessons,
+      category: caseStudy.category || mockMatch?.category || "AI Product Case Study",
+      date: caseStudy.date || mockMatch?.date || "2024",
+      readTime: caseStudy.readTime || mockMatch?.readTime || "8 min",
+      summary: caseStudy.summary || mockMatch?.summary || "",
+      coverImage: caseStudy.coverImage || mockMatch?.coverImage || "",
+    };
   } catch (error) {
     console.error(`Failed to fetch case study for slug ${slug}:`, error);
     return mockCaseStudies.find((s) => s.slug === slug) || null;

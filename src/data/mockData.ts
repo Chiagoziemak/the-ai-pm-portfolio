@@ -44,6 +44,7 @@ export interface CaseStudy {
   date: string;
   category: string;
   summary: string;
+  readTime?: string;
   tools: string[];
   coverImage: string;
   featured?: boolean;

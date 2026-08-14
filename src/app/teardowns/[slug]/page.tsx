@@ -18,8 +18,18 @@ export default async function SingleTeardownPage({ params }: PageProps) {
   const teardown = await getTeardownBySlug(slug);
   if (!teardown) notFound();
 
-  const allTeardowns = await getTeardowns();
-  const relatedTeardowns = allTeardowns.filter((t) => t.slug !== slug);
+  const allTeardowns = (await getTeardowns()) || [];
+  const relatedTeardowns = Array.isArray(allTeardowns) ? allTeardowns.filter((t) => t.slug !== slug) : [];
+
+  const bodyParagraphs = Array.isArray(teardown.body) && teardown.body.length > 0
+    ? teardown.body
+    : (teardown.summary ? [teardown.summary] : []);
+
+  const keyFindings = Array.isArray(teardown.keyFindings) ? teardown.keyFindings : [];
+  const recommendations = Array.isArray(teardown.recommendations) ? teardown.recommendations : [];
+  const projectLinks = Array.isArray(teardown.projectLinks) ? teardown.projectLinks : [];
+  const riceScores = Array.isArray(teardown.riceScores) ? teardown.riceScores : [];
+  const keyPainPoints = Array.isArray(teardown.keyPainPoints) ? teardown.keyPainPoints : [];
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors duration-300">
@@ -32,20 +42,20 @@ export default async function SingleTeardownPage({ params }: PageProps) {
         {/* Article Header */}
         <header className="max-w-4xl mx-auto px-4 sm:px-6 text-center mb-12">
           <div className="inline-block glass-panel text-accent-teal px-4 py-1.5 rounded-full text-xs font-mono mb-6 tracking-widest uppercase border border-accent-teal/30">
-            {teardown.category}
+            {teardown.category || "Product Strategy"}
           </div>
           <h1 className="font-extrabold text-3xl sm:text-4xl md:text-5xl mb-6 text-foreground tracking-tight leading-tight">
             {teardown.title}
           </h1>
           <div className="flex flex-wrap items-center justify-center gap-6 text-foreground/60 text-sm font-medium">
             <span className="flex items-center gap-1.5">
-              <Calendar size={15} className="text-accent-cyan" /> {teardown.date}
+              <Calendar size={15} className="text-accent-cyan" /> {teardown.date || "2024"}
             </span>
             <span className="flex items-center gap-1.5">
-              <Clock size={15} className="text-accent-teal" /> {teardown.readTime}
+              <Clock size={15} className="text-accent-teal" /> {teardown.readTime || "8 min"}
             </span>
             <span className="flex items-center gap-1.5">
-              <Tag size={15} className="text-accent-cyan" /> {teardown.category}
+              <Tag size={15} className="text-accent-cyan" /> {teardown.category || "Teardown"}
             </span>
           </div>
         </header>
@@ -68,12 +78,14 @@ export default async function SingleTeardownPage({ params }: PageProps) {
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
 
           {/* Summary Box */}
-          <div className="rounded-2xl p-6 sm:p-8 mb-10 border-l-4 border-l-accent-cyan glass-panel border-card-border shadow-sm">
-            <h3 className="text-lg font-bold mb-3 text-accent-cyan uppercase tracking-wider text-xs">Summary</h3>
-            <p className="text-base sm:text-lg text-foreground/90 italic leading-relaxed">
-              {teardown.summary}
-            </p>
-          </div>
+          {teardown.summary && (
+            <div className="rounded-2xl p-6 sm:p-8 mb-10 border-l-4 border-l-accent-cyan glass-panel border-card-border shadow-sm">
+              <h3 className="text-lg font-bold mb-3 text-accent-cyan uppercase tracking-wider text-xs">Summary</h3>
+              <p className="text-base sm:text-lg text-foreground/90 italic leading-relaxed">
+                {teardown.summary}
+              </p>
+            </div>
+          )}
 
           {/* My Role Section */}
           {teardown.myRole && (
@@ -95,11 +107,13 @@ export default async function SingleTeardownPage({ params }: PageProps) {
                 <Search size={20} className="text-accent-cyan" />
                 Research &amp; Evidence
               </h2>
-              <p className="text-base text-foreground/80 leading-relaxed mb-6">
-                {teardown.researchDetails.overview}
-              </p>
+              {teardown.researchDetails.overview && (
+                <p className="text-base text-foreground/80 leading-relaxed mb-6">
+                  {teardown.researchDetails.overview}
+                </p>
+              )}
 
-              {teardown.researchDetails.metrics && teardown.researchDetails.metrics.length > 0 && (
+              {Array.isArray(teardown.researchDetails.metrics) && teardown.researchDetails.metrics.length > 0 && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
                   {teardown.researchDetails.metrics.map((metric, idx) => (
                     <div key={idx} className="p-4 rounded-xl bg-card-border/15 border border-card-border/40 text-sm font-semibold text-foreground/90 flex items-start gap-2.5">
@@ -113,41 +127,47 @@ export default async function SingleTeardownPage({ params }: PageProps) {
           )}
 
           {/* Article Narrative Body */}
-          <article className="prose prose-invert max-w-none text-foreground/85 text-base sm:text-lg leading-relaxed space-y-6 mb-14">
-            {teardown.body.map((para, index) => (
-              <p key={index}>{para}</p>
-            ))}
-          </article>
+          {bodyParagraphs.length > 0 && (
+            <article className="prose prose-invert max-w-none text-foreground/85 text-base sm:text-lg leading-relaxed space-y-6 mb-14">
+              {bodyParagraphs.map((para, index) => (
+                <p key={index}>{para}</p>
+              ))}
+            </article>
+          )}
 
           {/* Key Product Findings */}
-          <section className="my-12 p-6 sm:p-8 rounded-2xl glass-panel border border-card-border">
-            <h2 className="text-xl sm:text-2xl font-extrabold mb-6 text-foreground flex items-center gap-2">
-              <Key size={22} className="text-accent-teal" />
-              Key Product Findings
-            </h2>
-            <div className="grid grid-cols-1 gap-4">
-              {teardown.keyFindings.map((finding, idx) => (
-                <div
-                  key={idx}
-                  className="p-5 rounded-xl flex items-start gap-4 border border-card-border/60 bg-card/30 hover:border-accent-teal/40 transition-all duration-300"
-                >
-                  <span className="text-accent-teal text-xl font-black font-mono flex-shrink-0">
-                    {String(idx + 1).padStart(2, "0")}
-                  </span>
-                  <p className="text-sm sm:text-base text-foreground/90 leading-relaxed">{finding}</p>
-                </div>
-              ))}
-            </div>
-          </section>
+          {keyFindings.length > 0 && (
+            <section className="my-12 p-6 sm:p-8 rounded-2xl glass-panel border border-card-border">
+              <h2 className="text-xl sm:text-2xl font-extrabold mb-6 text-foreground flex items-center gap-2">
+                <Key size={22} className="text-accent-teal" />
+                Key Product Findings
+              </h2>
+              <div className="grid grid-cols-1 gap-4">
+                {keyFindings.map((finding, idx) => (
+                  <div
+                    key={idx}
+                    className="p-5 rounded-xl flex items-start gap-4 border border-card-border/60 bg-card/30 hover:border-accent-teal/40 transition-all duration-300"
+                  >
+                    <span className="text-accent-teal text-xl font-black font-mono flex-shrink-0">
+                      {String(idx + 1).padStart(2, "0")}
+                    </span>
+                    <p className="text-sm sm:text-base text-foreground/90 leading-relaxed">
+                      {typeof finding === "string" ? finding : (finding as any)?.text || (finding as any)?.finding || JSON.stringify(finding)}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* Key Pain Points (if present) */}
-          {teardown.keyPainPoints && teardown.keyPainPoints.length > 0 && (
+          {keyPainPoints.length > 0 && (
             <section className="my-12 p-6 sm:p-8 rounded-2xl glass-panel border border-amber-500/30 bg-amber-500/5">
               <h2 className="text-xl font-bold mb-4 text-amber-500 flex items-center gap-2">
                 ⚠️ Key User Pain Points
               </h2>
               <ul className="space-y-3">
-                {teardown.keyPainPoints.map((point, idx) => (
+                {keyPainPoints.map((point, idx) => (
                   <li key={idx} className="flex items-start gap-3 text-sm sm:text-base text-foreground/90">
                     <span className="w-1.5 h-1.5 rounded-full bg-amber-500 mt-2 flex-shrink-0"></span>
                     <span>{point}</span>
@@ -158,7 +178,7 @@ export default async function SingleTeardownPage({ params }: PageProps) {
           )}
 
           {/* RICE Prioritization Table (if present) */}
-          {teardown.riceScores && teardown.riceScores.length > 0 && (
+          {riceScores.length > 0 && (
             <section className="my-12 p-6 sm:p-8 rounded-2xl glass-panel border border-card-border">
               <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
                 📊 RICE Prioritization Model
@@ -168,15 +188,15 @@ export default async function SingleTeardownPage({ params }: PageProps) {
                   <thead>
                     <tr className="border-b border-card-border text-xs uppercase tracking-wider text-accent-cyan">
                       <th className="py-3 px-4">Feature / Opportunity</th>
-                      {teardown.riceScores.some(r => r.reach !== undefined) && <th className="py-3 px-3">Reach</th>}
-                      {teardown.riceScores.some(r => r.impact !== undefined) && <th className="py-3 px-3">Impact</th>}
-                      {teardown.riceScores.some(r => r.confidence !== undefined) && <th className="py-3 px-3">Confidence</th>}
-                      {teardown.riceScores.some(r => r.effort !== undefined) && <th className="py-3 px-3">Effort</th>}
+                      {riceScores.some(r => r.reach !== undefined) && <th className="py-3 px-3">Reach</th>}
+                      {riceScores.some(r => r.impact !== undefined) && <th className="py-3 px-3">Impact</th>}
+                      {riceScores.some(r => r.confidence !== undefined) && <th className="py-3 px-3">Confidence</th>}
+                      {riceScores.some(r => r.effort !== undefined) && <th className="py-3 px-3">Effort</th>}
                       <th className="py-3 px-4 text-right">RICE Score</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {teardown.riceScores.map((scoreItem, idx) => (
+                    {riceScores.map((scoreItem, idx) => (
                       <tr key={idx} className="border-b border-card-border/40 hover:bg-card-border/10 transition-colors">
                         <td className="py-3 px-4 font-semibold text-foreground">{scoreItem.feature}</td>
                         {scoreItem.reach !== undefined && <td className="py-3 px-3">{scoreItem.reach}</td>}
@@ -184,7 +204,7 @@ export default async function SingleTeardownPage({ params }: PageProps) {
                         {scoreItem.confidence !== undefined && <td className="py-3 px-3">{scoreItem.confidence}</td>}
                         {scoreItem.effort !== undefined && <td className="py-3 px-3">{scoreItem.effort}</td>}
                         <td className="py-3 px-4 text-right font-mono font-bold text-accent-teal text-base">
-                          {scoreItem.rice.toFixed(1)}
+                          {typeof scoreItem.rice === "number" ? scoreItem.rice.toFixed(1) : scoreItem.rice}
                         </td>
                       </tr>
                     ))}
@@ -195,42 +215,44 @@ export default async function SingleTeardownPage({ params }: PageProps) {
           )}
 
           {/* Strategic Recommendations */}
-          <section className="my-12 p-6 sm:p-8 rounded-2xl glass-panel border border-card-border">
-            <div className="flex items-center gap-3 mb-6">
-              <Lightbulb size={24} className="text-accent-teal" />
-              <h2 className="text-2xl font-extrabold text-foreground tracking-tight">
-                Strategic Recommendations
-              </h2>
-            </div>
-            <div className="space-y-4">
-              {teardown.recommendations.map((rec, idx) => {
-                const title = typeof rec === "string" ? `Recommendation ${idx + 1}` : rec.title;
-                const desc = typeof rec === "string" ? rec : rec.description;
-                const priority = typeof rec === "string" ? undefined : rec.priority;
-                return (
-                  <div
-                    key={idx}
-                    className="p-6 rounded-xl border border-card-border/60 bg-card/40 shadow-sm"
-                  >
-                    <div className="flex flex-wrap justify-between items-center mb-2 gap-2">
-                      <h4 className="font-bold text-base sm:text-lg text-foreground">
-                        {title}
-                      </h4>
-                      {priority && (
-                        <span className="text-accent-teal text-xs font-mono tracking-wider uppercase font-semibold px-2.5 py-1 rounded-md bg-accent-teal/10 border border-accent-teal/20">
-                          {priority}
-                        </span>
-                      )}
+          {recommendations.length > 0 && (
+            <section className="my-12 p-6 sm:p-8 rounded-2xl glass-panel border border-card-border">
+              <div className="flex items-center gap-3 mb-6">
+                <Lightbulb size={24} className="text-accent-teal" />
+                <h2 className="text-2xl font-extrabold text-foreground tracking-tight">
+                  Strategic Recommendations
+                </h2>
+              </div>
+              <div className="space-y-4">
+                {recommendations.map((rec, idx) => {
+                  const title = typeof rec === "string" ? `Recommendation ${idx + 1}` : (rec.title || `Recommendation ${idx + 1}`);
+                  const desc = typeof rec === "string" ? rec : (rec.description || (rec as any).text || "");
+                  const priority = typeof rec === "string" ? undefined : rec.priority;
+                  return (
+                    <div
+                      key={idx}
+                      className="p-6 rounded-xl border border-card-border/60 bg-card/40 shadow-sm"
+                    >
+                      <div className="flex flex-wrap justify-between items-center mb-2 gap-2">
+                        <h4 className="font-bold text-base sm:text-lg text-foreground">
+                          {title}
+                        </h4>
+                        {priority && (
+                          <span className="text-accent-teal text-xs font-mono tracking-wider uppercase font-semibold px-2.5 py-1 rounded-md bg-accent-teal/10 border border-accent-teal/20">
+                            {priority}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm sm:text-base text-foreground/80 leading-relaxed">{desc}</p>
                     </div>
-                    <p className="text-sm sm:text-base text-foreground/80 leading-relaxed">{desc}</p>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
+                  );
+                })}
+              </div>
+            </section>
+          )}
 
           {/* Dedicated Project Links Section */}
-          {teardown.projectLinks && teardown.projectLinks.length > 0 && (
+          {projectLinks.length > 0 && (
             <section className="my-14 p-6 sm:p-8 rounded-2xl glass-panel border border-accent-cyan/30 bg-accent-cyan/5">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-extrabold text-foreground flex items-center gap-2">
@@ -241,7 +263,7 @@ export default async function SingleTeardownPage({ params }: PageProps) {
               </div>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {teardown.projectLinks.map((linkItem, idx) => (
+                {projectLinks.map((linkItem, idx) => (
                   <a
                     key={idx}
                     href={linkItem.url}
