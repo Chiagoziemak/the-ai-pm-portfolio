@@ -22,6 +22,35 @@ export const homePage = defineType({
       type: "text",
     }),
     defineField({
+      name: "heroImage",
+      title: "Hero Image",
+      type: "image",
+      options: {
+        hotspot: true,
+      },
+      fields: [
+        defineField({
+          name: "alt",
+          title: "Alternative Text",
+          type: "string",
+          validation: (Rule) => Rule.required(),
+        }),
+      ],
+    }),
+    defineField({
+      name: "heroImagePosition",
+      title: "Hero Image Position",
+      type: "string",
+      options: {
+        list: [
+          { title: "Right (Text Left, Image Right)", value: "right" },
+          { title: "Left (Image Left, Text Right)", value: "left" },
+        ],
+        layout: "radio",
+      },
+      initialValue: "right",
+    }),
+    defineField({
       name: "availabilityBadge",
       title: "Availability Badge Text",
       type: "string",

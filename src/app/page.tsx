@@ -4,6 +4,7 @@ import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { getTeardowns, getCaseStudies, getHomePageData, getSiteSettings } from "@/sanity/queries";
+import { urlForImage } from "@/sanity/image";
 import { mockTeardowns, mockCaseStudies } from "@/data/mockData";
 import { ArrowUpRight, Award, Brain, Compass, Sparkles } from "lucide-react";
 
@@ -31,6 +32,14 @@ export default async function HomePage() {
   const introText = homeData.introText || "Experienced SaaS Product Manager with CSPO and CSM credentials. Pivoting to AI Engineering and AI PM, currently building ResumeGenie—an agentic job application platform. Specialized in bridging high-level product strategy with hands-on AI engineering.";
   const availabilityBadge = homeData.availabilityBadge || "Available for Roles & Opportunities";
 
+  // Hero Image URL built using hotspot builder or fallback
+  const heroImageUrl = homeData.heroImage
+    ? urlForImage(homeData.heroImage)?.width(800).height(1000).url() || homeData.heroImageUrl
+    : homeData.heroImageUrl;
+
+  const heroImageAlt = homeData.heroImageAlt || homeData.heroImage?.alt || heroHeading;
+  const heroImagePosition = homeData.heroImagePosition === "left" ? "left" : "right";
+
   // Marquee items: combination of products and teardowns
   const marqueeItems = [
     { title: "ResumeGenie AI Agent", desc: "AI Autopilot", color: "from-cyan-500/20 to-teal-500/20" },
@@ -53,8 +62,9 @@ export default async function HomePage() {
         {/* HERO SECTION */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 lg:py-24">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-            {/* Left Content */}
-            <div className="lg:col-span-7 flex flex-col items-start text-left">
+            
+            {/* Text Content */}
+            <div className={`lg:col-span-7 flex flex-col items-start text-left ${heroImagePosition === "left" ? "lg:order-2" : "lg:order-1"}`}>
               {/* Badge */}
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold glass-panel text-accent-teal border-accent-teal/20 mb-6 shadow-sm hover:scale-105 transition-all duration-300">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -93,20 +103,31 @@ export default async function HomePage() {
               </div>
             </div>
 
-            {/* Right Photo Column */}
-            <div className="lg:col-span-5 flex justify-center lg:justify-end">
+            {/* Photo / Image Column */}
+            <div className={`lg:col-span-5 flex justify-center ${heroImagePosition === "left" ? "lg:order-1 lg:justify-start" : "lg:order-2 lg:justify-end"}`}>
               <div className="relative w-full max-w-md aspect-[4/5] rounded-3xl overflow-hidden glass-panel border-card-border/80 p-2 shadow-2xl group">
                 <div className="absolute inset-0 bg-gradient-to-tr from-accent-teal/20 via-transparent to-accent-cyan/10 opacity-50 group-hover:opacity-80 transition-opacity duration-500"></div>
-                <div className="w-full h-full rounded-2xl bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 flex flex-col items-center justify-center relative overflow-hidden text-center p-6 border border-white/5">
-                  <div className="w-24 h-24 rounded-full bg-accent-teal/10 border border-accent-teal/30 flex items-center justify-center mb-4 shadow-inner">
-                    <Sparkles className="w-10 h-10 text-accent-teal animate-pulse" />
+                {heroImageUrl ? (
+                  <div className="w-full h-full rounded-2xl overflow-hidden relative">
+                    <img
+                      src={heroImageUrl}
+                      alt={heroImageAlt}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent"></div>
                   </div>
-                  <span className="text-lg font-bold text-foreground">Chiagoziem Melvin Akobundu</span>
-                  <span className="text-xs text-accent-teal font-mono mt-1">CSPO® | CSM® | AI PM</span>
-                  <div className="mt-4 px-3 py-1 rounded-full text-[11px] font-mono glass-panel border-card-border text-foreground/60">
-                    Photo placeholder — blend enabled
+                ) : (
+                  <div className="w-full h-full rounded-2xl bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 flex flex-col items-center justify-center relative overflow-hidden text-center p-6 border border-white/5">
+                    <div className="w-24 h-24 rounded-full bg-accent-teal/10 border border-accent-teal/30 flex items-center justify-center mb-4 shadow-inner">
+                      <Sparkles className="w-10 h-10 text-accent-teal animate-pulse" />
+                    </div>
+                    <span className="text-lg font-bold text-foreground">Chiagoziem Melvin Akobundu</span>
+                    <span className="text-xs text-accent-teal font-mono mt-1">CSPO® | CSM® | AI PM</span>
+                    <div className="mt-4 px-3 py-1 rounded-full text-[11px] font-mono glass-panel border-card-border text-foreground/60">
+                      Photo placeholder — blend enabled
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           </div>

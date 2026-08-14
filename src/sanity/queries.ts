@@ -38,6 +38,10 @@ export interface HomePageData {
   heroHeading?: string;
   heroSubheading?: string;
   introText?: string;
+  heroImage?: any;
+  heroImageUrl?: string;
+  heroImageAlt?: string;
+  heroImagePosition?: "left" | "right" | string;
   availabilityBadge?: string;
   ctaButtons?: { label: string; url: string }[];
   featuredCaseStudies?: CaseStudy[];
@@ -119,6 +123,10 @@ export async function getHomePageData(): Promise<HomePageData> {
         heroHeading,
         heroSubheading,
         introText,
+        heroImage,
+        "heroImageUrl": heroImage.asset->url,
+        "heroImageAlt": heroImage.alt,
+        heroImagePosition,
         availabilityBadge,
         ctaButtons,
         credentialsShown,
