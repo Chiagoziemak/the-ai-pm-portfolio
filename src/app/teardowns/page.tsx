@@ -5,6 +5,9 @@ import TeardownsList from "./TeardownsList";
 import { getTeardowns } from "@/sanity/queries";
 import { mockTeardowns } from "@/data/mockData";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function TeardownsPage() {
   const data = await getTeardowns();
   const teardowns = data.length > 0 ? data : mockTeardowns;

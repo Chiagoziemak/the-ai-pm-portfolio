@@ -60,6 +60,8 @@ export interface ContactPageData {
   statusMessage?: string;
 }
 
+const fetchOptions = { next: { revalidate: 0 }, cache: "no-store" as const };
+
 export async function getSiteSettings(): Promise<SiteSettings> {
   if (!sanityConfigured) {
     console.warn("[Sanity Fallback] NEXT_PUBLIC_SANITY_PROJECT_ID not set. Using default site settings.");
@@ -75,17 +77,21 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     };
   }
   try {
-    const res = await sanityClient.fetch(`*[_type == "siteSettings"][0] {
-      siteTitle,
-      metaDescription,
-      metaKeywords,
-      navLabels,
-      socialLinks,
-      "resumeUrl": resumeFile.asset->url,
-      "faviconUrl": favicon.asset->url,
-      footerText,
-      contactEmail
-    }`);
+    const res = await sanityClient.fetch(
+      `*[_type == "siteSettings"][0] {
+        siteTitle,
+        metaDescription,
+        metaKeywords,
+        navLabels,
+        socialLinks,
+        "resumeUrl": resumeFile.asset->url,
+        "faviconUrl": favicon.asset->url,
+        footerText,
+        contactEmail
+      }`,
+      {},
+      fetchOptions
+    );
     if (!res) {
       console.warn("[Sanity Fallback] Site settings document 'siteSettings' not found in Sanity. Using fallback values.");
       return { contactEmail: "hello@chiagoziem.ai" };
@@ -108,42 +114,46 @@ export async function getHomePageData(): Promise<HomePageData> {
     };
   }
   try {
-    const data = await sanityClient.fetch(`*[_type == "homePage"][0] {
-      heroHeading,
-      heroSubheading,
-      introText,
-      availabilityBadge,
-      ctaButtons,
-      credentialsShown,
-      "featuredCaseStudies": featuredCaseStudies[]-> {
-        title,
-        "slug": slug.current,
-        date,
-        category,
-        summary,
-        readTime,
-        "coverImage": coverImage.asset->url,
-        featured,
-        isPlaceholder,
-        "tools": stackMethods,
-        results,
-        lessonsLearned
-      },
-      "featuredTeardowns": featuredTeardowns[]-> {
-        title,
-        "slug": slug.current,
-        date,
-        category,
-        summary,
-        readTime,
-        "coverImage": coverImage.asset->url,
-        "myRole": role,
-        body,
-        keyFindings,
-        recommendations,
-        projectLinks
-      }
-    }`);
+    const data = await sanityClient.fetch(
+      `*[_type == "homePage"][0] {
+        heroHeading,
+        heroSubheading,
+        introText,
+        availabilityBadge,
+        ctaButtons,
+        credentialsShown,
+        "featuredCaseStudies": featuredCaseStudies[]-> {
+          title,
+          "slug": slug.current,
+          date,
+          category,
+          summary,
+          readTime,
+          "coverImage": coverImage.asset->url,
+          featured,
+          isPlaceholder,
+          "tools": stackMethods,
+          results,
+          lessonsLearned
+        },
+        "featuredTeardowns": featuredTeardowns[]-> {
+          title,
+          "slug": slug.current,
+          date,
+          category,
+          summary,
+          readTime,
+          "coverImage": coverImage.asset->url,
+          "myRole": role,
+          body,
+          keyFindings,
+          recommendations,
+          projectLinks
+        }
+      }`,
+      {},
+      fetchOptions
+    );
     return data || {};
   } catch (error) {
     console.error("Error fetching home page data from Sanity:", error);
@@ -162,28 +172,32 @@ export async function getAboutPageData(): Promise<AboutPageData> {
     };
   }
   try {
-    const data = await sanityClient.fetch(`*[_type == "aboutPage"][0] {
-      headline,
-      introText,
-      "headshotUrl": headshot.asset->url,
-      taglineChips,
-      "skills": technicalProficiency[] {
-        category,
-        "items": skills[] { "name": @, "level": 90 }
-      },
-      "journey": professionalTrajectory[] {
-        "year": years,
-        role,
-        company,
-        description
-      },
-      "certifications": credentials[] {
-        "name": label + select(defined(sublabel) => " - " + sublabel, "")
-      },
-      learningVector,
-      closingHeadline,
-      closingText
-    }`);
+    const data = await sanityClient.fetch(
+      `*[_type == "aboutPage"][0] {
+        headline,
+        introText,
+        "headshotUrl": headshot.asset->url,
+        taglineChips,
+        "skills": technicalProficiency[] {
+          category,
+          "items": skills[] { "name": @, "level": 90 }
+        },
+        "journey": professionalTrajectory[] {
+          "year": years,
+          role,
+          company,
+          description
+        },
+        "certifications": credentials[] {
+          "name": label + select(defined(sublabel) => " - " + sublabel, "")
+        },
+        learningVector,
+        closingHeadline,
+        closingText
+      }`,
+      {},
+      fetchOptions
+    );
 
     if (!data) {
       console.warn("[Sanity Fallback] About Page document 'aboutPage' not found in Sanity. Falling back to mockAboutData.");
@@ -222,11 +236,15 @@ export async function getContactPageData(): Promise<ContactPageData> {
     };
   }
   try {
-    const res = await sanityClient.fetch(`*[_type == "contactPage"][0] {
-      headline,
-      introText,
-      statusMessage
-    }`);
+    const res = await sanityClient.fetch(
+      `*[_type == "contactPage"][0] {
+        headline,
+        introText,
+        statusMessage
+      }`,
+      {},
+      fetchOptions
+    );
     return res || {
       headline: "Let's Connect & Collaborate",
       introText: "Whether you're looking for an AI Product Manager, exploring strategic teardowns, or want to discuss agentic AI systems, reach out below.",
@@ -244,22 +262,26 @@ export async function getTeardowns(): Promise<Teardown[]> {
     return mockTeardowns;
   }
   try {
-    const teardowns = await sanityClient.fetch(`*[_type == "teardown"] | order(_createdAt desc) {
-      title,
-      "slug": slug.current,
-      "date": select(defined(year) => year, "2024"),
-      category,
-      summary,
-      readTime,
-      "coverImage": select(defined(coverImage.asset) => coverImage.asset->url, coverImage),
-      "myRole": role,
-      researchEvidence,
-      researchStats,
-      keyFindings,
-      riceTable,
-      recommendations,
-      projectLinks
-    }`);
+    const teardowns = await sanityClient.fetch(
+      `*[_type == "teardown"] | order(_createdAt desc) {
+        title,
+        "slug": slug.current,
+        "date": select(defined(year) => year, "2024"),
+        category,
+        summary,
+        readTime,
+        "coverImage": select(defined(coverImage.asset) => coverImage.asset->url, coverImage),
+        "myRole": role,
+        researchEvidence,
+        researchStats,
+        keyFindings,
+        riceTable,
+        recommendations,
+        projectLinks
+      }`,
+      {},
+      fetchOptions
+    );
     if (!teardowns || teardowns.length === 0) {
       console.warn("[Sanity Fallback] No teardown documents published in Sanity. Falling back to mockTeardowns.");
       return mockTeardowns;
@@ -301,7 +323,8 @@ export async function getTeardownBySlug(slug: string): Promise<Teardown | null> 
           "coverImage": coverImage.asset->url
         }
       }`,
-      { slug }
+      { slug },
+      fetchOptions
     );
     if (!teardown) {
       console.warn(`[Sanity Fallback] Teardown slug '${slug}' not found in Sanity. Searching mockTeardowns.`);
@@ -320,20 +343,24 @@ export async function getCaseStudies(): Promise<CaseStudy[]> {
     return mockCaseStudies;
   }
   try {
-    const caseStudies = await sanityClient.fetch(`*[_type == "caseStudy"] | order(date desc) {
-      title,
-      "slug": slug.current,
-      date,
-      category,
-      summary,
-      readTime,
-      featured,
-      isPlaceholder,
-      "tools": stackMethods,
-      "coverImage": coverImage.asset->url,
-      results,
-      lessonsLearned
-    }`);
+    const caseStudies = await sanityClient.fetch(
+      `*[_type == "caseStudy"] | order(date desc) {
+        title,
+        "slug": slug.current,
+        date,
+        category,
+        summary,
+        readTime,
+        featured,
+        isPlaceholder,
+        "tools": stackMethods,
+        "coverImage": coverImage.asset->url,
+        results,
+        lessonsLearned
+      }`,
+      {},
+      fetchOptions
+    );
     if (!caseStudies || caseStudies.length === 0) {
       console.warn("[Sanity Fallback] No caseStudy documents in Sanity. Falling back to mockCaseStudies.");
       return mockCaseStudies;
@@ -372,7 +399,8 @@ export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null
           "coverImage": coverImage.asset->url
         }
       }`,
-      { slug }
+      { slug },
+      fetchOptions
     );
     if (!caseStudy) {
       console.warn(`[Sanity Fallback] Case Study slug '${slug}' not found in Sanity. Searching mockCaseStudies.`);
@@ -391,18 +419,22 @@ export async function getProducts(): Promise<Product[]> {
     return mockProducts;
   }
   try {
-    const products = await sanityClient.fetch(`*[_type == "product"] {
-      name,
-      tagline,
-      description,
-      status,
-      icon,
-      linkType,
-      "caseStudySlug": caseStudyRef->slug.current,
-      externalUrl,
-      linkLabel,
-      "coverImage": productImage.asset->url
-    }`);
+    const products = await sanityClient.fetch(
+      `*[_type == "product"] {
+        name,
+        tagline,
+        description,
+        status,
+        icon,
+        linkType,
+        "caseStudySlug": caseStudyRef->slug.current,
+        externalUrl,
+        linkLabel,
+        "coverImage": productImage.asset->url
+      }`,
+      {},
+      fetchOptions
+    );
     if (!products || products.length === 0) {
       console.warn("[Sanity Fallback] No product documents in Sanity. Falling back to mockProducts.");
       return mockProducts;

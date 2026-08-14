@@ -5,6 +5,9 @@ import Link from "next/link";
 import { getProducts } from "@/sanity/queries";
 import { mockProducts } from "@/data/mockData";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function ProductsPage() {
   const data = await getProducts();
   const products = data.length > 0 ? data : mockProducts;

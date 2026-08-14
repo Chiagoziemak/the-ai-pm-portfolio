@@ -6,6 +6,9 @@ import { getCaseStudies } from "@/sanity/queries";
 import { mockCaseStudies } from "@/data/mockData";
 import { ArrowUpRight, Sparkles, BookOpen, Layers } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function CaseStudiesPage() {
   const data = await getCaseStudies();
   const caseStudies = data.length > 0 ? data : mockCaseStudies;

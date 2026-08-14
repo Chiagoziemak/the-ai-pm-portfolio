@@ -1,14 +1,14 @@
 import { createClient } from "@sanity/client";
 
-const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "";
+const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "r03r0hgb";
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || "production";
 const apiVersion = "2026-06-03";
 
-export const sanityConfigured = projectId !== "";
+export const sanityConfigured = true;
 
 export const sanityClient = createClient({
-  projectId: sanityConfigured ? projectId : "mock-project-id",
+  projectId,
   dataset,
   apiVersion,
-  useCdn: true,
+  useCdn: false, // Bypass Sanity API CDN cache to ensure freshly published content is returned immediately
 });

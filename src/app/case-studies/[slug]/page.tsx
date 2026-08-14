@@ -9,6 +9,9 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function SingleCaseStudyPage({ params }: PageProps) {
   const { slug } = await params;
   const study = await getCaseStudyBySlug(slug);

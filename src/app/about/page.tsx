@@ -5,6 +5,9 @@ import Footer from "@/components/Footer";
 import { getAboutPageData, getSiteSettings } from "@/sanity/queries";
 import { mockAboutData } from "@/data/mockData";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function AboutPage() {
   const aboutData = await getAboutPageData();
   const siteSettings = await getSiteSettings();

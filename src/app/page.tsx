@@ -7,6 +7,9 @@ import { getTeardowns, getCaseStudies, getHomePageData, getSiteSettings } from "
 import { mockTeardowns, mockCaseStudies } from "@/data/mockData";
 import { ArrowUpRight, Award, Brain, Compass, Sparkles } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function HomePage() {
   const homeData = await getHomePageData();
   const siteSettings = await getSiteSettings();
