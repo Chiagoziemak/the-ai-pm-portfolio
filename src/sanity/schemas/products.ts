@@ -37,8 +37,8 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: "productImage",
-      title: "Product Image",
+      name: "coverImage",
+      title: "Cover / Product Image",
       type: "image",
       options: {
         hotspot: true,
@@ -50,6 +50,15 @@ export default defineType({
           type: "string",
         }),
       ],
+    }),
+    defineField({
+      name: "productImage",
+      title: "Product Image (Legacy)",
+      type: "image",
+      options: {
+        hotspot: true,
+      },
+      hidden: true,
     }),
     defineField({
       name: "icon",
