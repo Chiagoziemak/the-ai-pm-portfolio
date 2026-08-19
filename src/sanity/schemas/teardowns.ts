@@ -110,6 +110,20 @@ export default defineType({
       of: [{ type: "externalLinkBlock" }],
     }),
     defineField({
+      name: "insightCards",
+      title: "Research Insight Cards",
+      type: "array",
+      of: [{ type: "insightCard" }],
+      description: "Structured research insight cards (number, title, description, evidence)",
+    }),
+    defineField({
+      name: "painPoints",
+      title: "Key Pain Points Cards",
+      type: "array",
+      of: [{ type: "painPointCard" }],
+      description: "Friction and user pain points (title, description, evidence, severity)",
+    }),
+    defineField({
       name: "relatedTeardowns",
       title: "Related Teardowns",
       type: "array",

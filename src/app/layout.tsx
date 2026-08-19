@@ -1,19 +1,8 @@
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Chiagoziem Melvin Akobundu | AI Product Manager Portfolio",
@@ -27,19 +16,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-  <html
-    lang="en"
-    className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    suppressHydrationWarning
-  >
-    <body className="min-h-full flex flex-col bg-background text-foreground">
-      <ThemeProvider>
-        {children}
-      </ThemeProvider>
+    <html
+      lang="en"
+      className="h-full antialiased font-sans"
+      suppressHydrationWarning
+    >
+      <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
+        <ThemeProvider>
+          {children}
+        </ThemeProvider>
 
-      <Analytics />
-      <SpeedInsights />
-    </body>
-  </html>
-);
+        <Analytics />
+        <SpeedInsights />
+      </body>
+    </html>
+  );
 }

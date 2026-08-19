@@ -110,6 +110,20 @@ export const homePage = defineType({
       of: [{ type: "learningItem" }],
       description: "Learning items (title, provider, status, tags, description)",
     }),
+    defineField({
+      name: "processSteps",
+      title: "Process Steps (How I Work)",
+      type: "array",
+      of: [{ type: "processStep" }],
+      description: "How I Work section process steps (number, title, description, icon, deliverables)",
+    }),
+    defineField({
+      name: "testimonials",
+      title: "Testimonials",
+      type: "array",
+      of: [{ type: "testimonial" }],
+      description: "Peer, client, and leadership testimonials",
+    }),
   ],
 });
 

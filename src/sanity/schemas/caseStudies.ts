@@ -109,6 +109,20 @@ export default defineType({
       of: [{ type: "string" }],
     }),
     defineField({
+      name: "productDecisions",
+      title: "Product Decisions",
+      type: "array",
+      of: [{ type: "productDecisionCard" }],
+      description: "Structured PM decision log (decision, context, options, chosenOption, rationale, tradeoffs, outcome)",
+    }),
+    defineField({
+      name: "beforeAfter",
+      title: "Before & After Comparison Blocks",
+      type: "array",
+      of: [{ type: "beforeAfterBlock" }],
+      description: "Before vs After comparison cards (labels, descriptions, hotspot images, impact)",
+    }),
+    defineField({
       name: "relatedCaseStudies",
       title: "Related Case Studies",
       type: "array",

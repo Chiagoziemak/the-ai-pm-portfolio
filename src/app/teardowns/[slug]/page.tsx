@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { getTeardownBySlug, getTeardowns } from "@/sanity/queries";
+import { getTeardownBySlug, getTeardowns, getSiteSettings } from "@/sanity/queries";
 import { ArrowUpRight, ExternalLink, Calendar, Clock, Tag, UserCheck, Search, Key, Lightbulb, Layers } from "lucide-react";
 
 interface PageProps {
@@ -18,6 +18,7 @@ export default async function SingleTeardownPage({ params }: PageProps) {
   const teardown = await getTeardownBySlug(slug);
   if (!teardown) notFound();
 
+  const siteSettings = await getSiteSettings();
   const allTeardowns = (await getTeardowns()) || [];
   const relatedTeardowns = Array.isArray(allTeardowns) ? allTeardowns.filter((t) => t.slug !== slug) : [];
 
@@ -30,6 +31,8 @@ export default async function SingleTeardownPage({ params }: PageProps) {
   const projectLinks = Array.isArray(teardown.projectLinks) ? teardown.projectLinks : [];
   const riceScores = Array.isArray(teardown.riceScores) ? teardown.riceScores : [];
   const keyPainPoints = Array.isArray(teardown.keyPainPoints) ? teardown.keyPainPoints : [];
+  const insightCards = Array.isArray(teardown.insightCards) ? teardown.insightCards : [];
+  const painPoints = Array.isArray(teardown.painPoints) ? teardown.painPoints : [];
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors duration-300">
@@ -126,6 +129,41 @@ export default async function SingleTeardownPage({ params }: PageProps) {
             </section>
           )}
 
+          {/* Research Insight Cards (Structured Section) */}
+          {insightCards.length > 0 && (
+            <section className="my-12 p-6 sm:p-8 rounded-2xl glass-panel border border-card-border">
+              <h2 className="text-xl sm:text-2xl font-extrabold mb-6 text-foreground flex items-center gap-2">
+                <Lightbulb size={22} className="text-accent-teal" />
+                Research Insights
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {insightCards.map((card, idx) => (
+                  <div
+                    key={idx}
+                    className="p-5 rounded-xl border border-card-border/60 bg-card/30 flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-base font-bold text-foreground">{card.title}</h3>
+                        {card.number && (
+                          <span className="text-xs font-mono text-accent-teal font-extrabold px-2 py-0.5 rounded bg-accent-teal/10">
+                            {card.number}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs sm:text-sm text-foreground/80 leading-relaxed mb-3">{card.description}</p>
+                    </div>
+                    {card.evidence && (
+                      <div className="pt-3 border-t border-card-border/30 text-xs text-foreground/60 italic">
+                        {card.evidence}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
           {/* Article Narrative Body */}
           {bodyParagraphs.length > 0 && (
             <article className="prose prose-invert max-w-none text-foreground/85 text-base sm:text-lg leading-relaxed space-y-6 mb-14">
@@ -160,8 +198,42 @@ export default async function SingleTeardownPage({ params }: PageProps) {
             </section>
           )}
 
-          {/* Key Pain Points (if present) */}
-          {keyPainPoints.length > 0 && (
+          {/* Key Pain Point Cards (Structured Section) */}
+          {painPoints.length > 0 && (
+            <section className="my-12 p-6 sm:p-8 rounded-2xl glass-panel border border-amber-500/30 bg-amber-500/5">
+              <h2 className="text-xl sm:text-2xl font-extrabold mb-6 text-amber-500 flex items-center gap-2">
+                ⚠️ Key Pain Points
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {painPoints.map((point, idx) => (
+                  <div
+                    key={idx}
+                    className="p-5 rounded-xl border border-amber-500/20 bg-background/50 flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-base font-bold text-foreground">{point.title}</h3>
+                        {point.severity && (
+                          <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 font-bold">
+                            {point.severity}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs sm:text-sm text-foreground/80 leading-relaxed mb-3">{point.description}</p>
+                    </div>
+                    {point.evidence && (
+                      <div className="pt-3 border-t border-amber-500/20 text-xs text-amber-300/80 italic">
+                        Evidence: {point.evidence}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Legacy Key Pain Points string list (if present and painPoints cards empty) */}
+          {keyPainPoints.length > 0 && painPoints.length === 0 && (
             <section className="my-12 p-6 sm:p-8 rounded-2xl glass-panel border border-amber-500/30 bg-amber-500/5">
               <h2 className="text-xl font-bold mb-4 text-amber-500 flex items-center gap-2">
                 ⚠️ Key User Pain Points
@@ -329,7 +401,7 @@ export default async function SingleTeardownPage({ params }: PageProps) {
 
       </main>
 
-      <Footer />
+      <Footer location={siteSettings.location} socialLinks={siteSettings.socialLinks} footerText={siteSettings.footerText} />
 
       {/* Progress bar script */}
       <script dangerouslySetInnerHTML={{

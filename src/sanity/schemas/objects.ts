@@ -234,6 +234,286 @@ export const learningItem = defineType({
   ],
 });
 
+export const processStep = defineType({
+  name: "processStep",
+  title: "Process Step",
+  type: "object",
+  fields: [
+    defineField({
+      name: "number",
+      title: "Step Number",
+      type: "string",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "title",
+      title: "Step Title",
+      type: "string",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "description",
+      title: "Description",
+      type: "text",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "icon",
+      title: "Icon Name / Identifier",
+      type: "string",
+    }),
+    defineField({
+      name: "deliverables",
+      title: "Deliverables List",
+      type: "array",
+      of: [{ type: "string" }],
+    }),
+  ],
+});
+
+export const testimonial = defineType({
+  name: "testimonial",
+  title: "Testimonial",
+  type: "object",
+  fields: [
+    defineField({
+      name: "quote",
+      title: "Quote",
+      type: "text",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "authorName",
+      title: "Author Name",
+      type: "string",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "authorRole",
+      title: "Author Role / Title",
+      type: "string",
+    }),
+    defineField({
+      name: "authorCompany",
+      title: "Author Company",
+      type: "string",
+    }),
+    defineField({
+      name: "authorPhoto",
+      title: "Author Photo",
+      type: "image",
+      options: { hotspot: true },
+      fields: [
+        defineField({
+          name: "alt",
+          title: "Alternative Text",
+          type: "string",
+        }),
+      ],
+    }),
+    defineField({
+      name: "linkedinUrl",
+      title: "LinkedIn Profile URL",
+      type: "url",
+    }),
+    defineField({
+      name: "context",
+      title: "Relationship / Project Context",
+      type: "string",
+    }),
+  ],
+});
+
+export const insightCard = defineType({
+  name: "insightCard",
+  title: "Insight Card",
+  type: "object",
+  fields: [
+    defineField({
+      name: "number",
+      title: "Number / Label",
+      type: "string",
+    }),
+    defineField({
+      name: "title",
+      title: "Insight Title",
+      type: "string",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "description",
+      title: "Description",
+      type: "text",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "evidence",
+      title: "Supporting Evidence / Details",
+      type: "text",
+    }),
+  ],
+});
+
+export const painPointCard = defineType({
+  name: "painPointCard",
+  title: "Pain Point Card",
+  type: "object",
+  fields: [
+    defineField({
+      name: "title",
+      title: "Pain Point Title",
+      type: "string",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "description",
+      title: "Description",
+      type: "text",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "evidence",
+      title: "Evidence / Impact Details",
+      type: "text",
+    }),
+    defineField({
+      name: "severity",
+      title: "Severity Level (e.g. Low, Medium, High, Critical)",
+      type: "string",
+    }),
+  ],
+});
+
+export const productDecisionCard = defineType({
+  name: "productDecisionCard",
+  title: "Product Decision Card",
+  type: "object",
+  fields: [
+    defineField({
+      name: "decision",
+      title: "Decision Title",
+      type: "string",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "context",
+      title: "Problem Context",
+      type: "text",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "options",
+      title: "Options Considered",
+      type: "array",
+      of: [{ type: "string" }],
+    }),
+    defineField({
+      name: "chosenOption",
+      title: "Chosen Option",
+      type: "string",
+    }),
+    defineField({
+      name: "rationale",
+      title: "Rationale / Strategic Why",
+      type: "text",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "tradeoffs",
+      title: "Trade-offs Accepted",
+      type: "text",
+    }),
+    defineField({
+      name: "outcome",
+      title: "Measurable Outcome / Result",
+      type: "text",
+    }),
+  ],
+});
+
+export const beforeAfterBlock = defineType({
+  name: "beforeAfterBlock",
+  title: "Before & After Comparison Block",
+  type: "object",
+  fields: [
+    defineField({
+      name: "beforeLabel",
+      title: "Before Label",
+      type: "string",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "beforeDescription",
+      title: "Before State Description",
+      type: "text",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "beforeImage",
+      title: "Before Image",
+      type: "image",
+      options: { hotspot: true },
+      fields: [
+        defineField({
+          name: "alt",
+          title: "Alternative Text",
+          type: "string",
+        }),
+      ],
+    }),
+    defineField({
+      name: "afterLabel",
+      title: "After Label",
+      type: "string",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "afterDescription",
+      title: "After State Description",
+      type: "text",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "afterImage",
+      title: "After Image",
+      type: "image",
+      options: { hotspot: true },
+      fields: [
+        defineField({
+          name: "alt",
+          title: "Alternative Text",
+          type: "string",
+        }),
+      ],
+    }),
+    defineField({
+      name: "impact",
+      title: "Impact / Key Improvement Summary",
+      type: "text",
+    }),
+  ],
+});
+
+export const checklistItem = defineType({
+  name: "checklistItem",
+  title: "Checklist Item",
+  type: "object",
+  fields: [
+    defineField({
+      name: "text",
+      title: "Checklist Item Text",
+      type: "string",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "checked",
+      title: "Is Completed / Checked",
+      type: "boolean",
+      initialValue: false,
+    }),
+  ],
+});
+
 export const reusableObjects = [
   statBlock,
   riceRow,
@@ -244,4 +524,11 @@ export const reusableObjects = [
   skillPercentBlock,
   credentialBlock,
   learningItem,
+  processStep,
+  testimonial,
+  insightCard,
+  painPointCard,
+  productDecisionCard,
+  beforeAfterBlock,
+  checklistItem,
 ];

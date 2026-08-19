@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { getCaseStudyBySlug, getCaseStudies } from "@/sanity/queries";
+import { getCaseStudyBySlug, getCaseStudies, getSiteSettings } from "@/sanity/queries";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -17,6 +17,7 @@ export default async function SingleCaseStudyPage({ params }: PageProps) {
   const study = await getCaseStudyBySlug(slug);
   if (!study) notFound();
 
+  const siteSettings = await getSiteSettings();
   const allStudies = (await getCaseStudies()) || [];
   const relatedStudies = Array.isArray(allStudies)
     ? allStudies.filter((s) => s.slug !== slug).slice(0, 2)
@@ -28,6 +29,8 @@ export default async function SingleCaseStudyPage({ params }: PageProps) {
     : (study.summary ? [study.summary] : []);
   const results = Array.isArray(study.results) ? study.results : [];
   const lessons = Array.isArray(study.lessons) ? study.lessons : [];
+  const productDecisions = Array.isArray(study.productDecisions) ? study.productDecisions : [];
+  const beforeAfter = Array.isArray(study.beforeAfter) ? study.beforeAfter : [];
 
   return (
     <div className="min-h-screen bg-[#0a0c1f] text-[#e4e2db]">
@@ -136,6 +139,91 @@ export default async function SingleCaseStudyPage({ params }: PageProps) {
               </section>
             )}
 
+            {/* Product Decisions (Structured PM Log Section) */}
+            {productDecisions.length > 0 && (
+              <section>
+                <h2 className="text-3xl font-semibold text-[#bec2fc] mb-6 tracking-tight">
+                  Product Decisions
+                </h2>
+                <div className="space-y-6">
+                  {productDecisions.map((pd, idx) => (
+                    <div
+                      key={idx}
+                      className="rounded-2xl p-6 sm:p-8 border border-white/10 bg-[#1a1f4e66] backdrop-blur-xl"
+                    >
+                      <h3 className="text-xl font-bold text-[#47f0f4] mb-3">{pd.decision}</h3>
+                      <p className="text-sm sm:text-base text-[#c7c5d0] leading-relaxed mb-4">
+                        <strong className="text-[#e4e2db]">Context:</strong> {pd.context}
+                      </p>
+
+                      {Array.isArray(pd.options) && pd.options.length > 0 && (
+                        <div className="mb-4">
+                          <span className="text-xs font-mono text-[#91909a] uppercase tracking-wider block mb-2 font-bold">Options Considered:</span>
+                          <ul className="list-disc list-inside space-y-1 text-xs sm:text-sm text-[#c7c5d0]">
+                            {pd.options.map((opt, oIdx) => (
+                              <li key={oIdx} className={opt === pd.chosenOption ? "text-[#47f0f4] font-semibold" : ""}>
+                                {opt} {opt === pd.chosenOption ? "(Chosen)" : ""}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      <div className="p-4 rounded-xl bg-[#0a0c1f]/80 border border-white/5 space-y-2 text-xs sm:text-sm">
+                        <p className="text-[#c7c5d0]"><strong className="text-[#bec2fc]">Rationale:</strong> {pd.rationale}</p>
+                        {pd.tradeoffs && <p className="text-[#c7c5d0]"><strong className="text-[#ffb955]">Trade-offs:</strong> {pd.tradeoffs}</p>}
+                        {pd.outcome && <p className="text-[#c7c5d0]"><strong className="text-[#47f0f4]">Outcome:</strong> {pd.outcome}</p>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Before & After Comparison Section */}
+            {beforeAfter.length > 0 && (
+              <section>
+                <h2 className="text-3xl font-semibold text-[#bec2fc] mb-6 tracking-tight">
+                  Before &amp; After Comparison
+                </h2>
+                <div className="space-y-8">
+                  {beforeAfter.map((block, idx) => (
+                    <div key={idx} className="rounded-2xl p-6 sm:p-8 border border-white/10 bg-[#1a1f4e66] backdrop-blur-xl">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        {/* Before */}
+                        <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20">
+                          <span className="text-xs font-mono font-bold uppercase tracking-wider text-red-400 block mb-2">
+                            Before: {block.beforeLabel}
+                          </span>
+                          <p className="text-xs sm:text-sm text-[#c7c5d0] leading-relaxed mb-4">{block.beforeDescription}</p>
+                          {block.beforeImageUrl && (
+                            <img src={block.beforeImageUrl} alt={block.beforeLabel} className="w-full h-48 object-cover rounded-lg border border-red-500/20" />
+                          )}
+                        </div>
+
+                        {/* After */}
+                        <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                          <span className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-400 block mb-2">
+                            After: {block.afterLabel}
+                          </span>
+                          <p className="text-xs sm:text-sm text-[#c7c5d0] leading-relaxed mb-4">{block.afterDescription}</p>
+                          {block.afterImageUrl && (
+                            <img src={block.afterImageUrl} alt={block.afterLabel} className="w-full h-48 object-cover rounded-lg border border-emerald-500/20" />
+                          )}
+                        </div>
+                      </div>
+
+                      {block.impact && (
+                        <div className="p-4 rounded-xl bg-[#47f0f4]/10 border border-[#47f0f4]/20 text-xs sm:text-sm text-[#47f0f4] font-medium">
+                          <strong>Impact Summary:</strong> {block.impact}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
             {/* Results Bento Grid */}
             {results.length > 0 && (
               <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -237,7 +325,7 @@ export default async function SingleCaseStudyPage({ params }: PageProps) {
 
       </main>
 
-      <Footer />
+      <Footer location={siteSettings.location} socialLinks={siteSettings.socialLinks} footerText={siteSettings.footerText} />
     </div>
   );
 }

@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 import { getTeardowns, getCaseStudies, getHomePageData, getSiteSettings } from "@/sanity/queries";
 import { urlForImage } from "@/sanity/image";
 import { mockTeardowns, mockCaseStudies } from "@/data/mockData";
-import { ArrowUpRight, Award, Brain, Compass, Sparkles, BookOpen, Layers, CheckCircle2 } from "lucide-react";
+import { ArrowUpRight, Award, Brain, Compass, Sparkles, BookOpen, Layers, CheckCircle2, MessageSquareQuote } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -42,6 +42,8 @@ export default async function HomePage() {
   const heroTagChips = Array.isArray(homeData.heroTagChips) ? homeData.heroTagChips : [];
   const currentStack = Array.isArray(homeData.currentStack) ? homeData.currentStack : [];
   const learningTrack = Array.isArray(homeData.learningTrack) ? homeData.learningTrack : [];
+  const processSteps = Array.isArray(homeData.processSteps) ? homeData.processSteps : [];
+  const testimonials = Array.isArray(homeData.testimonials) ? homeData.testimonials : [];
 
   // Marquee items: combination of products and teardowns
   const marqueeItems = [
@@ -305,6 +307,53 @@ export default async function HomePage() {
           </div>
         </section>
 
+        {/* HOW I WORK (PROCESS STEPS) SECTION */}
+        {processSteps.length > 0 && (
+          <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mb-16">
+            <div className="mb-10">
+              <span className="text-xs uppercase tracking-widest text-accent-teal font-extrabold">Operating Framework</span>
+              <h2 className="text-3xl sm:text-4xl font-extrabold mt-2 tracking-tight">How I Work</h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {processSteps.map((step, idx) => (
+                <div
+                  key={idx}
+                  className="p-6 rounded-2xl glass-panel border-card-border/60 bg-card/30 flex flex-col justify-between hover:border-accent-teal/40 transition-all duration-300 group"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-2xl font-black font-mono text-accent-teal/60 group-hover:text-accent-teal transition-colors">
+                        {step.number || `0${idx + 1}`}
+                      </span>
+                      {step.icon && (
+                        <span className="text-xs font-mono text-foreground/50 px-2 py-0.5 rounded bg-card-border/30">
+                          {step.icon}
+                        </span>
+                      )}
+                    </div>
+                    <h3 className="text-lg font-bold text-foreground mb-2">{step.title}</h3>
+                    <p className="text-xs sm:text-sm text-foreground/75 leading-relaxed mb-4">{step.description}</p>
+                  </div>
+
+                  {Array.isArray(step.deliverables) && step.deliverables.length > 0 && (
+                    <div className="pt-4 border-t border-card-border/30">
+                      <span className="text-[10px] font-mono uppercase text-accent-teal/80 font-bold block mb-1.5">Deliverables</span>
+                      <div className="flex flex-wrap gap-1">
+                        {step.deliverables.map((del, dIdx) => (
+                          <span key={dIdx} className="text-[10px] font-mono px-2 py-0.5 rounded bg-card-border/30 text-foreground/70">
+                            {del}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
         {/* LEARNING / TRANSITION TRACK SECTION */}
         {learningTrack.length > 0 && (
           <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mb-16">
@@ -401,6 +450,73 @@ export default async function HomePage() {
             ))}
           </div>
         </section>
+
+        {/* TESTIMONIALS SECTION */}
+        {testimonials.length > 0 && (
+          <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mb-16">
+            <div className="mb-10">
+              <span className="text-xs uppercase tracking-widest text-accent-teal font-extrabold">Endorsements</span>
+              <h2 className="text-3xl sm:text-4xl font-extrabold mt-2 tracking-tight">Testimonials</h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {testimonials.map((item, idx) => (
+                <div
+                  key={idx}
+                  className="p-8 rounded-3xl glass-panel border-card-border/60 bg-card/30 flex flex-col justify-between relative hover:border-accent-teal/40 transition-all duration-300"
+                >
+                  <div className="mb-6">
+                    <p className="text-base text-foreground/90 italic leading-relaxed mb-4">
+                      "{item.quote}"
+                    </p>
+                    {item.context && (
+                      <span className="inline-block text-xs font-mono text-accent-teal bg-accent-teal/10 border border-accent-teal/20 px-3 py-1 rounded-full">
+                        {item.context}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex items-center justify-between pt-4 border-t border-card-border/30">
+                    <div className="flex items-center gap-3">
+                      {item.authorPhotoUrl ? (
+                        <img
+                          src={item.authorPhotoUrl}
+                          alt={item.authorName}
+                          className="w-10 h-10 rounded-full object-cover border border-card-border"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-accent-teal/20 border border-accent-teal/40 flex items-center justify-center font-bold text-accent-teal text-sm">
+                          {item.authorName.charAt(0)}
+                        </div>
+                      )}
+                      <div>
+                        <h4 className="text-sm font-bold text-foreground">{item.authorName}</h4>
+                        {(item.authorRole || item.authorCompany) && (
+                          <p className="text-xs text-foreground/60">
+                            {item.authorRole}
+                            {item.authorRole && item.authorCompany ? " • " : ""}
+                            {item.authorCompany}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    {item.linkedinUrl && (
+                      <a
+                        href={item.linkedinUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs font-bold text-accent-teal hover:underline flex items-center gap-1"
+                      >
+                        LinkedIn <ArrowUpRight size={12} />
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* CTA BANNER */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mb-20">

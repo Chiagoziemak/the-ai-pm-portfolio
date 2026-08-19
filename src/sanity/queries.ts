@@ -9,6 +9,10 @@ import {
   CaseStudy,
   Product,
   AboutData,
+  InsightCard,
+  PainPointCard,
+  ProductDecisionCard,
+  BeforeAfterBlock,
 } from "@/data/mockData";
 
 export interface SiteSettings {
@@ -43,6 +47,24 @@ export interface LearningTrackItem {
   description?: string;
 }
 
+export interface ProcessStep {
+  number: string;
+  title: string;
+  description: string;
+  icon?: string;
+  deliverables?: string[];
+}
+
+export interface Testimonial {
+  quote: string;
+  authorName: string;
+  authorRole?: string;
+  authorCompany?: string;
+  authorPhotoUrl?: string;
+  linkedinUrl?: string;
+  context?: string;
+}
+
 export interface HomePageData {
   heroHeading?: string;
   heroSubheading?: string;
@@ -54,6 +76,8 @@ export interface HomePageData {
   heroTagChips?: string[];
   currentStack?: string[];
   learningTrack?: LearningTrackItem[];
+  processSteps?: ProcessStep[];
+  testimonials?: Testimonial[];
   availabilityBadge?: string;
   ctaButtons?: { label: string; url: string }[];
   featuredCaseStudies?: CaseStudy[];
@@ -144,6 +168,22 @@ export async function getHomePageData(): Promise<HomePageData> {
         heroTagChips,
         currentStack,
         learningTrack,
+        processSteps {
+          number,
+          title,
+          description,
+          icon,
+          deliverables
+        },
+        testimonials {
+          quote,
+          authorName,
+          authorRole,
+          authorCompany,
+          "authorPhotoUrl": authorPhoto.asset->url,
+          linkedinUrl,
+          context
+        },
         availabilityBadge,
         ctaButtons,
         credentialsShown,
@@ -161,7 +201,25 @@ export async function getHomePageData(): Promise<HomePageData> {
           isPlaceholder,
           "tools": stackMethods,
           results,
-          lessonsLearned
+          lessonsLearned,
+          productDecisions {
+            decision,
+            context,
+            options,
+            chosenOption,
+            rationale,
+            tradeoffs,
+            outcome
+          },
+          beforeAfter {
+            beforeLabel,
+            beforeDescription,
+            "beforeImageUrl": beforeImage.asset->url,
+            afterLabel,
+            afterDescription,
+            "afterImageUrl": afterImage.asset->url,
+            impact
+          }
         },
         "featuredTeardowns": featuredTeardowns[]-> {
           title,
@@ -174,6 +232,18 @@ export async function getHomePageData(): Promise<HomePageData> {
           "myRole": role,
           body,
           keyFindings,
+          insightCards {
+            number,
+            title,
+            description,
+            evidence
+          },
+          painPoints {
+            title,
+            description,
+            evidence,
+            severity
+          },
           recommendations,
           projectLinks
         }
@@ -302,6 +372,18 @@ export async function getTeardowns(): Promise<Teardown[]> {
         researchEvidence,
         researchStats,
         keyFindings,
+        insightCards {
+          number,
+          title,
+          description,
+          evidence
+        },
+        painPoints {
+          title,
+          description,
+          evidence,
+          severity
+        },
         riceTable,
         recommendations,
         projectLinks
@@ -339,6 +421,18 @@ export async function getTeardownBySlug(slug: string): Promise<Teardown | null> 
         researchEvidence,
         researchStats,
         keyFindings,
+        insightCards {
+          number,
+          title,
+          description,
+          evidence
+        },
+        painPoints {
+          title,
+          description,
+          evidence,
+          severity
+        },
         riceTable,
         recommendations,
         projectLinks,
@@ -441,6 +535,8 @@ export async function getTeardownBySlug(slug: string): Promise<Teardown | null> 
       riceScores,
       recommendations,
       projectLinks,
+      insightCards: Array.isArray(teardown.insightCards) ? teardown.insightCards : [],
+      painPoints: Array.isArray(teardown.painPoints) ? teardown.painPoints : [],
       myRole: teardown.myRole || mockMatch?.myRole || "",
       category: teardown.category || mockMatch?.category || "Product Strategy",
       readTime: teardown.readTime || mockMatch?.readTime || "8 min",
@@ -475,7 +571,25 @@ export async function getCaseStudies(): Promise<CaseStudy[]> {
         "tools": stackMethods,
         "coverImage": coverImage.asset->url,
         results,
-        lessonsLearned
+        lessonsLearned,
+        productDecisions {
+          decision,
+          context,
+          options,
+          chosenOption,
+          rationale,
+          tradeoffs,
+          outcome
+        },
+        beforeAfter {
+          beforeLabel,
+          beforeDescription,
+          "beforeImageUrl": beforeImage.asset->url,
+          afterLabel,
+          afterDescription,
+          "afterImageUrl": afterImage.asset->url,
+          impact
+        }
       }`,
       {},
       fetchOptions
@@ -514,6 +628,24 @@ export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null
         challenge,
         results,
         lessonsLearned,
+        productDecisions {
+          decision,
+          context,
+          options,
+          chosenOption,
+          rationale,
+          tradeoffs,
+          outcome
+        },
+        beforeAfter {
+          beforeLabel,
+          beforeDescription,
+          "beforeImageUrl": beforeImage.asset->url,
+          afterLabel,
+          afterDescription,
+          "afterImageUrl": afterImage.asset->url,
+          impact
+        },
         "relatedCaseStudies": relatedCaseStudies[]-> {
           title,
           "slug": slug.current,
@@ -574,6 +706,8 @@ export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null
       body,
       results,
       lessons,
+      productDecisions: Array.isArray(caseStudy.productDecisions) ? caseStudy.productDecisions : [],
+      beforeAfter: Array.isArray(caseStudy.beforeAfter) ? caseStudy.beforeAfter : [],
       category: caseStudy.category || mockMatch?.category || "AI Product Case Study",
       date: caseStudy.date || mockMatch?.date || "2024",
       readTime: caseStudy.readTime || mockMatch?.readTime || "8 min",
