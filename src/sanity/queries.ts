@@ -168,14 +168,14 @@ export async function getHomePageData(): Promise<HomePageData> {
         heroTagChips,
         currentStack,
         learningTrack,
-        processSteps {
+        processSteps[] {
           number,
           title,
           description,
           icon,
           deliverables
         },
-        testimonials {
+        testimonials[] {
           quote,
           authorName,
           authorRole,
@@ -202,7 +202,7 @@ export async function getHomePageData(): Promise<HomePageData> {
           "tools": stackMethods,
           results,
           lessonsLearned,
-          productDecisions {
+          productDecisions[] {
             decision,
             context,
             options,
@@ -211,7 +211,7 @@ export async function getHomePageData(): Promise<HomePageData> {
             tradeoffs,
             outcome
           },
-          beforeAfter {
+          beforeAfter[] {
             beforeLabel,
             beforeDescription,
             "beforeImageUrl": beforeImage.asset->url,
@@ -232,13 +232,13 @@ export async function getHomePageData(): Promise<HomePageData> {
           "myRole": role,
           body,
           keyFindings,
-          insightCards {
+          insightCards[] {
             number,
             title,
             description,
             evidence
           },
-          painPoints {
+          painPoints[] {
             title,
             description,
             evidence,
@@ -251,6 +251,7 @@ export async function getHomePageData(): Promise<HomePageData> {
       {},
       fetchOptions
     );
+    console.log("[Sanity HomePage Debug] Testimonials count:", data?.testimonials?.length, "ProcessSteps count:", data?.processSteps?.length);
     return data || {};
   } catch (error) {
     console.error("Error fetching home page data from Sanity:", error);
@@ -372,13 +373,13 @@ export async function getTeardowns(): Promise<Teardown[]> {
         researchEvidence,
         researchStats,
         keyFindings,
-        insightCards {
+        insightCards[] {
           number,
           title,
           description,
           evidence
         },
-        painPoints {
+        painPoints[] {
           title,
           description,
           evidence,
@@ -421,13 +422,13 @@ export async function getTeardownBySlug(slug: string): Promise<Teardown | null> 
         researchEvidence,
         researchStats,
         keyFindings,
-        insightCards {
+        insightCards[] {
           number,
           title,
           description,
           evidence
         },
-        painPoints {
+        painPoints[] {
           title,
           description,
           evidence,
@@ -572,7 +573,7 @@ export async function getCaseStudies(): Promise<CaseStudy[]> {
         "coverImage": coverImage.asset->url,
         results,
         lessonsLearned,
-        productDecisions {
+        productDecisions[] {
           decision,
           context,
           options,
@@ -581,7 +582,7 @@ export async function getCaseStudies(): Promise<CaseStudy[]> {
           tradeoffs,
           outcome
         },
-        beforeAfter {
+        beforeAfter[] {
           beforeLabel,
           beforeDescription,
           "beforeImageUrl": beforeImage.asset->url,
@@ -628,7 +629,7 @@ export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null
         challenge,
         results,
         lessonsLearned,
-        productDecisions {
+        productDecisions[] {
           decision,
           context,
           options,
@@ -637,7 +638,7 @@ export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null
           tradeoffs,
           outcome
         },
-        beforeAfter {
+        beforeAfter[] {
           beforeLabel,
           beforeDescription,
           "beforeImageUrl": beforeImage.asset->url,
