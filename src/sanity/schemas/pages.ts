@@ -105,7 +105,7 @@ export const homePage = defineType({
     }),
     defineField({
       name: "learningTrack",
-      title: "Learning / Transition Track",
+      title: "Learning Path",
       type: "array",
       of: [{ type: "learningItem" }],
       description: "Learning items (title, provider, status, tags, description)",
@@ -128,18 +128,22 @@ export const homePage = defineType({
       name: "sectionOrder",
       title: "Homepage Section Order",
       type: "array",
-      of: [{ type: "string" }],
-      options: {
-        list: [
-          { title: "Featured Work Strip (Marquee)", value: "featuredWorkStrip" },
-          { title: "Case Studies (Featured Case Studies)", value: "caseStudies" },
-          { title: "Teardowns (Featured Teardowns)", value: "teardowns" },
-          { title: "How I Work (Process Steps)", value: "howIWork" },
-          { title: "Testimonials (Endorsements)", value: "testimonials" },
-          { title: "AI & Engineering Learning Track", value: "learningTrack" },
-        ],
-      },
-      description: "Drag to reorder sections on the homepage. Hero remains fixed at the top.",
+      of: [
+        {
+          type: "string",
+          options: {
+            list: [
+              { title: "Featured Work Strip (Marquee)", value: "featuredWorkStrip" },
+              { title: "Case Studies (Featured Case Studies)", value: "caseStudies" },
+              { title: "Teardowns (Featured Teardowns)", value: "teardowns" },
+              { title: "How I Work (Process Steps)", value: "howIWork" },
+              { title: "Testimonials (Endorsements)", value: "testimonials" },
+              { title: "Learning Path", value: "learningTrack" },
+            ],
+          },
+        },
+      ],
+      description: "Click 'Add item' to select sections and drag to reorder them on the homepage. Hero remains fixed at the top.",
     }),
   ],
 });

@@ -50,7 +50,7 @@ export default async function HomePage() {
   // 3. Teardowns (teardowns)
   // 4. How I Work (howIWork)
   // 5. Testimonials (testimonials)
-  // 6. Learning Track (learningTrack)
+  // 6. Learning Path (learningTrack)
   const defaultOrder = [
     "featuredWorkStrip",
     "caseStudies",
@@ -104,7 +104,7 @@ export default async function HomePage() {
               </div>
               <Link
                 href="/case-studies"
-                className="mt-4 md:mt-0 inline-flex items-center gap-1.5 text-xs font-bold text-accent-teal hover:underline"
+                className="mt-4 md:mt-0 inline-flex items-center gap-1.5 text-xs font-bold text-accent-teal hover:underline transition-colors duration-200"
               >
                 Explore all case studies <ArrowUpRight size={14} />
               </Link>
@@ -113,8 +113,7 @@ export default async function HomePage() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
               {/* Main Featured Case Study */}
               {featuredCaseStudy && (
-                <div className="lg:col-span-7 group rounded-3xl overflow-hidden glass-panel border-card-border/60 hover:border-accent-teal/40 hover:-translate-y-1 hover:shadow-2xl transition-all duration-500 flex flex-col justify-between p-6 sm:p-8 relative">
-                  <div className="absolute top-0 right-0 w-48 h-48 rounded-full blur-3xl bg-accent-teal/5 pointer-events-none"></div>
+                <div className="lg:col-span-7 group rounded-3xl overflow-hidden glass-panel border-card-border/60 hover:border-accent-teal/40 hover:-translate-y-0.5 transition-all duration-300 ease-out flex flex-col justify-between p-6 sm:p-8 relative">
                   <div>
                     <div className="flex flex-wrap gap-2 items-center mb-4">
                       <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-accent-teal text-background">
@@ -132,7 +131,7 @@ export default async function HomePage() {
                       )}
                     </div>
 
-                    <h3 className="text-2xl sm:text-3xl font-extrabold text-foreground group-hover:text-accent-teal transition-colors mb-3 leading-snug">
+                    <h3 className="text-2xl sm:text-3xl font-extrabold text-foreground group-hover:text-accent-teal transition-colors duration-200 mb-3 leading-snug">
                       {featuredCaseStudy.title}
                     </h3>
 
@@ -170,7 +169,7 @@ export default async function HomePage() {
 
                     <Link
                       href={`/case-studies/${featuredCaseStudy.slug}`}
-                      className="inline-flex items-center gap-2 text-xs font-extrabold text-accent-cyan hover:text-accent-teal transition-colors group-hover:translate-x-1 duration-300"
+                      className="inline-flex items-center gap-2 text-xs font-extrabold text-accent-cyan hover:text-accent-teal transition-colors duration-200"
                     >
                       Read Full Case Study <ArrowUpRight size={14} />
                     </Link>
@@ -180,7 +179,7 @@ export default async function HomePage() {
 
               {/* Secondary Featured Case Study */}
               {otherCaseStudy && (
-                <div className="lg:col-span-5 group rounded-3xl overflow-hidden glass-panel border-card-border/60 hover:border-accent-teal/40 hover:-translate-y-1 hover:shadow-2xl transition-all duration-500 flex flex-col justify-between p-6 sm:p-8 relative">
+                <div className="lg:col-span-5 group rounded-3xl overflow-hidden glass-panel border-card-border/60 hover:border-accent-teal/40 hover:-translate-y-0.5 transition-all duration-300 ease-out flex flex-col justify-between p-6 sm:p-8 relative">
                   <div>
                     <div className="flex flex-wrap gap-2 items-center mb-4">
                       {otherCaseStudy.badgeLabel && (
@@ -195,7 +194,7 @@ export default async function HomePage() {
                       )}
                     </div>
 
-                    <h3 className="text-xl sm:text-2xl font-extrabold text-foreground group-hover:text-accent-teal transition-colors mb-3 leading-snug">
+                    <h3 className="text-xl sm:text-2xl font-extrabold text-foreground group-hover:text-accent-teal transition-colors duration-200 mb-3 leading-snug">
                       {otherCaseStudy.title}
                     </h3>
 
@@ -220,7 +219,7 @@ export default async function HomePage() {
 
                   <Link
                     href={`/case-studies/${otherCaseStudy.slug}`}
-                    className="inline-flex items-center gap-2 text-xs font-extrabold text-accent-cyan hover:text-accent-teal transition-colors group-hover:translate-x-1 duration-300"
+                    className="inline-flex items-center gap-2 text-xs font-extrabold text-accent-cyan hover:text-accent-teal transition-colors duration-200"
                   >
                     Read Case Study <ArrowUpRight size={14} />
                   </Link>
@@ -240,7 +239,7 @@ export default async function HomePage() {
               </div>
               <Link
                 href="/teardowns"
-                className="mt-4 md:mt-0 inline-flex items-center gap-1.5 text-xs font-bold text-accent-teal hover:underline"
+                className="mt-4 md:mt-0 inline-flex items-center gap-1.5 text-xs font-bold text-accent-teal hover:underline transition-colors duration-200"
               >
                 View all teardowns <ArrowUpRight size={14} />
               </Link>
@@ -251,14 +250,14 @@ export default async function HomePage() {
                 <Link
                   key={teardown.slug || idx}
                   href={`/teardowns/${teardown.slug}`}
-                  className="group rounded-2xl p-6 glass-panel border-card-border/60 hover:border-accent-teal/40 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
+                  className="group rounded-2xl p-6 glass-panel border-card-border/60 hover:border-accent-teal/40 hover:-translate-y-0.5 transition-all duration-300 ease-out flex flex-col justify-between"
                 >
                   <div>
                     <div className="flex items-center justify-between text-[11px] font-mono text-foreground/50 mb-3">
                       {teardown.category && <span className="px-2 py-0.5 rounded-md bg-card-border/30 text-foreground/80 font-bold">{teardown.category}</span>}
                       {teardown.readTime && <span>{teardown.readTime}</span>}
                     </div>
-                    <h3 className="text-lg font-bold text-foreground group-hover:text-accent-teal transition-colors mb-2 leading-snug">
+                    <h3 className="text-lg font-bold text-foreground group-hover:text-accent-teal transition-colors duration-200 mb-2 leading-snug">
                       {teardown.title}
                     </h3>
                     {teardown.summary && (
@@ -267,9 +266,9 @@ export default async function HomePage() {
                       </p>
                     )}
                   </div>
-                  <div className="flex items-center justify-between pt-4 border-t border-card-border/30 text-xs font-semibold text-accent-teal group-hover:text-accent-cyan">
+                  <div className="flex items-center justify-between pt-4 border-t border-card-border/30 text-xs font-semibold text-accent-teal group-hover:text-accent-cyan transition-colors duration-200">
                     <span>Explore Teardown</span>
-                    <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                    <ArrowUpRight size={14} />
                   </div>
                 </Link>
               ))}
@@ -289,11 +288,11 @@ export default async function HomePage() {
               {processSteps.map((step, idx) => (
                 <div
                   key={idx}
-                  className="p-6 rounded-2xl glass-panel border-card-border/60 bg-card/30 flex flex-col justify-between hover:border-accent-teal/40 transition-all duration-300 group"
+                  className="p-6 rounded-2xl glass-panel border-card-border/60 bg-card/30 flex flex-col justify-between hover:border-accent-teal/40 transition-all duration-300 ease-out group"
                 >
                   <div>
                     <div className="flex items-center justify-between mb-4">
-                      <span className="text-2xl font-black font-mono text-accent-teal/60 group-hover:text-accent-teal transition-colors">
+                      <span className="text-2xl font-black font-mono text-accent-teal/60 group-hover:text-accent-teal transition-colors duration-200">
                         {step.number || `0${idx + 1}`}
                       </span>
                       {step.icon && (
@@ -336,7 +335,7 @@ export default async function HomePage() {
               {testimonials.map((item, idx) => (
                 <div
                   key={idx}
-                  className="p-8 rounded-3xl glass-panel border-card-border/60 bg-card/30 flex flex-col justify-between relative hover:border-accent-teal/40 transition-all duration-300"
+                  className="p-8 rounded-3xl glass-panel border-card-border/60 bg-card/30 flex flex-col justify-between relative hover:border-accent-teal/40 transition-all duration-300 ease-out"
                 >
                   <div className="mb-6">
                     {item.quote && (
@@ -383,7 +382,7 @@ export default async function HomePage() {
                         href={item.linkedinUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-xs font-bold text-accent-teal hover:underline flex items-center gap-1"
+                        className="text-xs font-bold text-accent-teal hover:underline flex items-center gap-1 transition-colors duration-200"
                       >
                         LinkedIn <ArrowUpRight size={12} />
                       </a>
@@ -400,14 +399,14 @@ export default async function HomePage() {
           <section key="learningTrack" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
             <div className="mb-10">
               <span className="text-xs uppercase tracking-widest text-accent-teal font-extrabold">Continuous Evolution</span>
-              <h2 className="text-3xl sm:text-4xl font-extrabold mt-2 tracking-tight">AI &amp; Engineering Learning Track</h2>
+              <h2 className="text-3xl sm:text-4xl font-extrabold mt-2 tracking-tight">Learning Path</h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {learningTrack.map((item, idx) => (
                 <div
                   key={idx}
-                  className="p-6 rounded-2xl glass-panel border-card-border/60 bg-card/30 flex flex-col justify-between hover:border-accent-teal/40 transition-all duration-300"
+                  className="p-6 rounded-2xl glass-panel border-card-border/60 bg-card/30 flex flex-col justify-between hover:border-accent-teal/40 transition-all duration-300 ease-out"
                 >
                   <div>
                     {(item.provider || item.status) && (
@@ -458,10 +457,6 @@ export default async function HomePage() {
 
   return (
     <div className="flex flex-col min-h-screen relative overflow-hidden bg-background text-foreground transition-colors duration-300">
-      {/* Background glow effects */}
-      <div className="absolute top-[10%] left-[-10%] w-[350px] sm:w-[500px] h-[350px] sm:h-[500px] rounded-full blur-[100px] glow-bg opacity-40 z-0"></div>
-      <div className="absolute top-[40%] right-[-10%] w-[300px] sm:w-[450px] h-[300px] sm:h-[450px] rounded-full blur-[120px] glow-bg opacity-30 z-0"></div>
-
       <Navbar
         navTitleText={siteSettings.navTitleText}
         navLogoUrl={siteSettings.navLogoUrl}
@@ -483,7 +478,7 @@ export default async function HomePage() {
                 <div className="flex flex-wrap items-center gap-2.5 mb-6">
                   {availabilityBadge && (
                     <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold glass-panel text-accent-teal border-accent-teal/20 shadow-sm">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                      <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
                       {availabilityBadge}
                     </div>
                   )}
@@ -532,35 +527,54 @@ export default async function HomePage() {
                 </div>
               )}
 
-              {/* CTAs */}
+              {/* CTAs (Dynamic from homeData.ctaButtons if populated) */}
               <div className="flex flex-wrap gap-4 w-full sm:w-auto">
-                <Link
-                  href="/case-studies/resumegenie-ai-agent"
-                  className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-gradient-to-r from-accent-teal to-accent-cyan text-background font-extrabold text-sm flex items-center justify-center gap-2 shadow-lg shadow-accent-teal/20 hover:shadow-accent-teal/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
-                >
-                  <Brain size={18} />
-                  Explore ResumeGenie AI Case Study
-                </Link>
-                <Link
-                  href="/teardowns"
-                  className="w-full sm:w-auto px-7 py-3.5 rounded-xl glass-panel text-foreground font-bold text-sm flex items-center justify-center gap-2 border-card-border hover:border-accent-teal/50 hover:bg-foreground/5 transition-all duration-300"
-                >
-                  <Compass size={18} className="text-accent-teal" />
-                  View All Teardowns
-                </Link>
+                {Array.isArray(homeData.ctaButtons) && homeData.ctaButtons.length > 0 ? (
+                  homeData.ctaButtons.map((btn, idx) => (
+                    <Link
+                      key={idx}
+                      href={btn.url || "#"}
+                      className={
+                        idx === 0
+                          ? "w-full sm:w-auto px-7 py-3.5 rounded-xl bg-gradient-to-r from-accent-teal to-accent-cyan text-background font-extrabold text-sm flex items-center justify-center gap-2 shadow-sm hover:shadow-md transition-all duration-300 ease-out"
+                          : "w-full sm:w-auto px-7 py-3.5 rounded-xl glass-panel text-foreground font-bold text-sm flex items-center justify-center gap-2 border-card-border hover:border-accent-teal/50 hover:bg-foreground/5 transition-all duration-300 ease-out"
+                      }
+                    >
+                      {idx === 0 && <Brain size={18} />}
+                      {idx === 1 && <Compass size={18} className="text-accent-teal" />}
+                      {btn.label}
+                    </Link>
+                  ))
+                ) : (
+                  <>
+                    <Link
+                      href="/case-studies/resumegenie-ai-agent"
+                      className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-gradient-to-r from-accent-teal to-accent-cyan text-background font-extrabold text-sm flex items-center justify-center gap-2 shadow-sm hover:shadow-md transition-all duration-300 ease-out"
+                    >
+                      <Brain size={18} />
+                      Explore ResumeGenie AI Case Study
+                    </Link>
+                    <Link
+                      href="/teardowns"
+                      className="w-full sm:w-auto px-7 py-3.5 rounded-xl glass-panel text-foreground font-bold text-sm flex items-center justify-center gap-2 border-card-border hover:border-accent-teal/50 hover:bg-foreground/5 transition-all duration-300 ease-out"
+                    >
+                      <Compass size={18} className="text-accent-teal" />
+                      View All Teardowns
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
 
             {/* Photo / Image Column */}
             {heroImageUrl && (
               <div className={`lg:col-span-5 flex justify-center ${heroImagePosition === "left" ? "lg:order-1 lg:justify-start" : "lg:order-2 lg:justify-end"}`}>
-                <div className="relative w-full max-w-md aspect-[4/5] rounded-3xl overflow-hidden glass-panel border-card-border/80 p-2 shadow-2xl group">
-                  <div className="absolute inset-0 bg-gradient-to-tr from-accent-teal/20 via-transparent to-accent-cyan/10 opacity-50 group-hover:opacity-80 transition-opacity duration-500"></div>
+                <div className="relative w-full max-w-md aspect-[4/5] rounded-3xl overflow-hidden glass-panel border-card-border/80 p-2 shadow-xl group">
                   <div className="w-full h-full rounded-2xl overflow-hidden relative">
                     <img
                       src={heroImageUrl}
                       alt={heroImageAlt}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                      className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500 ease-out"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent"></div>
                   </div>
@@ -584,7 +598,7 @@ export default async function HomePage() {
             </p>
             <Link
               href="/contact"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-accent-teal text-background font-extrabold text-sm shadow-lg shadow-accent-teal/20 hover:bg-accent-cyan hover:scale-[1.02] active:scale-[0.98] transition-all"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-accent-teal text-background font-extrabold text-sm shadow-sm hover:bg-accent-cyan hover:shadow-md transition-all duration-300 ease-out"
             >
               Get in Touch with Chiagoziem
             </Link>
