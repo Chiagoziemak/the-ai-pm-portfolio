@@ -64,14 +64,12 @@ export default async function SingleCaseStudyPage({ params }: PageProps) {
         </header>
 
         {/* Cover Image */}
-        <div className="w-full h-[400px] md:h-[614px] relative mb-20 overflow-hidden bg-gradient-to-br from-[#1a1f4e] via-[#0a0c1f] to-[#13140f] flex items-center justify-center">
-          {study.coverImage ? (
+        {study.coverImage && (
+          <div className="w-full h-[400px] md:h-[614px] relative mb-20 overflow-hidden bg-gradient-to-br from-[#1a1f4e] via-[#0a0c1f] to-[#13140f] flex items-center justify-center">
             <img src={study.coverImage} alt={study.title} className="absolute inset-0 w-full h-full object-cover" />
-          ) : (
-            <span className="text-[#47f0f4]/10 text-[300px]">✦</span>
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0c1f] via-transparent to-transparent"></div>
-        </div>
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0a0c1f] via-transparent to-transparent"></div>
+          </div>
+        )}
 
         {/* Article Layout */}
         <div className="max-w-[1280px] mx-auto px-5 md:px-16 grid grid-cols-1 lg:grid-cols-12 gap-12">

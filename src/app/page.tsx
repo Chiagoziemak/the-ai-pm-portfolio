@@ -1,12 +1,11 @@
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { getTeardowns, getCaseStudies, getHomePageData, getSiteSettings } from "@/sanity/queries";
 import { urlForImage } from "@/sanity/image";
 import { mockTeardowns, mockCaseStudies } from "@/data/mockData";
-import { ArrowUpRight, Award, Brain, Compass, Sparkles, BookOpen, Layers, CheckCircle2, MessageSquareQuote } from "lucide-react";
+import { ArrowUpRight, Brain, Compass } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -69,36 +68,44 @@ export default async function HomePage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
             
             {/* Text Content */}
-            <div className={`lg:col-span-7 flex flex-col items-start text-left ${heroImagePosition === "left" ? "lg:order-2" : "lg:order-1"}`}>
+            <div className={`${heroImageUrl ? "lg:col-span-7" : "lg:col-span-12"} flex flex-col items-start text-left ${heroImageUrl && heroImagePosition === "left" ? "lg:order-2" : "lg:order-1"}`}>
               {/* Badge & Floating Tag Chips */}
-              <div className="flex flex-wrap items-center gap-2.5 mb-6">
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold glass-panel text-accent-teal border-accent-teal/20 shadow-sm">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                  {availabilityBadge}
-                </div>
+              {(availabilityBadge || heroTagChips.length > 0) && (
+                <div className="flex flex-wrap items-center gap-2.5 mb-6">
+                  {availabilityBadge && (
+                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold glass-panel text-accent-teal border-accent-teal/20 shadow-sm">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                      {availabilityBadge}
+                    </div>
+                  )}
 
-                {heroTagChips.map((chip, idx) => (
-                  <span
-                    key={idx}
-                    className="px-3 py-1 rounded-full text-xs font-mono tracking-wider glass-panel text-accent-cyan border-accent-cyan/30 bg-accent-cyan/10"
-                  >
-                    ✦ {chip}
-                  </span>
-                ))}
-              </div>
+                  {heroTagChips.map((chip, idx) => (
+                    <span
+                      key={idx}
+                      className="px-3 py-1 rounded-full text-xs font-mono tracking-wider glass-panel text-accent-cyan border-accent-cyan/30 bg-accent-cyan/10"
+                    >
+                      ✦ {chip}
+                    </span>
+                  ))}
+                </div>
+              )}
 
               {/* Name & Title */}
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
                 {heroHeading}
               </h1>
-              <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-accent-cyan via-accent-teal to-teal-400 bg-clip-text text-transparent mt-3 mb-6">
-                {heroSubheading}
-              </h2>
+              {heroSubheading && (
+                <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-accent-cyan via-accent-teal to-teal-400 bg-clip-text text-transparent mt-3 mb-6">
+                  {heroSubheading}
+                </h2>
+              )}
 
               {/* Bio */}
-              <p className="text-base sm:text-lg text-foreground/80 max-w-xl leading-relaxed mb-6">
-                {introText}
-              </p>
+              {introText && (
+                <p className="text-base sm:text-lg text-foreground/80 max-w-xl leading-relaxed mb-6">
+                  {introText}
+                </p>
+              )}
 
               {/* Current Stack List */}
               {currentStack.length > 0 && (
@@ -135,11 +142,11 @@ export default async function HomePage() {
               </div>
             </div>
 
-            {/* Photo / Image Column */}
-            <div className={`lg:col-span-5 flex justify-center ${heroImagePosition === "left" ? "lg:order-1 lg:justify-start" : "lg:order-2 lg:justify-end"}`}>
-              <div className="relative w-full max-w-md aspect-[4/5] rounded-3xl overflow-hidden glass-panel border-card-border/80 p-2 shadow-2xl group">
-                <div className="absolute inset-0 bg-gradient-to-tr from-accent-teal/20 via-transparent to-accent-cyan/10 opacity-50 group-hover:opacity-80 transition-opacity duration-500"></div>
-                {heroImageUrl ? (
+            {/* Photo / Image Column (Renders strictly if heroImageUrl is present) */}
+            {heroImageUrl && (
+              <div className={`lg:col-span-5 flex justify-center ${heroImagePosition === "left" ? "lg:order-1 lg:justify-start" : "lg:order-2 lg:justify-end"}`}>
+                <div className="relative w-full max-w-md aspect-[4/5] rounded-3xl overflow-hidden glass-panel border-card-border/80 p-2 shadow-2xl group">
+                  <div className="absolute inset-0 bg-gradient-to-tr from-accent-teal/20 via-transparent to-accent-cyan/10 opacity-50 group-hover:opacity-80 transition-opacity duration-500"></div>
                   <div className="w-full h-full rounded-2xl overflow-hidden relative">
                     <img
                       src={heroImageUrl}
@@ -148,20 +155,9 @@ export default async function HomePage() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent"></div>
                   </div>
-                ) : (
-                  <div className="w-full h-full rounded-2xl bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 flex flex-col items-center justify-center relative overflow-hidden text-center p-6 border border-white/5">
-                    <div className="w-24 h-24 rounded-full bg-accent-teal/10 border border-accent-teal/30 flex items-center justify-center mb-4 shadow-inner">
-                      <Sparkles className="w-10 h-10 text-accent-teal animate-pulse" />
-                    </div>
-                    <span className="text-lg font-bold text-foreground">Chiagoziem Melvin Akobundu</span>
-                    <span className="text-xs text-accent-teal font-mono mt-1">CSPO® | CSM® | AI PM</span>
-                    <div className="mt-4 px-3 py-1 rounded-full text-[11px] font-mono glass-panel border-card-border text-foreground/60">
-                      Photo placeholder — blend enabled
-                    </div>
-                  </div>
-                )}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </section>
 
@@ -211,18 +207,22 @@ export default async function HomePage() {
                         {featuredCaseStudy.badgeLabel}
                       </span>
                     )}
-                    <span className="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider glass-panel text-foreground/80 border-card-border">
-                      {featuredCaseStudy.category}
-                    </span>
+                    {featuredCaseStudy.category && (
+                      <span className="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider glass-panel text-foreground/80 border-card-border">
+                        {featuredCaseStudy.category}
+                      </span>
+                    )}
                   </div>
 
                   <h3 className="text-2xl sm:text-3xl font-extrabold text-foreground group-hover:text-accent-teal transition-colors mb-3 leading-snug">
                     {featuredCaseStudy.title}
                   </h3>
 
-                  <p className="text-sm sm:text-base text-foreground/70 leading-relaxed mb-6">
-                    {featuredCaseStudy.summary}
-                  </p>
+                  {featuredCaseStudy.summary && (
+                    <p className="text-sm sm:text-base text-foreground/70 leading-relaxed mb-6">
+                      {featuredCaseStudy.summary}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -270,18 +270,22 @@ export default async function HomePage() {
                         {otherCaseStudy.badgeLabel}
                       </span>
                     )}
-                    <span className="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider glass-panel text-foreground/80 border-card-border">
-                      {otherCaseStudy.category}
-                    </span>
+                    {otherCaseStudy.category && (
+                      <span className="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider glass-panel text-foreground/80 border-card-border">
+                        {otherCaseStudy.category}
+                      </span>
+                    )}
                   </div>
 
                   <h3 className="text-xl sm:text-2xl font-extrabold text-foreground group-hover:text-accent-teal transition-colors mb-3 leading-snug">
                     {otherCaseStudy.title}
                   </h3>
 
-                  <p className="text-sm text-foreground/70 leading-relaxed mb-6">
-                    {otherCaseStudy.summary}
-                  </p>
+                  {otherCaseStudy.summary && (
+                    <p className="text-sm text-foreground/70 leading-relaxed mb-6">
+                      {otherCaseStudy.summary}
+                    </p>
+                  )}
                 </div>
 
                 {/* Card Stat-Pair Blocks if present */}
@@ -333,7 +337,7 @@ export default async function HomePage() {
                       )}
                     </div>
                     <h3 className="text-lg font-bold text-foreground mb-2">{step.title}</h3>
-                    <p className="text-xs sm:text-sm text-foreground/75 leading-relaxed mb-4">{step.description}</p>
+                    {step.description && <p className="text-xs sm:text-sm text-foreground/75 leading-relaxed mb-4">{step.description}</p>}
                   </div>
 
                   {Array.isArray(step.deliverables) && step.deliverables.length > 0 && (
@@ -369,18 +373,20 @@ export default async function HomePage() {
                   className="p-6 rounded-2xl glass-panel border-card-border/60 bg-card/30 flex flex-col justify-between hover:border-accent-teal/40 transition-all duration-300"
                 >
                   <div>
-                    <div className="flex items-center justify-between gap-2 mb-3">
-                      {item.provider && (
-                        <span className="text-xs font-mono text-accent-cyan tracking-wider font-semibold">
-                          {item.provider}
-                        </span>
-                      )}
-                      {item.status && (
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-accent-teal/15 text-accent-teal border border-accent-teal/30">
-                          {item.status}
-                        </span>
-                      )}
-                    </div>
+                    {(item.provider || item.status) && (
+                      <div className="flex items-center justify-between gap-2 mb-3">
+                        {item.provider && (
+                          <span className="text-xs font-mono text-accent-cyan tracking-wider font-semibold">
+                            {item.provider}
+                          </span>
+                        )}
+                        {item.status && (
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-accent-teal/15 text-accent-teal border border-accent-teal/30">
+                            {item.status}
+                          </span>
+                        )}
+                      </div>
+                    )}
 
                     <h3 className="text-lg font-bold text-foreground mb-2 leading-snug">
                       {item.title}
@@ -409,47 +415,51 @@ export default async function HomePage() {
         )}
 
         {/* STRATEGIC TEARDOWNS GRID */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mb-16">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
-            <div>
-              <span className="text-xs uppercase tracking-widest text-accent-teal font-extrabold">Product Deconstruction</span>
-              <h2 className="text-3xl sm:text-4xl font-extrabold mt-2 tracking-tight">Strategic Product Teardowns</h2>
-            </div>
-            <Link
-              href="/teardowns"
-              className="mt-4 md:mt-0 inline-flex items-center gap-1.5 text-xs font-bold text-accent-teal hover:underline"
-            >
-              View all 6 teardowns <ArrowUpRight size={14} />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {featuredTeardowns.map((teardown, idx) => (
+        {featuredTeardowns.length > 0 && (
+          <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mb-16">
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
+              <div>
+                <span className="text-xs uppercase tracking-widest text-accent-teal font-extrabold">Product Deconstruction</span>
+                <h2 className="text-3xl sm:text-4xl font-extrabold mt-2 tracking-tight">Strategic Product Teardowns</h2>
+              </div>
               <Link
-                key={teardown.slug || idx}
-                href={`/teardowns/${teardown.slug}`}
-                className="group rounded-2xl p-6 glass-panel border-card-border/60 hover:border-accent-teal/40 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
+                href="/teardowns"
+                className="mt-4 md:mt-0 inline-flex items-center gap-1.5 text-xs font-bold text-accent-teal hover:underline"
               >
-                <div>
-                  <div className="flex items-center justify-between text-[11px] font-mono text-foreground/50 mb-3">
-                    <span className="px-2 py-0.5 rounded-md bg-card-border/30 text-foreground/80 font-bold">{teardown.category}</span>
-                    <span>{teardown.readTime}</span>
-                  </div>
-                  <h3 className="text-lg font-bold text-foreground group-hover:text-accent-teal transition-colors mb-2 leading-snug">
-                    {teardown.title}
-                  </h3>
-                  <p className="text-xs text-foreground/70 line-clamp-3 leading-relaxed mb-4">
-                    {teardown.summary}
-                  </p>
-                </div>
-                <div className="flex items-center justify-between pt-4 border-t border-card-border/30 text-xs font-semibold text-accent-teal group-hover:text-accent-cyan">
-                  <span>Explore Teardown</span>
-                  <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                </div>
+                View all teardowns <ArrowUpRight size={14} />
               </Link>
-            ))}
-          </div>
-        </section>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {featuredTeardowns.map((teardown, idx) => (
+                <Link
+                  key={teardown.slug || idx}
+                  href={`/teardowns/${teardown.slug}`}
+                  className="group rounded-2xl p-6 glass-panel border-card-border/60 hover:border-accent-teal/40 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex items-center justify-between text-[11px] font-mono text-foreground/50 mb-3">
+                      {teardown.category && <span className="px-2 py-0.5 rounded-md bg-card-border/30 text-foreground/80 font-bold">{teardown.category}</span>}
+                      {teardown.readTime && <span>{teardown.readTime}</span>}
+                    </div>
+                    <h3 className="text-lg font-bold text-foreground group-hover:text-accent-teal transition-colors mb-2 leading-snug">
+                      {teardown.title}
+                    </h3>
+                    {teardown.summary && (
+                      <p className="text-xs text-foreground/70 line-clamp-3 leading-relaxed mb-4">
+                        {teardown.summary}
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-between pt-4 border-t border-card-border/30 text-xs font-semibold text-accent-teal group-hover:text-accent-cyan">
+                    <span>Explore Teardown</span>
+                    <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* TESTIMONIALS SECTION */}
         {testimonials.length > 0 && (
@@ -466,9 +476,11 @@ export default async function HomePage() {
                   className="p-8 rounded-3xl glass-panel border-card-border/60 bg-card/30 flex flex-col justify-between relative hover:border-accent-teal/40 transition-all duration-300"
                 >
                   <div className="mb-6">
-                    <p className="text-base text-foreground/90 italic leading-relaxed mb-4">
-                      "{item.quote}"
-                    </p>
+                    {item.quote && (
+                      <p className="text-base text-foreground/90 italic leading-relaxed mb-4">
+                        "{item.quote}"
+                      </p>
+                    )}
                     {item.context && (
                       <span className="inline-block text-xs font-mono text-accent-teal bg-accent-teal/10 border border-accent-teal/20 px-3 py-1 rounded-full">
                         {item.context}
@@ -485,12 +497,14 @@ export default async function HomePage() {
                           className="w-10 h-10 rounded-full object-cover border border-card-border"
                         />
                       ) : (
-                        <div className="w-10 h-10 rounded-full bg-accent-teal/20 border border-accent-teal/40 flex items-center justify-center font-bold text-accent-teal text-sm">
-                          {item.authorName.charAt(0)}
-                        </div>
+                        item.authorName && (
+                          <div className="w-10 h-10 rounded-full bg-accent-teal/20 border border-accent-teal/40 flex items-center justify-center font-bold text-accent-teal text-sm">
+                            {item.authorName.charAt(0)}
+                          </div>
+                        )
                       )}
                       <div>
-                        <h4 className="text-sm font-bold text-foreground">{item.authorName}</h4>
+                        {item.authorName && <h4 className="text-sm font-bold text-foreground">{item.authorName}</h4>}
                         {(item.authorRole || item.authorCompany) && (
                           <p className="text-xs text-foreground/60">
                             {item.authorRole}

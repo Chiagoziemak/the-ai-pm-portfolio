@@ -29,9 +29,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Fetch siteSettings to get destination contactEmail (fallback: hello@chiagoziem.ai)
+    // Fetch siteSettings to get destination contactEmail (fallback: melvynmatthews19@gmail.com)
     const siteSettings = await getSiteSettings();
-    const destinationEmail = siteSettings.contactEmail || "hello@chiagoziem.ai";
+    const destinationEmail = siteSettings.contactEmail || "melvynmatthews19@gmail.com";
 
     const resendApiKey = process.env.RESEND_API_KEY;
     let emailSent = false;

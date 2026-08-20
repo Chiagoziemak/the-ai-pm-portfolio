@@ -85,7 +85,7 @@ export default function ContactPage() {
             {/* Contact Links */}
             <div className="space-y-6">
               <a
-                href="mailto:hello@chiagoziem.ai"
+                href="mailto:melvynmatthews19@gmail.com"
                 className="flex items-center gap-4 group cursor-pointer"
               >
                 <div className="w-12 h-12 rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl flex items-center justify-center text-[#47f0f4] group-hover:bg-[#47f0f4]/10 transition-colors text-lg">
@@ -96,7 +96,7 @@ export default function ContactPage() {
                     Direct Email
                   </p>
                   <span className="text-[#e4e2db] font-semibold hover:text-[#47f0f4] transition-colors">
-                    hello@chiagoziem.ai
+                    melvynmatthews19@gmail.com
                   </span>
                 </div>
               </a>
@@ -238,20 +238,7 @@ export default function ContactPage() {
                 </form>
               )}
             </div>
-
-            {/* Decorative placeholders */}
-            <div className="mt-8 grid grid-cols-3 gap-4">
-              {[1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className="h-24 rounded-2xl overflow-hidden grayscale hover:grayscale-0 transition-all duration-700 bg-gradient-to-br from-[#1a1f4e] via-[#0a0c1f] to-[#13140f] flex items-center justify-center"
-                >
-                  <span className="text-[#47f0f4]/20 text-4xl">&#10022;</span>
-                </div>
-              ))}
-            </div>
           </div>
-
         </div>
       </main>
 

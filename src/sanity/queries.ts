@@ -109,7 +109,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
       siteTitle: "Chiagoziem Melvin Akobundu | AI Product Manager Portfolio",
       metaDescription: "Experienced SaaS Product Manager & Certified Scrum Master transitioning to AI Product Management and AI Engineering.",
       location: "Lagos, Nigeria",
-      contactEmail: "hello@chiagoziem.ai",
+      contactEmail: "melvynmatthews19@gmail.com",
       socialLinks: {
         linkedin: "https://www.linkedin.com/in/chiagoziem-melvin-akobundu-cspo%E2%93%A1-b546b4206",
         github: "https://github.com/Chiagoziemak",
@@ -136,12 +136,12 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     );
     if (!res) {
       console.warn("[Sanity Fallback] Site settings document 'siteSettings' not found in Sanity. Using fallback values.");
-      return { contactEmail: "hello@chiagoziem.ai", location: "Lagos, Nigeria" };
+      return { contactEmail: "melvynmatthews19@gmail.com", location: "Lagos, Nigeria" };
     }
     return res;
   } catch (error) {
     console.error("Error fetching site settings from Sanity:", error);
-    return { contactEmail: "hello@chiagoziem.ai", location: "Lagos, Nigeria" };
+    return { contactEmail: "melvynmatthews19@gmail.com", location: "Lagos, Nigeria" };
   }
 }
 

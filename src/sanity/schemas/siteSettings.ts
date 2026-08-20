@@ -73,7 +73,7 @@ export default defineType({
       name: "contactEmail",
       title: "Contact Form Destination Email",
       type: "string",
-      description: "Submissions from the contact form will be emailed here (fallback: hello@chiagoziem.ai)",
+      description: "Submissions from the contact form will be emailed here (fallback: melvynmatthews19@gmail.com)",
     }),
   ],
 });

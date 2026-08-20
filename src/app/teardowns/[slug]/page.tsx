@@ -64,18 +64,14 @@ export default async function SingleTeardownPage({ params }: PageProps) {
         </header>
 
         {/* Hero Image */}
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
-          <div className="relative w-full aspect-[21/9] rounded-2xl overflow-hidden glass-panel border border-card-border shadow-xl">
-            {teardown.coverImage ? (
+        {teardown.coverImage && (
+          <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+            <div className="relative w-full aspect-[21/9] rounded-2xl overflow-hidden glass-panel border border-card-border shadow-xl">
               <img src={teardown.coverImage} alt={teardown.title} className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 flex items-center justify-center">
-                <span className="text-accent-teal/20 text-9xl">✦</span>
-              </div>
-            )}
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-40"></div>
-          </div>
-        </section>
+              <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-40"></div>
+            </div>
+          </section>
+        )}
 
         {/* Article Content Container */}
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
