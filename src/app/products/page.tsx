@@ -1,6 +1,7 @@
 import React from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import DynamicIcon from "@/components/DynamicIcon";
 import Link from "next/link";
 import { getProducts, getSiteSettings } from "@/sanity/queries";
 import { mockProducts } from "@/data/mockData";
@@ -128,8 +129,8 @@ export default async function ProductsPage() {
                 )}
                 <div className="relative z-10 h-full flex flex-col">
                   <div className="flex items-center justify-between mb-8">
-                    <div className="w-12 h-12 rounded-lg bg-[#1a1f4e] flex items-center justify-center border border-[#bec2fc]/20">
-                      <span className="text-[#bec2fc] text-2xl">{product.icon || "⬡"}</span>
+                    <div className="w-12 h-12 rounded-lg bg-[#1a1f4e] flex items-center justify-center border border-[#bec2fc]/20 text-[#bec2fc]">
+                      <DynamicIcon name={product.icon} size={22} />
                     </div>
                     <span className="text-xs text-[#91909a] uppercase tracking-widest font-mono">
                       {product.status}

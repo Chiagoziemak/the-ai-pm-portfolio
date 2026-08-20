@@ -7,6 +7,8 @@ import { urlForImage } from "@/sanity/image";
 import { mockTeardowns, mockCaseStudies } from "@/data/mockData";
 import { ArrowUpRight, Brain, Compass } from "lucide-react";
 
+import DynamicIcon from "@/components/DynamicIcon";
+
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
@@ -296,9 +298,9 @@ export default async function HomePage() {
                         {step.number || `0${idx + 1}`}
                       </span>
                       {step.icon && (
-                        <span className="text-xs font-mono text-foreground/50 px-2 py-0.5 rounded bg-card-border/30">
-                          {step.icon}
-                        </span>
+                        <div className="p-2 rounded-lg bg-card-border/30 text-accent-teal flex items-center justify-center">
+                          <DynamicIcon name={step.icon} size={18} />
+                        </div>
                       )}
                     </div>
                     <h3 className="text-lg font-bold text-foreground mb-2">{step.title}</h3>
