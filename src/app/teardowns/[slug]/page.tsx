@@ -196,29 +196,29 @@ export default async function SingleTeardownPage({ params }: PageProps) {
 
           {/* Key Pain Point Cards (Structured Section) */}
           {painPoints.length > 0 && (
-            <section className="my-12 p-6 sm:p-8 rounded-2xl glass-panel border border-amber-500/30 bg-amber-500/5">
-              <h2 className="text-xl sm:text-2xl font-extrabold mb-6 text-amber-500 flex items-center gap-2">
+            <section className="my-12 p-6 sm:p-8 rounded-2xl glass-panel border border-amber-600/40 dark:border-amber-500/30 bg-amber-500/10 dark:bg-amber-500/10">
+              <h2 className="text-xl sm:text-2xl font-extrabold mb-6 text-amber-700 dark:text-amber-400 flex items-center gap-2">
                 ⚠️ Key Pain Points
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {painPoints.map((point, idx) => (
                   <div
                     key={idx}
-                    className="p-5 rounded-xl border border-amber-500/20 bg-background/50 flex flex-col justify-between"
+                    className="p-5 rounded-xl border border-amber-600/30 dark:border-amber-500/30 bg-background/90 dark:bg-background/60 flex flex-col justify-between"
                   >
                     <div>
                       <div className="flex items-center justify-between mb-2">
                         <h3 className="text-base font-bold text-foreground">{point.title}</h3>
                         {point.severity && (
-                          <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 font-bold">
+                          <span className="text-[10px] font-mono uppercase tracking-wider px-2.5 py-0.5 rounded bg-amber-600/15 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 font-bold border border-amber-600/30 dark:border-amber-500/30">
                             {point.severity}
                           </span>
                         )}
                       </div>
-                      <p className="text-xs sm:text-sm text-foreground/80 leading-relaxed mb-3">{point.description}</p>
+                      <p className="text-xs sm:text-sm text-foreground/90 dark:text-foreground/80 leading-relaxed mb-3">{point.description}</p>
                     </div>
                     {point.evidence && (
-                      <div className="pt-3 border-t border-amber-500/20 text-xs text-amber-300/80 italic">
+                      <div className="pt-3 border-t border-amber-600/20 dark:border-amber-500/20 text-xs text-amber-800 dark:text-amber-300 font-medium italic">
                         Evidence: {point.evidence}
                       </div>
                     )}
@@ -230,14 +230,14 @@ export default async function SingleTeardownPage({ params }: PageProps) {
 
           {/* Legacy Key Pain Points string list (if present and painPoints cards empty) */}
           {keyPainPoints.length > 0 && painPoints.length === 0 && (
-            <section className="my-12 p-6 sm:p-8 rounded-2xl glass-panel border border-amber-500/30 bg-amber-500/5">
-              <h2 className="text-xl font-bold mb-4 text-amber-500 flex items-center gap-2">
+            <section className="my-12 p-6 sm:p-8 rounded-2xl glass-panel border border-amber-600/40 dark:border-amber-500/30 bg-amber-500/10 dark:bg-amber-500/10">
+              <h2 className="text-xl font-bold mb-4 text-amber-700 dark:text-amber-400 flex items-center gap-2">
                 ⚠️ Key User Pain Points
               </h2>
               <ul className="space-y-3">
                 {keyPainPoints.map((point, idx) => (
                   <li key={idx} className="flex items-start gap-3 text-sm sm:text-base text-foreground/90">
-                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 mt-2 flex-shrink-0"></span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-600 dark:bg-amber-500 mt-2 flex-shrink-0"></span>
                     <span>{point}</span>
                   </li>
                 ))}
