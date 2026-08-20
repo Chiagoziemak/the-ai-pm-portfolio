@@ -23,7 +23,14 @@ export default async function CaseStudiesPage() {
       <div className="absolute top-[10%] left-[-10%] w-[350px] sm:w-[500px] h-[350px] sm:h-[500px] rounded-full blur-[100px] glow-bg opacity-30 z-0"></div>
       <div className="absolute bottom-[20%] right-[-10%] w-[300px] sm:w-[450px] h-[300px] sm:h-[450px] rounded-full blur-[120px] glow-bg opacity-20 z-0"></div>
 
-      <Navbar />
+      <Navbar
+        navTitleText={siteSettings.navTitleText}
+        navLogoUrl={siteSettings.navLogoUrl}
+        navLinks={siteSettings.navLinks}
+        navCtaLabel={siteSettings.navCtaLabel}
+        navCtaUrl={siteSettings.navCtaUrl}
+        resumeUrl={siteSettings.resumeUrl}
+      />
 
       <main className="flex-grow z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12">
         {/* Page Header */}
@@ -189,7 +196,12 @@ export default async function CaseStudiesPage() {
         )}
       </main>
 
-      <Footer location={siteSettings.location} socialLinks={siteSettings.socialLinks} footerText={siteSettings.footerText} />
+      <Footer
+        location={siteSettings.location}
+        socialLinks={siteSettings.socialLinks}
+        footerText={siteSettings.footerText}
+        footerLinks={siteSettings.footerLinks}
+      />
     </div>
   );
 }

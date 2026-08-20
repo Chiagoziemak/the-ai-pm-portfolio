@@ -2,7 +2,7 @@ import React from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Link from "next/link";
-import { getProducts } from "@/sanity/queries";
+import { getProducts, getSiteSettings } from "@/sanity/queries";
 import { mockProducts } from "@/data/mockData";
 
 export const dynamic = "force-dynamic";
@@ -10,6 +10,7 @@ export const revalidate = 0;
 
 export default async function ProductsPage() {
   const data = await getProducts();
+  const siteSettings = (await getSiteSettings()) || {};
   const products = Array.isArray(data) && data.length > 0 ? data : mockProducts;
 
   // featured product is usually "In Development" (like ResumeGenie)
@@ -18,7 +19,14 @@ export default async function ProductsPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0c1f] text-[#e4e2db]">
-      <Navbar />
+      <Navbar
+        navTitleText={siteSettings.navTitleText}
+        navLogoUrl={siteSettings.navLogoUrl}
+        navLinks={siteSettings.navLinks}
+        navCtaLabel={siteSettings.navCtaLabel}
+        navCtaUrl={siteSettings.navCtaUrl}
+        resumeUrl={siteSettings.resumeUrl}
+      />
       <main className="pt-32 pb-24 px-5 md:px-16 max-w-[1280px] mx-auto">
         
         {/* Header */}
@@ -175,7 +183,12 @@ export default async function ProductsPage() {
         </section>
 
       </main>
-      <Footer />
+      <Footer
+        location={siteSettings.location}
+        socialLinks={siteSettings.socialLinks}
+        footerText={siteSettings.footerText}
+        footerLinks={siteSettings.footerLinks}
+      />
     </div>
   );
 }

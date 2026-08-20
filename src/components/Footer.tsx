@@ -9,9 +9,10 @@ interface FooterProps {
     twitter?: string;
   };
   footerText?: string;
+  footerLinks?: { label: string; url: string }[];
 }
 
-export default function Footer({ location = "Lagos, Nigeria", socialLinks, footerText }: FooterProps) {
+export default function Footer({ location = "Lagos, Nigeria", socialLinks, footerText, footerLinks }: FooterProps) {
   const currentYear = new Date().getFullYear();
 
   const linkedin = socialLinks?.linkedin || "https://www.linkedin.com/in/chiagoziem-melvin-akobundu-cspo%E2%93%A1-b546b4206";
@@ -28,7 +29,7 @@ export default function Footer({ location = "Lagos, Nigeria", socialLinks, foote
               Chiagoziem Melvin Akobundu
             </Link>
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 text-xs text-foreground/60 mt-1">
-              <span>AI Product Manager & Engineer</span>
+              <span>AI Product Manager &amp; Engineer</span>
               <span>•</span>
               <span className="text-accent-teal font-medium flex items-center gap-1">
                 📍 {location}
@@ -36,32 +37,54 @@ export default function Footer({ location = "Lagos, Nigeria", socialLinks, foote
             </div>
           </div>
 
-          {/* Social Links */}
-          <div className="flex items-center space-x-6 text-sm">
-            <a
-              href={linkedin}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-foreground/75 hover:text-accent-teal transition-colors font-medium"
-            >
-              LinkedIn
-            </a>
-            <a
-              href={github}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-foreground/75 hover:text-accent-teal transition-colors font-medium"
-            >
-              GitHub
-            </a>
-            <a
-              href={twitter}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-foreground/75 hover:text-accent-teal transition-colors font-medium"
-            >
-              Twitter
-            </a>
+          {/* Social Links & Custom Footer Links */}
+          <div className="flex flex-wrap items-center justify-center gap-6 text-sm">
+            {Array.isArray(footerLinks) && footerLinks.length > 0 ? (
+              footerLinks.map((link, idx) => (
+                <a
+                  key={idx}
+                  href={link.url}
+                  target={link.url.startsWith("http") ? "_blank" : undefined}
+                  rel={link.url.startsWith("http") ? "noopener noreferrer" : undefined}
+                  className="text-foreground/75 hover:text-accent-teal transition-colors font-medium"
+                >
+                  {link.label}
+                </a>
+              ))
+            ) : (
+              <>
+                {linkedin && (
+                  <a
+                    href={linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-foreground/75 hover:text-accent-teal transition-colors font-medium"
+                  >
+                    LinkedIn
+                  </a>
+                )}
+                {github && (
+                  <a
+                    href={github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-foreground/75 hover:text-accent-teal transition-colors font-medium"
+                  >
+                    GitHub
+                  </a>
+                )}
+                {twitter && (
+                  <a
+                    href={twitter}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-foreground/75 hover:text-accent-teal transition-colors font-medium"
+                  >
+                    Twitter
+                  </a>
+                )}
+              </>
+            )}
           </div>
 
           {/* Copyright / Footer Text */}

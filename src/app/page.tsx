@@ -44,7 +44,27 @@ export default async function HomePage() {
   const processSteps = Array.isArray(homeData.processSteps) ? homeData.processSteps : [];
   const testimonials = Array.isArray(homeData.testimonials) ? homeData.testimonials : [];
 
-  // Marquee items: combination of products and teardowns
+  // Default section order sequence:
+  // 1. Featured Work Strip (featuredWorkStrip)
+  // 2. Case Studies (caseStudies)
+  // 3. Teardowns (teardowns)
+  // 4. How I Work (howIWork)
+  // 5. Testimonials (testimonials)
+  // 6. Learning Track (learningTrack)
+  const defaultOrder = [
+    "featuredWorkStrip",
+    "caseStudies",
+    "teardowns",
+    "howIWork",
+    "testimonials",
+    "learningTrack",
+  ];
+
+  const orderToUse = (Array.isArray(homeData.sectionOrder) && homeData.sectionOrder.length > 0)
+    ? homeData.sectionOrder
+    : defaultOrder;
+
+  // Marquee items
   const marqueeItems = [
     { title: "ResumeGenie AI Agent", desc: "AI Autopilot", color: "from-cyan-500/20 to-teal-500/20" },
     { title: "Netflix Localization & Pricing", desc: "Teardown", color: "from-red-500/20 to-pink-500/20" },
@@ -54,16 +74,405 @@ export default async function HomePage() {
     { title: "WhatsApp Media & Status Controls", desc: "Teardown", color: "from-emerald-500/20 to-teal-500/20" },
   ];
 
+  const renderSectionByKey = (key: string) => {
+    switch (key) {
+      case "featuredWorkStrip":
+        return (
+          <section key="featuredWorkStrip" className="w-full border-y border-card-border/40 py-4 bg-background/50 backdrop-blur-md overflow-hidden relative my-6">
+            <div className="flex w-max gap-8 animate-marquee">
+              {[...marqueeItems, ...marqueeItems].map((item, index) => (
+                <div
+                  key={index}
+                  className="flex items-center gap-3 px-4 py-2 rounded-xl glass-panel border-card-border/50 text-xs font-semibold whitespace-nowrap"
+                >
+                  <span className={`w-2 h-2 rounded-full bg-gradient-to-r ${item.color}`}></span>
+                  <span className="text-foreground">{item.title}</span>
+                  <span className="text-foreground/40 font-mono text-[10px] uppercase">[{item.desc}]</span>
+                </div>
+              ))}
+            </div>
+          </section>
+        );
+
+      case "caseStudies":
+        return (featuredCaseStudy || otherCaseStudy) ? (
+          <section key="caseStudies" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
+              <div>
+                <span className="text-xs uppercase tracking-widest text-accent-teal font-extrabold">Deep Dives &amp; Work</span>
+                <h2 className="text-3xl sm:text-4xl font-extrabold mt-2 tracking-tight">Featured Case Studies</h2>
+              </div>
+              <Link
+                href="/case-studies"
+                className="mt-4 md:mt-0 inline-flex items-center gap-1.5 text-xs font-bold text-accent-teal hover:underline"
+              >
+                Explore all case studies <ArrowUpRight size={14} />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              {/* Main Featured Case Study */}
+              {featuredCaseStudy && (
+                <div className="lg:col-span-7 group rounded-3xl overflow-hidden glass-panel border-card-border/60 hover:border-accent-teal/40 hover:-translate-y-1 hover:shadow-2xl transition-all duration-500 flex flex-col justify-between p-6 sm:p-8 relative">
+                  <div className="absolute top-0 right-0 w-48 h-48 rounded-full blur-3xl bg-accent-teal/5 pointer-events-none"></div>
+                  <div>
+                    <div className="flex flex-wrap gap-2 items-center mb-4">
+                      <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-accent-teal text-background">
+                        Featured AI Product
+                      </span>
+                      {featuredCaseStudy.badgeLabel && (
+                        <span className="px-3 py-1 rounded-full text-[10px] font-mono tracking-wider bg-accent-cyan/20 text-accent-cyan border border-accent-cyan/30">
+                          {featuredCaseStudy.badgeLabel}
+                        </span>
+                      )}
+                      {featuredCaseStudy.category && (
+                        <span className="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider glass-panel text-foreground/80 border-card-border">
+                          {featuredCaseStudy.category}
+                        </span>
+                      )}
+                    </div>
+
+                    <h3 className="text-2xl sm:text-3xl font-extrabold text-foreground group-hover:text-accent-teal transition-colors mb-3 leading-snug">
+                      {featuredCaseStudy.title}
+                    </h3>
+
+                    {featuredCaseStudy.summary && (
+                      <p className="text-sm sm:text-base text-foreground/70 leading-relaxed mb-6">
+                        {featuredCaseStudy.summary}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    {/* Card Stat-Pair Blocks if present */}
+                    {Array.isArray(featuredCaseStudy.cardStats) && featuredCaseStudy.cardStats.length > 0 ? (
+                      <div className="mb-6 grid grid-cols-2 gap-3">
+                        {featuredCaseStudy.cardStats.map((stat, i) => (
+                          <div key={i} className="p-3.5 rounded-xl bg-accent-teal/10 border border-accent-teal/20 text-center">
+                            <span className="block text-xl font-extrabold text-accent-teal">{stat.value}</span>
+                            <span className="text-[10px] font-mono text-foreground/70 uppercase">{stat.label}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      /* Fallback to results preview */
+                      Array.isArray(featuredCaseStudy.results) && featuredCaseStudy.results.length > 0 && (
+                        <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          {featuredCaseStudy.results.slice(0, 2).map((res, i) => (
+                            <div key={i} className="px-3 py-2 rounded-xl bg-card-border/20 border border-card-border/30 text-xs text-foreground/80 font-medium flex items-center gap-2">
+                              <span className="w-1.5 h-1.5 rounded-full bg-accent-teal flex-shrink-0"></span>
+                              <span className="truncate">{res}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )
+                    )}
+
+                    <Link
+                      href={`/case-studies/${featuredCaseStudy.slug}`}
+                      className="inline-flex items-center gap-2 text-xs font-extrabold text-accent-cyan hover:text-accent-teal transition-colors group-hover:translate-x-1 duration-300"
+                    >
+                      Read Full Case Study <ArrowUpRight size={14} />
+                    </Link>
+                  </div>
+                </div>
+              )}
+
+              {/* Secondary Featured Case Study */}
+              {otherCaseStudy && (
+                <div className="lg:col-span-5 group rounded-3xl overflow-hidden glass-panel border-card-border/60 hover:border-accent-teal/40 hover:-translate-y-1 hover:shadow-2xl transition-all duration-500 flex flex-col justify-between p-6 sm:p-8 relative">
+                  <div>
+                    <div className="flex flex-wrap gap-2 items-center mb-4">
+                      {otherCaseStudy.badgeLabel && (
+                        <span className="px-3 py-1 rounded-full text-[10px] font-mono tracking-wider bg-accent-cyan/20 text-accent-cyan border border-accent-cyan/30">
+                          {otherCaseStudy.badgeLabel}
+                        </span>
+                      )}
+                      {otherCaseStudy.category && (
+                        <span className="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider glass-panel text-foreground/80 border-card-border">
+                          {otherCaseStudy.category}
+                        </span>
+                      )}
+                    </div>
+
+                    <h3 className="text-xl sm:text-2xl font-extrabold text-foreground group-hover:text-accent-teal transition-colors mb-3 leading-snug">
+                      {otherCaseStudy.title}
+                    </h3>
+
+                    {otherCaseStudy.summary && (
+                      <p className="text-sm text-foreground/70 leading-relaxed mb-6">
+                        {otherCaseStudy.summary}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Card Stat-Pair Blocks if present */}
+                  {Array.isArray(otherCaseStudy.cardStats) && otherCaseStudy.cardStats.length > 0 && (
+                    <div className="mb-6 grid grid-cols-2 gap-3">
+                      {otherCaseStudy.cardStats.map((stat, i) => (
+                        <div key={i} className="p-3.5 rounded-xl bg-accent-teal/10 border border-accent-teal/20 text-center">
+                          <span className="block text-xl font-extrabold text-accent-teal">{stat.value}</span>
+                          <span className="text-[10px] font-mono text-foreground/70 uppercase">{stat.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <Link
+                    href={`/case-studies/${otherCaseStudy.slug}`}
+                    className="inline-flex items-center gap-2 text-xs font-extrabold text-accent-cyan hover:text-accent-teal transition-colors group-hover:translate-x-1 duration-300"
+                  >
+                    Read Case Study <ArrowUpRight size={14} />
+                  </Link>
+                </div>
+              )}
+            </div>
+          </section>
+        ) : null;
+
+      case "teardowns":
+        return featuredTeardowns.length > 0 ? (
+          <section key="teardowns" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
+              <div>
+                <span className="text-xs uppercase tracking-widest text-accent-teal font-extrabold">Product Deconstruction</span>
+                <h2 className="text-3xl sm:text-4xl font-extrabold mt-2 tracking-tight">Strategic Product Teardowns</h2>
+              </div>
+              <Link
+                href="/teardowns"
+                className="mt-4 md:mt-0 inline-flex items-center gap-1.5 text-xs font-bold text-accent-teal hover:underline"
+              >
+                View all teardowns <ArrowUpRight size={14} />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {featuredTeardowns.map((teardown, idx) => (
+                <Link
+                  key={teardown.slug || idx}
+                  href={`/teardowns/${teardown.slug}`}
+                  className="group rounded-2xl p-6 glass-panel border-card-border/60 hover:border-accent-teal/40 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex items-center justify-between text-[11px] font-mono text-foreground/50 mb-3">
+                      {teardown.category && <span className="px-2 py-0.5 rounded-md bg-card-border/30 text-foreground/80 font-bold">{teardown.category}</span>}
+                      {teardown.readTime && <span>{teardown.readTime}</span>}
+                    </div>
+                    <h3 className="text-lg font-bold text-foreground group-hover:text-accent-teal transition-colors mb-2 leading-snug">
+                      {teardown.title}
+                    </h3>
+                    {teardown.summary && (
+                      <p className="text-xs text-foreground/70 line-clamp-3 leading-relaxed mb-4">
+                        {teardown.summary}
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-between pt-4 border-t border-card-border/30 text-xs font-semibold text-accent-teal group-hover:text-accent-cyan">
+                    <span>Explore Teardown</span>
+                    <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        ) : null;
+
+      case "howIWork":
+        return processSteps.length > 0 ? (
+          <section key="howIWork" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div className="mb-10">
+              <span className="text-xs uppercase tracking-widest text-accent-teal font-extrabold">Operating Framework</span>
+              <h2 className="text-3xl sm:text-4xl font-extrabold mt-2 tracking-tight">How I Work</h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {processSteps.map((step, idx) => (
+                <div
+                  key={idx}
+                  className="p-6 rounded-2xl glass-panel border-card-border/60 bg-card/30 flex flex-col justify-between hover:border-accent-teal/40 transition-all duration-300 group"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-2xl font-black font-mono text-accent-teal/60 group-hover:text-accent-teal transition-colors">
+                        {step.number || `0${idx + 1}`}
+                      </span>
+                      {step.icon && (
+                        <span className="text-xs font-mono text-foreground/50 px-2 py-0.5 rounded bg-card-border/30">
+                          {step.icon}
+                        </span>
+                      )}
+                    </div>
+                    <h3 className="text-lg font-bold text-foreground mb-2">{step.title}</h3>
+                    {step.description && <p className="text-xs sm:text-sm text-foreground/75 leading-relaxed mb-4">{step.description}</p>}
+                  </div>
+
+                  {Array.isArray(step.deliverables) && step.deliverables.length > 0 && (
+                    <div className="pt-4 border-t border-card-border/30">
+                      <span className="text-[10px] font-mono uppercase text-accent-teal/80 font-bold block mb-1.5">Deliverables</span>
+                      <div className="flex flex-wrap gap-1">
+                        {step.deliverables.map((del, dIdx) => (
+                          <span key={dIdx} className="text-[10px] font-mono px-2 py-0.5 rounded bg-card-border/30 text-foreground/70">
+                            {del}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : null;
+
+      case "testimonials":
+        return testimonials.length > 0 ? (
+          <section key="testimonials" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div className="mb-10">
+              <span className="text-xs uppercase tracking-widest text-accent-teal font-extrabold">Endorsements</span>
+              <h2 className="text-3xl sm:text-4xl font-extrabold mt-2 tracking-tight">Testimonials</h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {testimonials.map((item, idx) => (
+                <div
+                  key={idx}
+                  className="p-8 rounded-3xl glass-panel border-card-border/60 bg-card/30 flex flex-col justify-between relative hover:border-accent-teal/40 transition-all duration-300"
+                >
+                  <div className="mb-6">
+                    {item.quote && (
+                      <p className="text-base text-foreground/90 italic leading-relaxed mb-4">
+                        "{item.quote}"
+                      </p>
+                    )}
+                    {item.context && (
+                      <span className="inline-block text-xs font-mono text-accent-teal bg-accent-teal/10 border border-accent-teal/20 px-3 py-1 rounded-full">
+                        {item.context}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex items-center justify-between pt-4 border-t border-card-border/30">
+                    <div className="flex items-center gap-3">
+                      {item.authorPhotoUrl ? (
+                        <img
+                          src={item.authorPhotoUrl}
+                          alt={item.authorName}
+                          className="w-10 h-10 rounded-full object-cover border border-card-border"
+                        />
+                      ) : (
+                        item.authorName && (
+                          <div className="w-10 h-10 rounded-full bg-accent-teal/20 border border-accent-teal/40 flex items-center justify-center font-bold text-accent-teal text-sm">
+                            {item.authorName.charAt(0)}
+                          </div>
+                        )
+                      )}
+                      <div>
+                        {item.authorName && <h4 className="text-sm font-bold text-foreground">{item.authorName}</h4>}
+                        {(item.authorRole || item.authorCompany) && (
+                          <p className="text-xs text-foreground/60">
+                            {item.authorRole}
+                            {item.authorRole && item.authorCompany ? " • " : ""}
+                            {item.authorCompany}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    {item.linkedinUrl && (
+                      <a
+                        href={item.linkedinUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs font-bold text-accent-teal hover:underline flex items-center gap-1"
+                      >
+                        LinkedIn <ArrowUpRight size={12} />
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : null;
+
+      case "learningTrack":
+        return learningTrack.length > 0 ? (
+          <section key="learningTrack" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div className="mb-10">
+              <span className="text-xs uppercase tracking-widest text-accent-teal font-extrabold">Continuous Evolution</span>
+              <h2 className="text-3xl sm:text-4xl font-extrabold mt-2 tracking-tight">AI &amp; Engineering Learning Track</h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {learningTrack.map((item, idx) => (
+                <div
+                  key={idx}
+                  className="p-6 rounded-2xl glass-panel border-card-border/60 bg-card/30 flex flex-col justify-between hover:border-accent-teal/40 transition-all duration-300"
+                >
+                  <div>
+                    {(item.provider || item.status) && (
+                      <div className="flex items-center justify-between gap-2 mb-3">
+                        {item.provider && (
+                          <span className="text-xs font-mono text-accent-cyan tracking-wider font-semibold">
+                            {item.provider}
+                          </span>
+                        )}
+                        {item.status && (
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-accent-teal/15 text-accent-teal border border-accent-teal/30">
+                            {item.status}
+                          </span>
+                        )}
+                      </div>
+                    )}
+
+                    <h3 className="text-lg font-bold text-foreground mb-2 leading-snug">
+                      {item.title}
+                    </h3>
+
+                    {item.description && (
+                      <p className="text-xs sm:text-sm text-foreground/75 leading-relaxed mb-4">
+                        {item.description}
+                      </p>
+                    )}
+                  </div>
+
+                  {Array.isArray(item.tags) && item.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 pt-4 border-t border-card-border/30">
+                      {item.tags.map((tag, tIdx) => (
+                        <span key={tIdx} className="text-[10px] font-mono px-2 py-0.5 rounded bg-card-border/30 text-foreground/70">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : null;
+
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-screen relative overflow-hidden bg-background text-foreground transition-colors duration-300">
       {/* Background glow effects */}
       <div className="absolute top-[10%] left-[-10%] w-[350px] sm:w-[500px] h-[350px] sm:h-[500px] rounded-full blur-[100px] glow-bg opacity-40 z-0"></div>
       <div className="absolute top-[40%] right-[-10%] w-[300px] sm:w-[450px] h-[300px] sm:h-[450px] rounded-full blur-[120px] glow-bg opacity-30 z-0"></div>
 
-      <Navbar />
+      <Navbar
+        navTitleText={siteSettings.navTitleText}
+        navLogoUrl={siteSettings.navLogoUrl}
+        navLinks={siteSettings.navLinks}
+        navCtaLabel={siteSettings.navCtaLabel}
+        navCtaUrl={siteSettings.navCtaUrl}
+        resumeUrl={siteSettings.resumeUrl}
+      />
 
       <main className="flex-grow z-10">
-        {/* HERO SECTION */}
+        {/* HERO SECTION (Fixed at top) */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 lg:py-24">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
             
@@ -142,7 +551,7 @@ export default async function HomePage() {
               </div>
             </div>
 
-            {/* Photo / Image Column (Renders strictly if heroImageUrl is present) */}
+            {/* Photo / Image Column */}
             {heroImageUrl && (
               <div className={`lg:col-span-5 flex justify-center ${heroImagePosition === "left" ? "lg:order-1 lg:justify-start" : "lg:order-2 lg:justify-end"}`}>
                 <div className="relative w-full max-w-md aspect-[4/5] rounded-3xl overflow-hidden glass-panel border-card-border/80 p-2 shadow-2xl group">
@@ -161,376 +570,8 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* MARQUEE HIGHLIGHTS */}
-        <section className="w-full border-y border-card-border/40 py-4 bg-background/50 backdrop-blur-md overflow-hidden relative">
-          <div className="flex w-max gap-8 animate-marquee">
-            {[...marqueeItems, ...marqueeItems].map((item, index) => (
-              <div
-                key={index}
-                className="flex items-center gap-3 px-4 py-2 rounded-xl glass-panel border-card-border/50 text-xs font-semibold whitespace-nowrap"
-              >
-                <span className={`w-2 h-2 rounded-full bg-gradient-to-r ${item.color}`}></span>
-                <span className="text-foreground">{item.title}</span>
-                <span className="text-foreground/40 font-mono text-[10px] uppercase">[{item.desc}]</span>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* FEATURED CASE STUDIES SECTION */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
-            <div>
-              <span className="text-xs uppercase tracking-widest text-accent-teal font-extrabold">Deep Dives &amp; Work</span>
-              <h2 className="text-3xl sm:text-4xl font-extrabold mt-2 tracking-tight">Featured Case Studies</h2>
-            </div>
-            <Link
-              href="/case-studies"
-              className="mt-4 md:mt-0 inline-flex items-center gap-1.5 text-xs font-bold text-accent-teal hover:underline"
-            >
-              Explore all case studies <ArrowUpRight size={14} />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            {/* Main Featured Case Study */}
-            {featuredCaseStudy && (
-              <div className="lg:col-span-7 group rounded-3xl overflow-hidden glass-panel border-card-border/60 hover:border-accent-teal/40 hover:-translate-y-1 hover:shadow-2xl transition-all duration-500 flex flex-col justify-between p-6 sm:p-8 relative">
-                <div className="absolute top-0 right-0 w-48 h-48 rounded-full blur-3xl bg-accent-teal/5 pointer-events-none"></div>
-                <div>
-                  <div className="flex flex-wrap gap-2 items-center mb-4">
-                    <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-accent-teal text-background">
-                      Featured AI Product
-                    </span>
-                    {featuredCaseStudy.badgeLabel && (
-                      <span className="px-3 py-1 rounded-full text-[10px] font-mono tracking-wider bg-accent-cyan/20 text-accent-cyan border border-accent-cyan/30">
-                        {featuredCaseStudy.badgeLabel}
-                      </span>
-                    )}
-                    {featuredCaseStudy.category && (
-                      <span className="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider glass-panel text-foreground/80 border-card-border">
-                        {featuredCaseStudy.category}
-                      </span>
-                    )}
-                  </div>
-
-                  <h3 className="text-2xl sm:text-3xl font-extrabold text-foreground group-hover:text-accent-teal transition-colors mb-3 leading-snug">
-                    {featuredCaseStudy.title}
-                  </h3>
-
-                  {featuredCaseStudy.summary && (
-                    <p className="text-sm sm:text-base text-foreground/70 leading-relaxed mb-6">
-                      {featuredCaseStudy.summary}
-                    </p>
-                  )}
-                </div>
-
-                <div>
-                  {/* Card Stat-Pair Blocks if present */}
-                  {Array.isArray(featuredCaseStudy.cardStats) && featuredCaseStudy.cardStats.length > 0 ? (
-                    <div className="mb-6 grid grid-cols-2 gap-3">
-                      {featuredCaseStudy.cardStats.map((stat, i) => (
-                        <div key={i} className="p-3.5 rounded-xl bg-accent-teal/10 border border-accent-teal/20 text-center">
-                          <span className="block text-xl font-extrabold text-accent-teal">{stat.value}</span>
-                          <span className="text-[10px] font-mono text-foreground/70 uppercase">{stat.label}</span>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    /* Fallback to results preview */
-                    Array.isArray(featuredCaseStudy.results) && featuredCaseStudy.results.length > 0 && (
-                      <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        {featuredCaseStudy.results.slice(0, 2).map((res, i) => (
-                          <div key={i} className="px-3 py-2 rounded-xl bg-card-border/20 border border-card-border/30 text-xs text-foreground/80 font-medium flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-accent-teal flex-shrink-0"></span>
-                            <span className="truncate">{res}</span>
-                          </div>
-                        ))}
-                      </div>
-                    )
-                  )}
-
-                  <Link
-                    href={`/case-studies/${featuredCaseStudy.slug}`}
-                    className="inline-flex items-center gap-2 text-xs font-extrabold text-accent-cyan hover:text-accent-teal transition-colors group-hover:translate-x-1 duration-300"
-                  >
-                    Read Full Case Study <ArrowUpRight size={14} />
-                  </Link>
-                </div>
-              </div>
-            )}
-
-            {/* Secondary Featured Case Study */}
-            {otherCaseStudy && (
-              <div className="lg:col-span-5 group rounded-3xl overflow-hidden glass-panel border-card-border/60 hover:border-accent-teal/40 hover:-translate-y-1 hover:shadow-2xl transition-all duration-500 flex flex-col justify-between p-6 sm:p-8 relative">
-                <div>
-                  <div className="flex flex-wrap gap-2 items-center mb-4">
-                    {otherCaseStudy.badgeLabel && (
-                      <span className="px-3 py-1 rounded-full text-[10px] font-mono tracking-wider bg-accent-cyan/20 text-accent-cyan border border-accent-cyan/30">
-                        {otherCaseStudy.badgeLabel}
-                      </span>
-                    )}
-                    {otherCaseStudy.category && (
-                      <span className="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider glass-panel text-foreground/80 border-card-border">
-                        {otherCaseStudy.category}
-                      </span>
-                    )}
-                  </div>
-
-                  <h3 className="text-xl sm:text-2xl font-extrabold text-foreground group-hover:text-accent-teal transition-colors mb-3 leading-snug">
-                    {otherCaseStudy.title}
-                  </h3>
-
-                  {otherCaseStudy.summary && (
-                    <p className="text-sm text-foreground/70 leading-relaxed mb-6">
-                      {otherCaseStudy.summary}
-                    </p>
-                  )}
-                </div>
-
-                {/* Card Stat-Pair Blocks if present */}
-                {Array.isArray(otherCaseStudy.cardStats) && otherCaseStudy.cardStats.length > 0 && (
-                  <div className="mb-6 grid grid-cols-2 gap-3">
-                    {otherCaseStudy.cardStats.map((stat, i) => (
-                      <div key={i} className="p-3.5 rounded-xl bg-accent-teal/10 border border-accent-teal/20 text-center">
-                        <span className="block text-xl font-extrabold text-accent-teal">{stat.value}</span>
-                        <span className="text-[10px] font-mono text-foreground/70 uppercase">{stat.label}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                <Link
-                  href={`/case-studies/${otherCaseStudy.slug}`}
-                  className="inline-flex items-center gap-2 text-xs font-extrabold text-accent-cyan hover:text-accent-teal transition-colors group-hover:translate-x-1 duration-300"
-                >
-                  Read Case Study <ArrowUpRight size={14} />
-                </Link>
-              </div>
-            )}
-          </div>
-        </section>
-
-        {/* HOW I WORK (PROCESS STEPS) SECTION */}
-        {processSteps.length > 0 && (
-          <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mb-16">
-            <div className="mb-10">
-              <span className="text-xs uppercase tracking-widest text-accent-teal font-extrabold">Operating Framework</span>
-              <h2 className="text-3xl sm:text-4xl font-extrabold mt-2 tracking-tight">How I Work</h2>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {processSteps.map((step, idx) => (
-                <div
-                  key={idx}
-                  className="p-6 rounded-2xl glass-panel border-card-border/60 bg-card/30 flex flex-col justify-between hover:border-accent-teal/40 transition-all duration-300 group"
-                >
-                  <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <span className="text-2xl font-black font-mono text-accent-teal/60 group-hover:text-accent-teal transition-colors">
-                        {step.number || `0${idx + 1}`}
-                      </span>
-                      {step.icon && (
-                        <span className="text-xs font-mono text-foreground/50 px-2 py-0.5 rounded bg-card-border/30">
-                          {step.icon}
-                        </span>
-                      )}
-                    </div>
-                    <h3 className="text-lg font-bold text-foreground mb-2">{step.title}</h3>
-                    {step.description && <p className="text-xs sm:text-sm text-foreground/75 leading-relaxed mb-4">{step.description}</p>}
-                  </div>
-
-                  {Array.isArray(step.deliverables) && step.deliverables.length > 0 && (
-                    <div className="pt-4 border-t border-card-border/30">
-                      <span className="text-[10px] font-mono uppercase text-accent-teal/80 font-bold block mb-1.5">Deliverables</span>
-                      <div className="flex flex-wrap gap-1">
-                        {step.deliverables.map((del, dIdx) => (
-                          <span key={dIdx} className="text-[10px] font-mono px-2 py-0.5 rounded bg-card-border/30 text-foreground/70">
-                            {del}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* LEARNING / TRANSITION TRACK SECTION */}
-        {learningTrack.length > 0 && (
-          <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mb-16">
-            <div className="mb-10">
-              <span className="text-xs uppercase tracking-widest text-accent-teal font-extrabold">Continuous Evolution</span>
-              <h2 className="text-3xl sm:text-4xl font-extrabold mt-2 tracking-tight">AI &amp; Engineering Learning Track</h2>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {learningTrack.map((item, idx) => (
-                <div
-                  key={idx}
-                  className="p-6 rounded-2xl glass-panel border-card-border/60 bg-card/30 flex flex-col justify-between hover:border-accent-teal/40 transition-all duration-300"
-                >
-                  <div>
-                    {(item.provider || item.status) && (
-                      <div className="flex items-center justify-between gap-2 mb-3">
-                        {item.provider && (
-                          <span className="text-xs font-mono text-accent-cyan tracking-wider font-semibold">
-                            {item.provider}
-                          </span>
-                        )}
-                        {item.status && (
-                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-accent-teal/15 text-accent-teal border border-accent-teal/30">
-                            {item.status}
-                          </span>
-                        )}
-                      </div>
-                    )}
-
-                    <h3 className="text-lg font-bold text-foreground mb-2 leading-snug">
-                      {item.title}
-                    </h3>
-
-                    {item.description && (
-                      <p className="text-xs sm:text-sm text-foreground/75 leading-relaxed mb-4">
-                        {item.description}
-                      </p>
-                    )}
-                  </div>
-
-                  {Array.isArray(item.tags) && item.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 pt-4 border-t border-card-border/30">
-                      {item.tags.map((tag, tIdx) => (
-                        <span key={tIdx} className="text-[10px] font-mono px-2 py-0.5 rounded bg-card-border/30 text-foreground/70">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* STRATEGIC TEARDOWNS GRID */}
-        {featuredTeardowns.length > 0 && (
-          <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mb-16">
-            <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
-              <div>
-                <span className="text-xs uppercase tracking-widest text-accent-teal font-extrabold">Product Deconstruction</span>
-                <h2 className="text-3xl sm:text-4xl font-extrabold mt-2 tracking-tight">Strategic Product Teardowns</h2>
-              </div>
-              <Link
-                href="/teardowns"
-                className="mt-4 md:mt-0 inline-flex items-center gap-1.5 text-xs font-bold text-accent-teal hover:underline"
-              >
-                View all teardowns <ArrowUpRight size={14} />
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {featuredTeardowns.map((teardown, idx) => (
-                <Link
-                  key={teardown.slug || idx}
-                  href={`/teardowns/${teardown.slug}`}
-                  className="group rounded-2xl p-6 glass-panel border-card-border/60 hover:border-accent-teal/40 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
-                >
-                  <div>
-                    <div className="flex items-center justify-between text-[11px] font-mono text-foreground/50 mb-3">
-                      {teardown.category && <span className="px-2 py-0.5 rounded-md bg-card-border/30 text-foreground/80 font-bold">{teardown.category}</span>}
-                      {teardown.readTime && <span>{teardown.readTime}</span>}
-                    </div>
-                    <h3 className="text-lg font-bold text-foreground group-hover:text-accent-teal transition-colors mb-2 leading-snug">
-                      {teardown.title}
-                    </h3>
-                    {teardown.summary && (
-                      <p className="text-xs text-foreground/70 line-clamp-3 leading-relaxed mb-4">
-                        {teardown.summary}
-                      </p>
-                    )}
-                  </div>
-                  <div className="flex items-center justify-between pt-4 border-t border-card-border/30 text-xs font-semibold text-accent-teal group-hover:text-accent-cyan">
-                    <span>Explore Teardown</span>
-                    <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* TESTIMONIALS SECTION */}
-        {testimonials.length > 0 && (
-          <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mb-16">
-            <div className="mb-10">
-              <span className="text-xs uppercase tracking-widest text-accent-teal font-extrabold">Endorsements</span>
-              <h2 className="text-3xl sm:text-4xl font-extrabold mt-2 tracking-tight">Testimonials</h2>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {testimonials.map((item, idx) => (
-                <div
-                  key={idx}
-                  className="p-8 rounded-3xl glass-panel border-card-border/60 bg-card/30 flex flex-col justify-between relative hover:border-accent-teal/40 transition-all duration-300"
-                >
-                  <div className="mb-6">
-                    {item.quote && (
-                      <p className="text-base text-foreground/90 italic leading-relaxed mb-4">
-                        "{item.quote}"
-                      </p>
-                    )}
-                    {item.context && (
-                      <span className="inline-block text-xs font-mono text-accent-teal bg-accent-teal/10 border border-accent-teal/20 px-3 py-1 rounded-full">
-                        {item.context}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="flex items-center justify-between pt-4 border-t border-card-border/30">
-                    <div className="flex items-center gap-3">
-                      {item.authorPhotoUrl ? (
-                        <img
-                          src={item.authorPhotoUrl}
-                          alt={item.authorName}
-                          className="w-10 h-10 rounded-full object-cover border border-card-border"
-                        />
-                      ) : (
-                        item.authorName && (
-                          <div className="w-10 h-10 rounded-full bg-accent-teal/20 border border-accent-teal/40 flex items-center justify-center font-bold text-accent-teal text-sm">
-                            {item.authorName.charAt(0)}
-                          </div>
-                        )
-                      )}
-                      <div>
-                        {item.authorName && <h4 className="text-sm font-bold text-foreground">{item.authorName}</h4>}
-                        {(item.authorRole || item.authorCompany) && (
-                          <p className="text-xs text-foreground/60">
-                            {item.authorRole}
-                            {item.authorRole && item.authorCompany ? " • " : ""}
-                            {item.authorCompany}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    {item.linkedinUrl && (
-                      <a
-                        href={item.linkedinUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs font-bold text-accent-teal hover:underline flex items-center gap-1"
-                      >
-                        LinkedIn <ArrowUpRight size={12} />
-                      </a>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
+        {/* DYNAMIC REORDERABLE SECTIONS */}
+        {orderToUse.map((key) => renderSectionByKey(key))}
 
         {/* CTA BANNER */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mb-20">
@@ -551,7 +592,12 @@ export default async function HomePage() {
         </section>
       </main>
 
-      <Footer location={siteSettings.location} socialLinks={siteSettings.socialLinks} footerText={siteSettings.footerText} />
+      <Footer
+        location={siteSettings.location}
+        socialLinks={siteSettings.socialLinks}
+        footerText={siteSettings.footerText}
+        footerLinks={siteSettings.footerLinks}
+      />
     </div>
   );
 }

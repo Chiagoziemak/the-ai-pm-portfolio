@@ -75,5 +75,64 @@ export default defineType({
       type: "string",
       description: "Submissions from the contact form will be emailed here (fallback: melvynmatthews19@gmail.com)",
     }),
+    defineField({
+      name: "navTitleText",
+      title: "Navbar Title Text (e.g. The AI PM)",
+      type: "string",
+      description: "Text logo in header (defaults to 'The AI PM' if unset)",
+    }),
+    defineField({
+      name: "navLogoImage",
+      title: "Navbar Logo Image (Optional)",
+      type: "image",
+      description: "Optional logo image to display in navbar instead of text logo",
+      options: { hotspot: true },
+    }),
+    defineField({
+      name: "navLinks",
+      title: "Navbar Links",
+      type: "array",
+      of: [
+        {
+          type: "object",
+          name: "navLink",
+          title: "Nav Link",
+          fields: [
+            defineField({ name: "label", title: "Label", type: "string" }),
+            defineField({ name: "url", title: "URL / Path", type: "string" }),
+          ],
+        },
+      ],
+      description: "Drag-to-reorder main header navigation links.",
+    }),
+    defineField({
+      name: "navCtaLabel",
+      title: "Navbar CTA Button Label",
+      type: "string",
+      description: "Label for top-right header button (defaults to 'Resume')",
+    }),
+    defineField({
+      name: "navCtaUrl",
+      title: "Navbar CTA Custom URL",
+      type: "string",
+      description: "Custom link for top-right header button (if unset, links to Resume PDF)",
+    }),
+    defineField({
+      name: "footerLinks",
+      title: "Footer Links",
+      type: "array",
+      of: [
+        {
+          type: "object",
+          name: "footerLink",
+          title: "Footer Link",
+          fields: [
+            defineField({ name: "label", title: "Label", type: "string" }),
+            defineField({ name: "url", title: "URL / Path", type: "string" }),
+          ],
+        },
+      ],
+      description: "Drag-to-reorder secondary footer / legal links.",
+    }),
   ],
 });

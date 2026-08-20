@@ -15,11 +15,26 @@ import {
   BeforeAfterBlock,
 } from "@/data/mockData";
 
+export interface NavLink {
+  label: string;
+  url: string;
+}
+
+export interface FooterLink {
+  label: string;
+  url: string;
+}
+
 export interface SiteSettings {
   siteTitle?: string;
   metaDescription?: string;
   metaKeywords?: string[];
   location?: string;
+  navTitleText?: string;
+  navLogoUrl?: string;
+  navLinks?: NavLink[];
+  navCtaLabel?: string;
+  navCtaUrl?: string;
   navLabels?: {
     home?: string;
     about?: string;
@@ -36,6 +51,7 @@ export interface SiteSettings {
   resumeUrl?: string;
   faviconUrl?: string;
   footerText?: string;
+  footerLinks?: FooterLink[];
   contactEmail?: string;
 }
 
@@ -83,6 +99,7 @@ export interface HomePageData {
   featuredCaseStudies?: CaseStudy[];
   featuredTeardowns?: Teardown[];
   credentialsShown?: { label: string; sublabel?: string }[];
+  sectionOrder?: string[];
 }
 
 export interface AboutPageData extends AboutData {
@@ -124,11 +141,17 @@ export async function getSiteSettings(): Promise<SiteSettings> {
         metaDescription,
         metaKeywords,
         location,
+        navTitleText,
+        "navLogoUrl": navLogoImage.asset->url,
+        navLinks[] { label, url },
+        navCtaLabel,
+        navCtaUrl,
         navLabels,
         socialLinks,
         "resumeUrl": resumeFile.asset->url,
         "faviconUrl": favicon.asset->url,
         footerText,
+        footerLinks[] { label, url },
         contactEmail
       }`,
       {},
@@ -167,6 +190,7 @@ export async function getHomePageData(): Promise<HomePageData> {
         heroImagePosition,
         heroTagChips,
         currentStack,
+        sectionOrder,
         learningTrack,
         processSteps[] {
           number,

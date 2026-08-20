@@ -2,7 +2,7 @@ import React from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import TeardownsList from "./TeardownsList";
-import { getTeardowns } from "@/sanity/queries";
+import { getTeardowns, getSiteSettings } from "@/sanity/queries";
 import { mockTeardowns } from "@/data/mockData";
 
 export const dynamic = "force-dynamic";
@@ -10,6 +10,7 @@ export const revalidate = 0;
 
 export default async function TeardownsPage() {
   const data = await getTeardowns();
+  const siteSettings = (await getSiteSettings()) || {};
   const teardowns = data.length > 0 ? data : mockTeardowns;
 
   return (
@@ -18,11 +19,23 @@ export default async function TeardownsPage() {
       <div className="absolute top-[10%] right-[-10%] w-[350px] sm:w-[500px] h-[350px] sm:h-[500px] rounded-full blur-[100px] glow-bg opacity-30 z-0"></div>
       <div className="absolute bottom-[20%] left-[-10%] w-[300px] sm:w-[450px] h-[300px] sm:h-[450px] rounded-full blur-[120px] glow-bg opacity-30 z-0"></div>
 
-      <Navbar />
+      <Navbar
+        navTitleText={siteSettings.navTitleText}
+        navLogoUrl={siteSettings.navLogoUrl}
+        navLinks={siteSettings.navLinks}
+        navCtaLabel={siteSettings.navCtaLabel}
+        navCtaUrl={siteSettings.navCtaUrl}
+        resumeUrl={siteSettings.resumeUrl}
+      />
 
       <TeardownsList initialTeardowns={teardowns} />
 
-      <Footer />
+      <Footer
+        location={siteSettings.location}
+        socialLinks={siteSettings.socialLinks}
+        footerText={siteSettings.footerText}
+        footerLinks={siteSettings.footerLinks}
+      />
     </div>
   );
 }

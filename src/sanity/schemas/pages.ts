@@ -124,6 +124,23 @@ export const homePage = defineType({
       of: [{ type: "testimonial" }],
       description: "Peer, client, and leadership testimonials",
     }),
+    defineField({
+      name: "sectionOrder",
+      title: "Homepage Section Order",
+      type: "array",
+      of: [{ type: "string" }],
+      options: {
+        list: [
+          { title: "Featured Work Strip (Marquee)", value: "featuredWorkStrip" },
+          { title: "Case Studies (Featured Case Studies)", value: "caseStudies" },
+          { title: "Teardowns (Featured Teardowns)", value: "teardowns" },
+          { title: "How I Work (Process Steps)", value: "howIWork" },
+          { title: "Testimonials (Endorsements)", value: "testimonials" },
+          { title: "AI & Engineering Learning Track", value: "learningTrack" },
+        ],
+      },
+      description: "Drag to reorder sections on the homepage. Hero remains fixed at the top.",
+    }),
   ],
 });
 
