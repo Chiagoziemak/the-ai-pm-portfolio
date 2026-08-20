@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import DynamicIcon from "@/components/DynamicIcon";
 import { getTeardownBySlug, getTeardowns, getSiteSettings } from "@/sanity/queries";
 import { ArrowUpRight, ExternalLink, Calendar, Clock, Tag, UserCheck, Search, Key, Lightbulb, Layers } from "lucide-react";
 
@@ -173,7 +174,7 @@ export default async function SingleTeardownPage({ params }: PageProps) {
           {keyFindings.length > 0 && (
             <section className="my-12 p-6 sm:p-8 rounded-2xl glass-panel border border-card-border">
               <h2 className="text-xl sm:text-2xl font-extrabold mb-6 text-foreground flex items-center gap-2">
-                <Key size={22} className="text-accent-teal" />
+                <DynamicIcon name={(teardown as any).keyFindingsIcon || "FiKey"} size={22} className="text-accent-teal" />
                 Key Product Findings
               </h2>
               <div className="grid grid-cols-1 gap-4">
@@ -198,32 +199,44 @@ export default async function SingleTeardownPage({ params }: PageProps) {
           {painPoints.length > 0 && (
             <section className="my-12 p-6 sm:p-8 rounded-2xl glass-panel border border-amber-600/40 dark:border-amber-500/30 bg-amber-500/10 dark:bg-amber-500/10">
               <h2 className="text-xl sm:text-2xl font-extrabold mb-6 text-amber-700 dark:text-amber-400 flex items-center gap-2">
-                ⚠️ Key Pain Points
+                <DynamicIcon name={(teardown as any).painPointsIcon || "FiAlertTriangle"} size={22} className="text-amber-700 dark:text-amber-400" />
+                Key Pain Points
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {painPoints.map((point, idx) => (
-                  <div
-                    key={idx}
-                    className="p-5 rounded-xl border border-amber-600/30 dark:border-amber-500/30 bg-background/90 dark:bg-background/60 flex flex-col justify-between"
-                  >
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-base font-bold text-foreground">{point.title}</h3>
-                        {point.severity && (
-                          <span className="text-[10px] font-mono uppercase tracking-wider px-2.5 py-0.5 rounded bg-amber-600/15 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 font-bold border border-amber-600/30 dark:border-amber-500/30">
-                            {point.severity}
-                          </span>
-                        )}
+                {painPoints.map((point, idx) => {
+                  const severityText = point.severity?.toLowerCase() || "";
+                  const badgeIcon = severityText.includes("critical")
+                    ? "FiAlertCircle"
+                    : severityText.includes("high")
+                    ? "FiAlertTriangle"
+                    : severityText.includes("med")
+                    ? "FiInfo"
+                    : "FiCheckCircle";
+                  return (
+                    <div
+                      key={idx}
+                      className="p-5 rounded-xl border border-amber-600/30 dark:border-amber-500/30 bg-background/90 dark:bg-background/60 flex flex-col justify-between"
+                    >
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="text-base font-bold text-foreground">{point.title}</h3>
+                          {point.severity && (
+                            <span className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-wider px-2.5 py-0.5 rounded bg-amber-600/15 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 font-bold border border-amber-600/30 dark:border-amber-500/30">
+                              <DynamicIcon name={badgeIcon} size={12} />
+                              {point.severity}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs sm:text-sm text-foreground/90 dark:text-foreground/80 leading-relaxed mb-3">{point.description}</p>
                       </div>
-                      <p className="text-xs sm:text-sm text-foreground/90 dark:text-foreground/80 leading-relaxed mb-3">{point.description}</p>
+                      {point.evidence && (
+                        <div className="pt-3 border-t border-amber-600/20 dark:border-amber-500/20 text-xs text-amber-800 dark:text-amber-300 font-medium italic">
+                          Evidence: {point.evidence}
+                        </div>
+                      )}
                     </div>
-                    {point.evidence && (
-                      <div className="pt-3 border-t border-amber-600/20 dark:border-amber-500/20 text-xs text-amber-800 dark:text-amber-300 font-medium italic">
-                        Evidence: {point.evidence}
-                      </div>
-                    )}
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </section>
           )}
@@ -232,7 +245,8 @@ export default async function SingleTeardownPage({ params }: PageProps) {
           {keyPainPoints.length > 0 && painPoints.length === 0 && (
             <section className="my-12 p-6 sm:p-8 rounded-2xl glass-panel border border-amber-600/40 dark:border-amber-500/30 bg-amber-500/10 dark:bg-amber-500/10">
               <h2 className="text-xl font-bold mb-4 text-amber-700 dark:text-amber-400 flex items-center gap-2">
-                ⚠️ Key User Pain Points
+                <DynamicIcon name={(teardown as any).painPointsIcon || "FiAlertTriangle"} size={20} className="text-amber-700 dark:text-amber-400" />
+                Key User Pain Points
               </h2>
               <ul className="space-y-3">
                 {keyPainPoints.map((point, idx) => (
@@ -249,7 +263,8 @@ export default async function SingleTeardownPage({ params }: PageProps) {
           {riceScores.length > 0 && (
             <section className="my-12 p-6 sm:p-8 rounded-2xl glass-panel border border-card-border">
               <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
-                📊 RICE Prioritization Model
+                <DynamicIcon name={(teardown as any).riceIcon || "FiBarChart2"} size={20} className="text-accent-teal" />
+                RICE Prioritization Model
               </h2>
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm text-foreground/80 border-collapse">
@@ -286,7 +301,7 @@ export default async function SingleTeardownPage({ params }: PageProps) {
           {recommendations.length > 0 && (
             <section className="my-12 p-6 sm:p-8 rounded-2xl glass-panel border border-card-border">
               <div className="flex items-center gap-3 mb-6">
-                <Lightbulb size={24} className="text-accent-teal" />
+                <DynamicIcon name={(teardown as any).recommendationsIcon || "FiCheckSquare"} size={24} className="text-accent-teal" />
                 <h2 className="text-2xl font-extrabold text-foreground tracking-tight">
                   Strategic Recommendations
                 </h2>
@@ -324,7 +339,7 @@ export default async function SingleTeardownPage({ params }: PageProps) {
             <section className="my-14 p-6 sm:p-8 rounded-2xl glass-panel border border-accent-cyan/30 bg-accent-cyan/5">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-extrabold text-foreground flex items-center gap-2">
-                  <ExternalLink size={20} className="text-accent-cyan" />
+                  <DynamicIcon name={(teardown as any).linksIcon || "FiExternalLink"} size={20} className="text-accent-cyan" />
                   Project Links &amp; Documentation
                 </h2>
                 <span className="text-xs text-foreground/50 font-mono">Explore the Artifacts</span>

@@ -396,6 +396,7 @@ export async function getTeardowns(): Promise<Teardown[]> {
         "myRole": role,
         researchEvidence,
         researchStats,
+        keyFindingsIcon,
         keyFindings,
         insightCards[] {
           number,
@@ -403,14 +404,18 @@ export async function getTeardowns(): Promise<Teardown[]> {
           description,
           evidence
         },
+        painPointsIcon,
         painPoints[] {
           title,
           description,
           evidence,
           severity
         },
+        riceIcon,
         riceTable,
+        recommendationsIcon,
         recommendations,
+        linksIcon,
         projectLinks
       }`,
       {},
@@ -445,6 +450,7 @@ export async function getTeardownBySlug(slug: string): Promise<Teardown | null> 
         "myRole": role,
         researchEvidence,
         researchStats,
+        keyFindingsIcon,
         keyFindings,
         insightCards[] {
           number,
@@ -452,14 +458,18 @@ export async function getTeardownBySlug(slug: string): Promise<Teardown | null> 
           description,
           evidence
         },
+        painPointsIcon,
         painPoints[] {
           title,
           description,
           evidence,
           severity
         },
+        riceIcon,
         riceTable,
+        recommendationsIcon,
         recommendations,
+        linksIcon,
         projectLinks,
         "relatedTeardowns": relatedTeardowns[]-> {
           title,
@@ -648,11 +658,16 @@ export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null
         cardStats,
         featured,
         isPlaceholder,
+        summaryIcon,
+        toolsIcon,
         "tools": stackMethods,
         "coverImage": coverImage.asset->url,
+        challengeIcon,
         challenge,
+        resultsIcon,
         results,
         lessonsLearned,
+        decisionsIcon,
         productDecisions[] {
           decision,
           context,
@@ -662,6 +677,7 @@ export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null
           tradeoffs,
           outcome
         },
+        beforeAfterIcon,
         beforeAfter[] {
           beforeLabel,
           beforeDescription,

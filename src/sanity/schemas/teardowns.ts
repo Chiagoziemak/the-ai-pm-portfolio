@@ -76,6 +76,12 @@ export default defineType({
       of: [{ type: "statBlock" }],
     }),
     defineField({
+      name: "keyFindingsIcon",
+      title: "Key Product Findings Section Icon",
+      type: "string",
+      description: "React-icons identifier (e.g. FiKey, FaKey, HiKey). Defaults to FiKey",
+    }),
+    defineField({
       name: "keyFindings",
       title: "Key Product Findings",
       type: "array",
@@ -92,16 +98,47 @@ export default defineType({
       ],
     }),
     defineField({
+      name: "painPointsIcon",
+      title: "Key Pain Points Section Icon",
+      type: "string",
+      description: "React-icons identifier (e.g. FiAlertTriangle, FaTriangleExclamation, HiExclamationTriangle). Defaults to FiAlertTriangle",
+    }),
+    defineField({
+      name: "painPoints",
+      title: "Key Pain Points Cards",
+      type: "array",
+      of: [{ type: "painPointCard" }],
+      description: "Friction and user pain points (title, description, evidence, severity)",
+    }),
+    defineField({
+      name: "riceIcon",
+      title: "RICE Table Section Icon",
+      type: "string",
+      description: "React-icons identifier (e.g. FiBarChart2, FaChartBar, HiChartBar). Defaults to FiBarChart2",
+    }),
+    defineField({
       name: "riceTable",
       title: "RICE Prioritization Table",
       type: "array",
       of: [{ type: "riceRow" }],
     }),
     defineField({
+      name: "recommendationsIcon",
+      title: "Strategic Recommendations Section Icon",
+      type: "string",
+      description: "React-icons identifier (e.g. FiCheckSquare, FaListCheck, HiClipboardDocumentCheck). Defaults to FiCheckSquare",
+    }),
+    defineField({
       name: "recommendations",
       title: "Strategic Recommendations",
       type: "array",
       of: [{ type: "recommendationBlock" }],
+    }),
+    defineField({
+      name: "linksIcon",
+      title: "Project Links Section Icon",
+      type: "string",
+      description: "React-icons identifier (e.g. FiExternalLink, FaLink, HiLink). Defaults to FiExternalLink",
     }),
     defineField({
       name: "projectLinks",
@@ -115,13 +152,6 @@ export default defineType({
       type: "array",
       of: [{ type: "insightCard" }],
       description: "Structured research insight cards (number, title, description, evidence)",
-    }),
-    defineField({
-      name: "painPoints",
-      title: "Key Pain Points Cards",
-      type: "array",
-      of: [{ type: "painPointCard" }],
-      description: "Friction and user pain points (title, description, evidence, severity)",
     }),
     defineField({
       name: "relatedTeardowns",
