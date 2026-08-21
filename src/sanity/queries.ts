@@ -302,7 +302,7 @@ export async function getAboutPageData(): Promise<AboutPageData> {
         taglineChips,
         "skills": technicalProficiency[] {
           category,
-          "items": skills[] { "name": @, "level": 90 }
+          "items": skills
         },
         "journey": professionalTrajectory[] {
           "year": years,
@@ -311,7 +311,10 @@ export async function getAboutPageData(): Promise<AboutPageData> {
           description
         },
         "certifications": credentials[] {
-          "name": label + select(defined(sublabel) => " - " + sublabel, "")
+          "name": select(
+            defined(sublabel) => label + " - " + sublabel,
+            label
+          )
         },
         learningVector,
         closingHeadline,
