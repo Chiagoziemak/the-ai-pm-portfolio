@@ -19,7 +19,7 @@ export default async function ProductsPage() {
   const comingSoonProducts = products.filter((p) => p !== featuredProduct);
 
   return (
-    <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
+    <div className="min-h-screen page-bg-products text-foreground transition-colors duration-300">
       <Navbar
         navTitleText={siteSettings.navTitleText}
         navLogoUrl={siteSettings.navLogoUrl}

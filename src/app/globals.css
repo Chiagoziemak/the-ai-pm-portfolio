@@ -12,7 +12,7 @@
 }
 
 .dark {
-  --background: #0a0c1f;
+  --background: #13140f;
   --foreground: #e4e2db;
   --card: rgba(190, 194, 252, 0.05);
   --card-foreground: #e4e2db;
@@ -20,6 +20,49 @@
   --accent-cyan: #47f0f4;
   --accent-teal: #21dce0;
   --glow-gradient: radial-gradient(circle, rgba(0, 212, 216, 0.4) 0%, transparent 70%);
+}
+
+/* Page-Specific Theme-Aware Background Utilities */
+.page-bg-home {
+  background-color: var(--background);
+}
+.dark .page-bg-home {
+  background-color: #050d1a;
+}
+
+.page-bg-about {
+  background-color: var(--background);
+}
+.dark .page-bg-about {
+  background-color: #0a0c1f;
+}
+
+.page-bg-products {
+  background-color: var(--background);
+}
+.dark .page-bg-products {
+  background-color: #0a0c1f;
+}
+
+.page-bg-contact {
+  background-color: var(--background);
+}
+.dark .page-bg-contact {
+  background-color: #13140f;
+}
+
+.page-bg-teardowns {
+  background-color: var(--background);
+}
+.dark .page-bg-teardowns {
+  background-color: #0a0c1f;
+}
+
+.page-bg-casestudies {
+  background-color: var(--background);
+}
+.dark .page-bg-casestudies {
+  background-color: #0a0c1f;
 }
 
 @theme inline {

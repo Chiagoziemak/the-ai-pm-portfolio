@@ -28,7 +28,7 @@ export default async function AboutPage() {
   const taglineChips = Array.isArray(aboutData.taglineChips) ? aboutData.taglineChips : [];
 
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-x-hidden flex flex-col transition-colors duration-300">
+    <div className="min-h-screen page-bg-about text-foreground overflow-x-hidden flex flex-col transition-colors duration-300">
       <Navbar
         navTitleText={siteSettings.navTitleText}
         navLogoUrl={siteSettings.navLogoUrl}

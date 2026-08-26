@@ -36,7 +36,7 @@ export default async function SingleTeardownPage({ params }: PageProps) {
   const painPoints = Array.isArray(teardown.painPoints) ? teardown.painPoints : [];
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors duration-300">
+    <div className="min-h-screen flex flex-col page-bg-teardowns text-foreground transition-colors duration-300">
       <Navbar />
 
       {/* Reading Progress Bar */}

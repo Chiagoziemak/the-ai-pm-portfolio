@@ -33,7 +33,7 @@ export default async function SingleCaseStudyPage({ params }: PageProps) {
   const beforeAfter = Array.isArray(study.beforeAfter) ? study.beforeAfter : [];
 
   return (
-    <div className="min-h-screen bg-[#0a0c1f] text-[#e4e2db]">
+    <div className="min-h-screen page-bg-casestudies text-foreground transition-colors duration-300">
       <Navbar
         navTitleText={siteSettings.navTitleText}
         navLogoUrl={siteSettings.navLogoUrl}

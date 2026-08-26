@@ -52,7 +52,7 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col overflow-x-hidden transition-colors duration-300">
+    <div className="min-h-screen page-bg-contact text-foreground flex flex-col overflow-x-hidden transition-colors duration-300">
       <Navbar />
 
       <main className="flex-grow pt-32 pb-24 px-5 md:px-16 max-w-[1280px] mx-auto w-full">
