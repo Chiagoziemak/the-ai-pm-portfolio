@@ -52,7 +52,7 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-[#13140f] dark:text-[#e4e2db] flex flex-col overflow-x-hidden transition-colors duration-300">
+    <div className="min-h-screen bg-background text-foreground flex flex-col overflow-x-hidden transition-colors duration-300">
       <Navbar />
 
       <main className="flex-grow pt-32 pb-24 px-5 md:px-16 max-w-[1280px] mx-auto w-full">
@@ -61,15 +61,15 @@ export default function ContactPage() {
           {/* Left Side */}
           <div className="lg:col-span-5 space-y-8">
             <div className="space-y-4">
-              <span className="text-xs font-mono text-teal-600 dark:text-[#47f0f4] tracking-widest uppercase font-bold">
+              <span className="text-xs font-mono text-accent-teal tracking-widest uppercase font-bold">
                 Get in touch
               </span>
-              <h1 className="font-bold text-4xl md:text-5xl text-slate-900 dark:text-[#e4e2db] leading-tight tracking-tight">
+              <h1 className="font-bold text-4xl md:text-5xl text-foreground leading-tight tracking-tight">
                 Architecting the future,{" "}
                 <br />
-                <span className="text-teal-600 dark:text-[#47f0f4]">one interaction</span> at a time.
+                <span className="text-accent-teal">one interaction</span> at a time.
               </h1>
-              <p className="text-slate-600 dark:text-[#c7c5d0] text-base max-w-md leading-relaxed">
+              <p className="text-foreground/80 text-base max-w-md leading-relaxed">
                 Whether you are looking to discuss product strategy, AI implementation,
                 or just want to talk about technical architecture — I am always open to
                 new connections and ambitious projects.
@@ -82,14 +82,14 @@ export default function ContactPage() {
                 href="mailto:melvynmatthews19@gmail.com"
                 className="flex items-center gap-4 group cursor-pointer"
               >
-                <div className="w-12 h-12 rounded-xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/5 dark:backdrop-blur-xl flex items-center justify-center text-teal-600 dark:text-[#47f0f4] group-hover:bg-teal-500/10 dark:group-hover:bg-[#47f0f4]/10 transition-colors text-lg">
+                <div className="w-12 h-12 rounded-xl border border-card-border glass-panel flex items-center justify-center text-accent-teal group-hover:bg-accent-teal/10 transition-colors text-lg">
                   <span role="img" aria-label="email">@</span>
                 </div>
                 <div>
-                  <p className="text-[10px] font-mono text-slate-500 dark:text-[#91909a] uppercase tracking-widest font-semibold">
+                  <p className="text-[10px] font-mono text-foreground/60 uppercase tracking-widest font-semibold">
                     Direct Email
                   </p>
-                  <span className="text-slate-900 dark:text-[#e4e2db] font-semibold hover:text-teal-600 dark:hover:text-[#47f0f4] transition-colors">
+                  <span className="text-foreground font-semibold hover:text-accent-teal transition-colors">
                     melvynmatthews19@gmail.com
                   </span>
                 </div>
@@ -101,14 +101,14 @@ export default function ContactPage() {
                 rel="noopener noreferrer"
                 className="flex items-center gap-4 group cursor-pointer"
               >
-                <div className="w-12 h-12 rounded-xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/5 dark:backdrop-blur-xl flex items-center justify-center text-teal-600 dark:text-[#47f0f4] group-hover:bg-teal-500/10 dark:group-hover:bg-[#47f0f4]/10 transition-colors font-bold text-sm">
+                <div className="w-12 h-12 rounded-xl border border-card-border glass-panel flex items-center justify-center text-accent-teal group-hover:bg-accent-teal/10 transition-colors font-bold text-sm">
                   <span>in</span>
                 </div>
                 <div>
-                  <p className="text-[10px] font-mono text-slate-500 dark:text-[#91909a] uppercase tracking-widest font-semibold">
+                  <p className="text-[10px] font-mono text-foreground/60 uppercase tracking-widest font-semibold">
                     LinkedIn Network
                   </p>
-                  <span className="text-slate-900 dark:text-[#e4e2db] font-semibold hover:text-teal-600 dark:hover:text-[#47f0f4] transition-colors">
+                  <span className="text-foreground font-semibold hover:text-accent-teal transition-colors">
                     Chiagoziem Melvin Akobundu
                   </span>
                 </div>
@@ -116,13 +116,13 @@ export default function ContactPage() {
             </div>
 
             {/* Status Badge */}
-            <div className="border border-slate-200 border-l-4 border-l-teal-500 bg-white/80 dark:border-white/10 dark:border-l-4 dark:border-l-[#47f0f4] dark:bg-white/5 dark:backdrop-blur-xl p-6 rounded-2xl inline-block">
+            <div className="border border-card-border border-l-4 border-l-accent-teal glass-panel p-6 rounded-2xl inline-block">
               <div className="flex items-center gap-3">
                 <div className="relative flex h-3 w-3">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-500 dark:bg-[#47f0f4] opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-teal-500 dark:bg-[#47f0f4]"></span>
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-teal opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-accent-teal"></span>
                 </div>
-                <span className="text-xs font-mono text-teal-700 dark:text-[#21dce0] font-bold">
+                <span className="text-xs font-mono text-accent-teal font-bold">
                   System Status: Active &amp; accepting inquiries
                 </span>
               </div>
@@ -131,23 +131,23 @@ export default function ContactPage() {
 
           {/* Right Side - Form */}
           <div className="lg:col-span-7">
-            <div className="border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/5 dark:backdrop-blur-xl p-8 md:p-12 rounded-[2rem] relative overflow-hidden shadow-sm">
-              <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-teal-500/5 dark:bg-[#47f0f4]/5 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="border border-card-border glass-panel p-8 md:p-12 rounded-[2rem] relative overflow-hidden shadow-sm">
+              <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-accent-teal/5 rounded-full blur-3xl pointer-events-none"></div>
 
               {isSuccess ? (
                 <div className="text-center py-16 flex flex-col items-center gap-6">
-                  <div className="w-16 h-16 rounded-full bg-teal-50 dark:bg-[#47f0f4]/10 flex items-center justify-center text-teal-600 dark:text-[#47f0f4] text-3xl">
+                  <div className="w-16 h-16 rounded-full bg-accent-teal/10 flex items-center justify-center text-accent-teal text-3xl">
                     <span>&#10003;</span>
                   </div>
-                  <h3 className="text-2xl font-bold text-slate-900 dark:text-[#e4e2db]">
+                  <h3 className="text-2xl font-bold text-foreground">
                     Message Sent!
                   </h3>
-                  <p className="text-slate-600 dark:text-[#c7c5d0] text-base">
+                  <p className="text-foreground/80 text-base">
                     Thank you for reaching out. Your inquiry has been transmitted successfully.
                   </p>
                   <button
                     onClick={() => setIsSuccess(false)}
-                    className="mt-4 px-6 py-2 rounded-xl border border-slate-300 bg-slate-100 hover:bg-slate-200 dark:border-white/10 dark:bg-white/10 dark:hover:bg-white/20 text-slate-800 dark:text-[#e4e2db] text-sm font-semibold transition-all"
+                    className="mt-4 px-6 py-2 rounded-xl border border-card-border bg-card hover:bg-card-border/20 text-foreground text-sm font-semibold transition-all"
                   >
                     Send Another Message
                   </button>
@@ -164,7 +164,7 @@ export default function ContactPage() {
                     <div className="space-y-2">
                       <label
                         htmlFor="name"
-                        className="text-xs font-mono text-slate-600 dark:text-[#c7c5d0] uppercase tracking-widest font-semibold"
+                        className="text-xs font-mono text-foreground/75 uppercase tracking-widest font-semibold"
                       >
                         Full Name
                       </label>
@@ -176,13 +176,13 @@ export default function ContactPage() {
                         onChange={handleInputChange}
                         placeholder="Jane Doe"
                         required
-                        className="w-full bg-slate-100/80 border border-slate-300 text-slate-900 placeholder:text-slate-400 dark:bg-[#0e0f0a] dark:border-white/10 dark:text-[#e4e2db] dark:placeholder:text-[#91909a] rounded-xl px-6 py-4 focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 dark:focus:ring-[#47f0f4]/50 dark:focus:border-[#47f0f4] transition-all text-base"
+                        className="w-full bg-card border border-card-border rounded-xl px-6 py-4 text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-accent-teal/50 focus:border-accent-teal transition-all text-base"
                       />
                     </div>
                     <div className="space-y-2">
                       <label
                         htmlFor="email"
-                        className="text-xs font-mono text-slate-600 dark:text-[#c7c5d0] uppercase tracking-widest font-semibold"
+                        className="text-xs font-mono text-foreground/75 uppercase tracking-widest font-semibold"
                       >
                         Email Address
                       </label>
@@ -194,7 +194,7 @@ export default function ContactPage() {
                         onChange={handleInputChange}
                         placeholder="jane@example.com"
                         required
-                        className="w-full bg-slate-100/80 border border-slate-300 text-slate-900 placeholder:text-slate-400 dark:bg-[#0e0f0a] dark:border-white/10 dark:text-[#e4e2db] dark:placeholder:text-[#91909a] rounded-xl px-6 py-4 focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 dark:focus:ring-[#47f0f4]/50 dark:focus:border-[#47f0f4] transition-all text-base"
+                        className="w-full bg-card border border-card-border rounded-xl px-6 py-4 text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-accent-teal/50 focus:border-accent-teal transition-all text-base"
                       />
                     </div>
                   </div>
@@ -202,7 +202,7 @@ export default function ContactPage() {
                   <div className="space-y-2">
                     <label
                       htmlFor="message"
-                      className="text-xs font-mono text-slate-600 dark:text-[#c7c5d0] uppercase tracking-widest font-semibold"
+                      className="text-xs font-mono text-foreground/75 uppercase tracking-widest font-semibold"
                     >
                       Message
                     </label>
@@ -214,14 +214,14 @@ export default function ContactPage() {
                       placeholder="Tell me about your project..."
                       required
                       rows={5}
-                      className="w-full bg-slate-100/80 border border-slate-300 text-slate-900 placeholder:text-slate-400 dark:bg-[#0e0f0a] dark:border-white/10 dark:text-[#e4e2db] dark:placeholder:text-[#91909a] rounded-xl px-6 py-4 focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 dark:focus:ring-[#47f0f4]/50 dark:focus:border-[#47f0f4] transition-all text-base resize-none"
+                      className="w-full bg-card border border-card-border rounded-xl px-6 py-4 text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-accent-teal/50 focus:border-accent-teal transition-all text-base resize-none"
                     />
                   </div>
 
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full bg-teal-500 hover:bg-teal-600 text-white dark:bg-[#47f0f4] dark:text-[#003738] dark:hover:shadow-[0_0_20px_rgba(0,212,216,0.4)] font-bold text-lg py-5 rounded-2xl transition-all duration-300 active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-70 shadow-sm"
+                    className="w-full bg-accent-teal text-background font-bold text-lg py-5 rounded-2xl hover:bg-accent-cyan hover:shadow-[0_0_20px_rgba(0,212,216,0.3)] transition-all duration-300 active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-70 shadow-sm"
                   >
                     {isSubmitting ? (
                       <span>Sending Message...</span>

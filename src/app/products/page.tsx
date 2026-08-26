@@ -19,7 +19,7 @@ export default async function ProductsPage() {
   const comingSoonProducts = products.filter((p) => p !== featuredProduct);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-[#0a0c1f] dark:text-[#e4e2db] transition-colors duration-300">
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
       <Navbar
         navTitleText={siteSettings.navTitleText}
         navLogoUrl={siteSettings.navLogoUrl}
@@ -33,7 +33,7 @@ export default async function ProductsPage() {
         {/* Header */}
         <header className="mb-16 md:mb-24 text-center md:text-left">
           <h1 className="font-bold text-5xl mb-4 tracking-tight">Products</h1>
-          <p className="text-slate-600 dark:text-[#c7c5d0] max-w-2xl text-base leading-relaxed">
+          <p className="text-foreground/80 max-w-2xl text-base leading-relaxed">
             AI tools I am building to solve real problems. A collection of experimental 
             and production-ready applications focusing on high-density utility and elegant engineering.
           </p>
@@ -42,10 +42,10 @@ export default async function ProductsPage() {
         {/* Featured Product Card */}
         {featuredProduct && (
           <section className="mb-12">
-            <div className="rounded-xl overflow-hidden transition-all duration-500 group flex flex-col lg:flex-row min-h-[500px] border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-[#bec2fc0d] dark:backdrop-blur-xl hover:shadow-[0_0_30px_rgba(0,212,216,0.2)] dark:hover:border-[rgba(71,240,244,0.4)] hover:border-teal-500/40">
+            <div className="rounded-2xl overflow-hidden transition-all duration-500 group flex flex-col lg:flex-row min-h-[500px] border border-card-border glass-panel hover:shadow-[0_0_30px_rgba(0,212,216,0.15)] hover:border-accent-teal/40">
               
               {/* Image side */}
-              <div className="w-full lg:w-1/2 relative overflow-hidden bg-slate-100 dark:bg-[#0e0f0a]">
+              <div className="w-full lg:w-1/2 relative overflow-hidden bg-card/60">
                 {featuredProduct.coverImage ? (
                   <img 
                     src={featuredProduct.coverImage} 
@@ -53,29 +53,29 @@ export default async function ProductsPage() {
                     className="w-full h-full object-cover min-h-[300px] group-hover:scale-105 transition-transform duration-700" 
                   />
                 ) : (
-                  <div className="w-full h-full min-h-[300px] bg-gradient-to-br from-slate-200 via-slate-100 to-slate-200 dark:from-[#1a1f4e] dark:via-[#0a0c1f] dark:to-[#13140f] flex items-center justify-center">
-                    <span className="text-teal-600/20 dark:text-[#47f0f4]/20 text-9xl">✦</span>
+                  <div className="w-full h-full min-h-[300px] bg-gradient-to-br from-accent-teal/10 via-card to-background flex items-center justify-center">
+                    <span className="text-accent-teal/20 text-9xl">✦</span>
                   </div>
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-100 via-transparent to-transparent dark:from-[#0a0c1f] lg:bg-gradient-to-r"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent lg:bg-gradient-to-r"></div>
               </div>
 
               {/* Content side */}
               <div className="w-full lg:w-1/2 p-8 md:p-12 flex flex-col justify-center">
                 <div className="flex items-center gap-3 mb-6 flex-wrap">
-                  <span className="text-xs tracking-widest text-teal-700 dark:text-[#21dce0] uppercase bg-teal-50 dark:bg-[#00d3d7]/20 px-3 py-1 rounded-full border border-teal-200 dark:border-[#47f0f4]/30 font-mono font-bold">
+                  <span className="text-xs tracking-widest text-accent-teal uppercase bg-accent-teal/10 px-3 py-1 rounded-full border border-accent-teal/30 font-mono font-bold">
                     {featuredProduct.name}
                   </span>
-                  <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 dark:bg-[#341f00]/30 dark:border-[#ffb955]/20">
-                    <span className="w-2 h-2 rounded-full bg-amber-500 dark:bg-[#ffb955] animate-pulse"></span>
-                    <span className="text-xs text-amber-700 dark:text-[#ffb955] uppercase font-mono tracking-widest font-bold">{featuredProduct.status}</span>
+                  <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30">
+                    <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                    <span className="text-xs text-amber-700 dark:text-amber-400 uppercase font-mono tracking-widest font-bold">{featuredProduct.status}</span>
                   </div>
                 </div>
 
-                <h2 className="text-3xl font-semibold mb-4 leading-tight tracking-tight text-slate-900 dark:text-[#e4e2db]">
+                <h2 className="text-3xl font-semibold mb-4 leading-tight tracking-tight text-foreground">
                   {featuredProduct.tagline}
                 </h2>
-                <p className="text-slate-600 dark:text-[#c7c5d0] text-base mb-8 leading-relaxed">
+                <p className="text-foreground/80 text-base mb-8 leading-relaxed">
                   {featuredProduct.description}
                 </p>
 
@@ -83,7 +83,7 @@ export default async function ProductsPage() {
                   {featuredProduct.linkType === "Case Study" && (featuredProduct as any).caseStudySlug ? (
                     <Link
                       href={`/case-studies/${(featuredProduct as any).caseStudySlug}`}
-                      className="bg-teal-500 text-white hover:bg-teal-600 dark:bg-[#47f0f4] dark:text-[#003738] dark:hover:bg-[#53f8fc] px-8 py-3 rounded-lg font-bold transition-all active:scale-95 flex items-center gap-2 shadow-sm"
+                      className="bg-accent-teal text-background px-8 py-3 rounded-xl font-bold transition-all hover:bg-accent-cyan active:scale-95 flex items-center gap-2 shadow-sm"
                     >
                       {featuredProduct.linkLabel || "View Case Study →"}
                     </Link>
@@ -92,19 +92,19 @@ export default async function ProductsPage() {
                       href={featuredProduct.externalUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="bg-teal-500 text-white hover:bg-teal-600 dark:bg-[#47f0f4] dark:text-[#003738] dark:hover:bg-[#53f8fc] px-8 py-3 rounded-lg font-bold transition-all active:scale-95 flex items-center gap-2 shadow-sm"
+                      className="bg-accent-teal text-background px-8 py-3 rounded-xl font-bold transition-all hover:bg-accent-cyan active:scale-95 flex items-center gap-2 shadow-sm"
                     >
                       {featuredProduct.linkLabel || "View Product →"}
                     </a>
                   ) : (
                     <Link
                       href="/case-studies/resumegenie-ai-agent"
-                      className="bg-teal-500 text-white hover:bg-teal-600 dark:bg-[#47f0f4] dark:text-[#003738] dark:hover:bg-[#53f8fc] px-8 py-3 rounded-lg font-bold transition-all active:scale-95 flex items-center gap-2 shadow-sm"
+                      className="bg-accent-teal text-background px-8 py-3 rounded-xl font-bold transition-all hover:bg-accent-cyan active:scale-95 flex items-center gap-2 shadow-sm"
                     >
                       {featuredProduct.linkLabel || "View Case Study →"}
                     </Link>
                   )}
-                  <Link href="/contact" className="border border-slate-300 bg-slate-100 text-slate-800 hover:bg-slate-200 dark:border-white/10 dark:bg-white/5 dark:text-[#e4e2db] dark:hover:bg-white/10 px-8 py-3 rounded-lg font-semibold transition-all">
+                  <Link href="/contact" className="border border-card-border bg-card text-foreground px-8 py-3 rounded-xl font-semibold hover:bg-card-border/20 transition-all">
                     Technical Spec
                   </Link>
                 </div>
@@ -120,7 +120,7 @@ export default async function ProductsPage() {
             return (
               <div 
                 key={slug} 
-                className="rounded-xl p-8 md:p-10 transition-all duration-500 relative overflow-hidden group border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-[#bec2fc0d] dark:backdrop-blur-xl hover:shadow-[0_0_30px_rgba(0,212,216,0.2)] dark:hover:border-[rgba(71,240,244,0.4)] hover:border-teal-500/40"
+                className="rounded-2xl p-8 md:p-10 transition-all duration-500 relative overflow-hidden group border border-card-border glass-panel hover:shadow-[0_0_30px_rgba(0,212,216,0.15)] hover:border-accent-teal/40"
               >
                 {product.coverImage && (
                   <div className="absolute inset-0 opacity-5 group-hover:opacity-10 transition-opacity duration-500 pointer-events-none">
@@ -129,32 +129,32 @@ export default async function ProductsPage() {
                 )}
                 <div className="relative z-10 h-full flex flex-col">
                   <div className="flex items-center justify-between mb-8">
-                    <div className="w-12 h-12 rounded-lg bg-teal-50 border border-teal-200 text-teal-600 dark:bg-[#1a1f4e] dark:border-[#bec2fc]/20 dark:text-[#bec2fc] flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-xl bg-accent-teal/10 flex items-center justify-center border border-accent-teal/20 text-accent-teal">
                       <DynamicIcon name={product.icon} size={22} />
                     </div>
-                    <span className="text-xs text-slate-500 dark:text-[#91909a] uppercase tracking-widest font-mono font-semibold">
+                    <span className="text-xs text-foreground/60 uppercase tracking-widest font-mono font-semibold">
                       {product.status}
                     </span>
                   </div>
-                  <h3 className="text-2xl font-semibold mb-2 tracking-tight text-slate-900 dark:text-[#e4e2db]">{product.name}</h3>
-                  <p className="text-xs font-mono text-teal-600 dark:text-[#47f0f4] mb-4 uppercase tracking-wider font-bold">{product.tagline}</p>
-                  <p className="text-slate-600 dark:text-[#c7c5d0] text-base mb-auto leading-relaxed">
+                  <h3 className="text-2xl font-semibold mb-2 tracking-tight text-foreground">{product.name}</h3>
+                  <p className="text-xs font-mono text-accent-teal mb-4 uppercase tracking-wider font-bold">{product.tagline}</p>
+                  <p className="text-foreground/80 text-base mb-auto leading-relaxed">
                     {product.description}
                   </p>
-                  <div className="mt-8 pt-6 border-t border-slate-200 dark:border-white/10">
+                  <div className="mt-8 pt-6 border-t border-card-border/60">
                     {product.externalUrl ? (
                       <a
                         href={product.externalUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-teal-600 dark:text-[#21dce0] text-xs flex items-center gap-2 hover:translate-x-1 transition-transform font-mono tracking-widest uppercase font-bold"
+                        className="text-accent-teal text-xs flex items-center gap-2 hover:translate-x-1 transition-transform font-mono tracking-widest uppercase font-bold"
                       >
                         {product.linkLabel || "EXPLORE PRODUCT →"}
                       </a>
                     ) : (
                       <Link
                         href="/contact"
-                        className="text-teal-600 dark:text-[#21dce0] text-xs flex items-center gap-2 hover:translate-x-1 transition-transform font-mono tracking-widest uppercase font-bold"
+                        className="text-accent-teal text-xs flex items-center gap-2 hover:translate-x-1 transition-transform font-mono tracking-widest uppercase font-bold"
                       >
                         {product.linkLabel || "GET NOTIFIED →"}
                       </Link>
@@ -167,17 +167,17 @@ export default async function ProductsPage() {
         </section>
 
         {/* CTA Section */}
-        <section className="mt-24 text-center border border-dashed border-slate-300 bg-slate-100/60 dark:border-white/10 dark:bg-[#bec2fc0d] dark:backdrop-blur-xl py-16 rounded-2xl">
-          <h2 className="text-3xl font-semibold mb-6 tracking-tight text-slate-900 dark:text-[#e4e2db]">
+        <section className="mt-24 text-center border border-dashed border-card-border glass-panel py-16 rounded-3xl">
+          <h2 className="text-3xl font-semibold mb-6 tracking-tight text-foreground">
             Have a problem worth solving with AI?
           </h2>
-          <p className="text-slate-600 dark:text-[#c7c5d0] max-w-xl mx-auto mb-10 text-base leading-relaxed">
+          <p className="text-foreground/80 max-w-xl mx-auto mb-10 text-base leading-relaxed">
             I'm always looking for complex bottlenecks that can be streamlined with 
             agentic workflows or predictive modeling. Let's discuss your architecture.
           </p>
           <Link
             href="/contact"
-            className="bg-indigo-600 text-white hover:bg-indigo-700 dark:bg-[#bec2fc] dark:text-[#272c5b] dark:hover:shadow-[0_0_20px_rgba(190,194,252,0.3)] px-10 py-4 rounded-lg font-bold transition-all active:scale-95 inline-block shadow-sm"
+            className="bg-accent-teal text-background px-10 py-4 rounded-xl font-bold transition-all hover:bg-accent-cyan active:scale-95 inline-block shadow-sm"
           >
             Contact Chiagoziem
           </Link>
