@@ -308,7 +308,8 @@ export async function getAboutPageData(): Promise<AboutPageData> {
           "year": years,
           role,
           company,
-          description
+          description,
+          cardPosition
         },
         "certifications": credentials[] {
           "name": select(

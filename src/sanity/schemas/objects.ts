@@ -137,6 +137,19 @@ export const timelineEntry = defineType({
       title: "Description",
       type: "text",
     }),
+    defineField({
+      name: "cardPosition",
+      title: "Card Position (Left or Right)",
+      type: "string",
+      description: "Side of the timeline line where this entry's card will display. Defaults to alternating if left unset.",
+      options: {
+        list: [
+          { title: "Left", value: "left" },
+          { title: "Right", value: "right" },
+        ],
+        layout: "radio",
+      },
+    }),
   ],
 });
 
