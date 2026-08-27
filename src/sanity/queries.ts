@@ -94,6 +94,7 @@ export interface HomePageData {
   learningTrack?: LearningTrackItem[];
   processSteps?: ProcessStep[];
   testimonials?: Testimonial[];
+  testimonialScrollInterval?: number;
   availabilityBadge?: string;
   ctaButtons?: { label: string; url: string }[];
   featuredCaseStudies?: CaseStudy[];
@@ -208,6 +209,7 @@ export async function getHomePageData(): Promise<HomePageData> {
           linkedinUrl,
           context
         },
+        testimonialScrollInterval,
         availabilityBadge,
         ctaButtons,
         credentialsShown,

@@ -3,6 +3,7 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import DynamicIcon from "@/components/DynamicIcon";
+import TestimonialsCarousel from "@/components/TestimonialsCarousel";
 import { getTeardowns, getCaseStudies, getHomePageData, getSiteSettings } from "@/sanity/queries";
 import { urlForImage } from "@/sanity/image";
 import { mockTeardowns, mockCaseStudies } from "@/data/mockData";
@@ -327,73 +328,11 @@ export default async function HomePage() {
 
       case "testimonials":
         return testimonials.length > 0 ? (
-          <section key="testimonials" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-            <div className="mb-10">
-              <span className="text-xs uppercase tracking-widest text-accent-teal font-extrabold">Endorsements</span>
-              <h2 className="text-3xl sm:text-4xl font-extrabold mt-2 tracking-tight">Testimonials</h2>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {testimonials.map((item, idx) => (
-                <div
-                  key={idx}
-                  className="p-8 rounded-3xl glass-panel border-card-border/60 bg-card/30 flex flex-col justify-between relative hover:border-accent-teal/40 transition-all duration-300"
-                >
-                  <div className="mb-6">
-                    {item.quote && (
-                      <p className="text-base text-foreground/90 italic leading-relaxed mb-4">
-                        "{item.quote}"
-                      </p>
-                    )}
-                    {item.context && (
-                      <span className="inline-block text-xs font-mono text-accent-teal bg-accent-teal/10 border border-accent-teal/20 px-3 py-1 rounded-full">
-                        {item.context}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="flex items-center justify-between pt-4 border-t border-card-border/30">
-                    <div className="flex items-center gap-3">
-                      {item.authorPhotoUrl ? (
-                        <img
-                          src={item.authorPhotoUrl}
-                          alt={item.authorName}
-                          className="w-10 h-10 rounded-full object-cover border border-card-border"
-                        />
-                      ) : (
-                        item.authorName && (
-                          <div className="w-10 h-10 rounded-full bg-accent-teal/20 border border-accent-teal/40 flex items-center justify-center font-bold text-accent-teal text-sm">
-                            {item.authorName.charAt(0)}
-                          </div>
-                        )
-                      )}
-                      <div>
-                        {item.authorName && <h4 className="text-sm font-bold text-foreground">{item.authorName}</h4>}
-                        {(item.authorRole || item.authorCompany) && (
-                          <p className="text-xs text-foreground/60">
-                            {item.authorRole}
-                            {item.authorRole && item.authorCompany ? " • " : ""}
-                            {item.authorCompany}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    {item.linkedinUrl && (
-                      <a
-                        href={item.linkedinUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs font-bold text-accent-teal hover:underline flex items-center gap-1"
-                      >
-                        LinkedIn <ArrowUpRight size={12} />
-                      </a>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
+          <TestimonialsCarousel
+            key="testimonials"
+            testimonials={testimonials}
+            scrollInterval={homeData.testimonialScrollInterval}
+          />
         ) : null;
 
       case "learningTrack":

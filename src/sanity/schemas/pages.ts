@@ -125,6 +125,13 @@ export const homePage = defineType({
       description: "Peer, client, and leadership testimonials",
     }),
     defineField({
+      name: "testimonialScrollInterval",
+      title: "Testimonial Auto-Scroll Interval (Seconds)",
+      type: "number",
+      description: "Time in seconds before auto-advancing to the next testimonial. Set to 0 to disable auto-scroll (Default: 5).",
+      initialValue: 5,
+    }),
+    defineField({
       name: "sectionOrder",
       title: "Homepage Section Order",
       type: "array",
