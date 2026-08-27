@@ -32,6 +32,8 @@ export default async function SingleCaseStudyPage({ params }: PageProps) {
   const productDecisions = Array.isArray(study.productDecisions) ? study.productDecisions : [];
   const beforeAfter = Array.isArray(study.beforeAfter) ? study.beforeAfter : [];
 
+  const isEnabled = siteSettings.caseStudiesPageEnabled !== false;
+
   return (
     <div className="min-h-screen page-bg-casestudies text-foreground transition-colors duration-300">
       <Navbar
@@ -41,9 +43,31 @@ export default async function SingleCaseStudyPage({ params }: PageProps) {
         navCtaLabel={siteSettings.navCtaLabel}
         navCtaUrl={siteSettings.navCtaUrl}
         resumeUrl={siteSettings.resumeUrl}
+        caseStudiesPageEnabled={siteSettings.caseStudiesPageEnabled}
       />
 
-      <main className="pt-28 pb-24">
+      {!isEnabled ? (
+        <main className="pt-32 pb-24 px-5 max-w-2xl mx-auto text-center space-y-6">
+          <div className="p-12 rounded-3xl glass-panel border-card-border space-y-6">
+            <div className="w-16 h-16 rounded-2xl bg-accent-teal/10 border border-accent-teal/20 text-accent-teal flex items-center justify-center mx-auto text-2xl font-bold">
+              <span>✦</span>
+            </div>
+            <h1 className="text-3xl font-extrabold tracking-tight">Case Studies Currently Disabled</h1>
+            <p className="text-foreground/80 leading-relaxed text-base">
+              The case studies section is currently undergoing maintenance and updates.
+            </p>
+            <div className="pt-2 flex justify-center gap-4">
+              <Link
+                href="/teardowns"
+                className="px-6 py-3 rounded-xl bg-accent-teal text-background font-bold hover:bg-accent-cyan transition-all text-sm"
+              >
+                View Teardowns →
+              </Link>
+            </div>
+          </div>
+        </main>
+      ) : (
+        <main className="pt-28 pb-24">
         {/* Header */}
         <header className="max-w-[1280px] mx-auto px-5 md:px-16 mb-16">
           <div className="flex flex-wrap items-center gap-3 mb-6">
@@ -298,6 +322,7 @@ export default async function SingleCaseStudyPage({ params }: PageProps) {
           </article>
         </div>
       </main>
+      )}
 
       <Footer
         location={siteSettings.location}

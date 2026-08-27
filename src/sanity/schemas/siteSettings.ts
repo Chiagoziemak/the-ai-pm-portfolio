@@ -118,6 +118,13 @@ export default defineType({
       description: "Custom link for top-right header button (if unset, links to Resume PDF)",
     }),
     defineField({
+      name: "caseStudiesPageEnabled",
+      title: "Enable Case Studies Page & Sections",
+      type: "boolean",
+      description: "Toggle to show or hide the /case-studies page, navbar link, and homepage case study sections.",
+      initialValue: true,
+    }),
+    defineField({
       name: "footerLinks",
       title: "Footer Links",
       type: "array",

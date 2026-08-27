@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import DynamicIcon from "@/components/DynamicIcon";
 import TestimonialsCarousel from "@/components/TestimonialsCarousel";
-import { getTeardowns, getCaseStudies, getHomePageData, getSiteSettings } from "@/sanity/queries";
+import { getTeardowns, getCaseStudies, getHomePageData, getSiteSettings, MarqueeItem } from "@/sanity/queries";
 import { urlForImage } from "@/sanity/image";
 import { mockTeardowns, mockCaseStudies } from "@/data/mockData";
 import { ArrowUpRight, Brain, Compass } from "lucide-react";
@@ -66,8 +66,8 @@ export default async function HomePage() {
     ? homeData.sectionOrder
     : defaultOrder;
 
-  // Marquee items
-  const marqueeItems = [
+  // Marquee items (Sanity or default fallback)
+  const defaultMarqueeItems: MarqueeItem[] = [
     { title: "ResumeGenie AI Agent", desc: "AI Autopilot", color: "from-cyan-500/20 to-teal-500/20" },
     { title: "Netflix Localization & Pricing", desc: "Teardown", color: "from-red-500/20 to-pink-500/20" },
     { title: "Claude AI Strategy Teardown", desc: "Teardown", color: "from-purple-500/20 to-indigo-500/20" },
@@ -76,27 +76,48 @@ export default async function HomePage() {
     { title: "WhatsApp Media & Status Controls", desc: "Teardown", color: "from-emerald-500/20 to-teal-500/20" },
   ];
 
+  const marqueeItems = (Array.isArray(homeData.marqueeItems) && homeData.marqueeItems.length > 0)
+    ? homeData.marqueeItems
+    : defaultMarqueeItems;
+
+  const marqueeEnabled = homeData.marqueeEnabled !== false;
+  const marqueeSpeedSeconds = typeof homeData.marqueeSpeed === "number" ? homeData.marqueeSpeed : 25;
+  const isCaseStudiesEnabled = siteSettings.caseStudiesPageEnabled !== false;
+
   const renderSectionByKey = (key: string) => {
     switch (key) {
       case "featuredWorkStrip":
+        if (!marqueeEnabled || marqueeItems.length === 0) return null;
         return (
           <section key="featuredWorkStrip" className="w-full border-y border-card-border/40 py-4 bg-background/50 backdrop-blur-md overflow-hidden relative my-6">
-            <div className="flex w-max gap-8 animate-marquee">
-              {[...marqueeItems, ...marqueeItems].map((item, index) => (
-                <div
-                  key={index}
-                  className="flex items-center gap-3 px-4 py-2 rounded-xl glass-panel border-card-border/50 text-xs font-semibold whitespace-nowrap"
-                >
-                  <span className={`w-2 h-2 rounded-full bg-gradient-to-r ${item.color}`}></span>
-                  <span className="text-foreground">{item.title}</span>
-                  <span className="text-foreground/40 font-mono text-[10px] uppercase">[{item.desc}]</span>
-                </div>
-              ))}
+            <div
+              className="flex w-max gap-8 animate-marquee"
+              style={{ animationDuration: `${marqueeSpeedSeconds}s` }}
+            >
+              {[...marqueeItems, ...marqueeItems].map((item, index) => {
+                const badgeColor = item.color || "from-cyan-500/20 to-teal-500/20";
+                const cardContent = (
+                  <div className="flex items-center gap-3 px-4 py-2 rounded-xl glass-panel border-card-border/50 text-xs font-semibold whitespace-nowrap hover:border-accent-teal/40 transition-all">
+                    <span className={`w-2 h-2 rounded-full bg-gradient-to-r ${badgeColor}`}></span>
+                    <span className="text-foreground">{item.title}</span>
+                    {item.desc && <span className="text-foreground/40 font-mono text-[10px] uppercase">[{item.desc}]</span>}
+                  </div>
+                );
+
+                return item.url ? (
+                  <Link key={index} href={item.url}>
+                    {cardContent}
+                  </Link>
+                ) : (
+                  <div key={index}>{cardContent}</div>
+                );
+              })}
             </div>
           </section>
         );
 
       case "caseStudies":
+        if (!isCaseStudiesEnabled) return null;
         return (featuredCaseStudy || otherCaseStudy) ? (
           <section key="caseStudies" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
             <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
@@ -248,12 +269,12 @@ export default async function HomePage() {
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="flex flex-wrap justify-center gap-6">
               {featuredTeardowns.map((teardown, idx) => (
                 <Link
                   key={teardown.slug || idx}
                   href={`/teardowns/${teardown.slug}`}
-                  className="group rounded-2xl p-6 glass-panel border-card-border/60 hover:border-accent-teal/40 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
+                  className="group rounded-2xl p-6 glass-panel border-card-border/60 hover:border-accent-teal/40 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 flex flex-col justify-between w-full md:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] max-w-[380px]"
                 >
                   <div>
                     <div className="flex items-center justify-between text-[11px] font-mono text-foreground/50 mb-3">
@@ -409,6 +430,7 @@ export default async function HomePage() {
         navCtaLabel={siteSettings.navCtaLabel}
         navCtaUrl={siteSettings.navCtaUrl}
         resumeUrl={siteSettings.resumeUrl}
+        caseStudiesPageEnabled={siteSettings.caseStudiesPageEnabled}
       />
 
       <main className="flex-grow z-10">

@@ -132,6 +132,39 @@ export const homePage = defineType({
       initialValue: 5,
     }),
     defineField({
+      name: "marqueeEnabled",
+      title: "Enable Marquee Strip",
+      type: "boolean",
+      description: "Toggle to show or hide the ticker marquee strip on the homepage.",
+      initialValue: true,
+    }),
+    defineField({
+      name: "marqueeSpeed",
+      title: "Marquee Scroll Speed (Seconds)",
+      type: "number",
+      description: "Duration in seconds for one full loop of the marquee ticker (Default: 25).",
+      initialValue: 25,
+    }),
+    defineField({
+      name: "marqueeItems",
+      title: "Marquee Ticker Items",
+      type: "array",
+      of: [
+        {
+          type: "object",
+          name: "marqueeItem",
+          title: "Marquee Item",
+          fields: [
+            defineField({ name: "title", title: "Title / Label", type: "string" }),
+            defineField({ name: "desc", title: "Badge / Subtitle", type: "string" }),
+            defineField({ name: "url", title: "Link URL / Path (Optional)", type: "string" }),
+            defineField({ name: "color", title: "Dot Gradient Color Class (Optional)", type: "string" }),
+          ],
+        },
+      ],
+      description: "Custom ticker items displayed in the scrolling banner.",
+    }),
+    defineField({
       name: "sectionOrder",
       title: "Homepage Section Order",
       type: "array",

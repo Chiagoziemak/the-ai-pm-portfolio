@@ -13,6 +13,7 @@ export interface NavbarProps {
   navCtaLabel?: string;
   navCtaUrl?: string;
   resumeUrl?: string;
+  caseStudiesPageEnabled?: boolean;
 }
 
 export default function Navbar({
@@ -22,6 +23,7 @@ export default function Navbar({
   navCtaLabel,
   navCtaUrl,
   resumeUrl,
+  caseStudiesPageEnabled,
 }: NavbarProps) {
   const { theme, toggleTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
@@ -35,9 +37,13 @@ export default function Navbar({
     { name: "Contact", path: "/contact" },
   ];
 
-  const activeLinks = (Array.isArray(navLinks) && navLinks.length > 0)
+  const rawLinks = (Array.isArray(navLinks) && navLinks.length > 0)
     ? navLinks.map((l) => ({ name: l.label, path: l.url }))
     : defaultLinks;
+
+  const activeLinks = caseStudiesPageEnabled === false
+    ? rawLinks.filter((l) => !l.path.startsWith("/case-studies"))
+    : rawLinks;
 
   const ctaLabel = navCtaLabel || "Resume";
   const ctaHref = navCtaUrl || resumeUrl || "/resume.pdf";

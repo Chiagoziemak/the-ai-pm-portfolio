@@ -35,6 +35,7 @@ export interface SiteSettings {
   navLinks?: NavLink[];
   navCtaLabel?: string;
   navCtaUrl?: string;
+  caseStudiesPageEnabled?: boolean;
   navLabels?: {
     home?: string;
     about?: string;
@@ -81,6 +82,13 @@ export interface Testimonial {
   context?: string;
 }
 
+export interface MarqueeItem {
+  title: string;
+  desc?: string;
+  url?: string;
+  color?: string;
+}
+
 export interface HomePageData {
   heroHeading?: string;
   heroSubheading?: string;
@@ -95,6 +103,9 @@ export interface HomePageData {
   processSteps?: ProcessStep[];
   testimonials?: Testimonial[];
   testimonialScrollInterval?: number;
+  marqueeEnabled?: boolean;
+  marqueeSpeed?: number;
+  marqueeItems?: MarqueeItem[];
   availabilityBadge?: string;
   ctaButtons?: { label: string; url: string }[];
   featuredCaseStudies?: CaseStudy[];
@@ -147,6 +158,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
         navLinks[] { label, url },
         navCtaLabel,
         navCtaUrl,
+        caseStudiesPageEnabled,
         navLabels,
         socialLinks,
         "resumeUrl": resumeFile.asset->url,
@@ -210,6 +222,14 @@ export async function getHomePageData(): Promise<HomePageData> {
           context
         },
         testimonialScrollInterval,
+        marqueeEnabled,
+        marqueeSpeed,
+        marqueeItems[] {
+          title,
+          desc,
+          url,
+          color
+        },
         availabilityBadge,
         ctaButtons,
         credentialsShown,

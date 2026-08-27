@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { getCaseStudies, getSiteSettings } from "@/sanity/queries";
 import { mockCaseStudies } from "@/data/mockData";
-import { ArrowUpRight, Sparkles, BookOpen, Layers } from "lucide-react";
+import { ArrowUpRight, Sparkles } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -17,8 +17,59 @@ export default async function CaseStudiesPage() {
   const featuredCaseStudy = caseStudies[0] || mockCaseStudies[0];
   const otherCaseStudies = caseStudies.length > 1 ? caseStudies.slice(1) : [];
 
+  const isEnabled = siteSettings.caseStudiesPageEnabled !== false;
+
+  if (!isEnabled) {
+    return (
+      <div className="flex flex-col min-h-screen relative overflow-hidden page-bg-casestudies text-foreground transition-colors duration-300">
+        <Navbar
+          navTitleText={siteSettings.navTitleText}
+          navLogoUrl={siteSettings.navLogoUrl}
+          navLinks={siteSettings.navLinks}
+          navCtaLabel={siteSettings.navCtaLabel}
+          navCtaUrl={siteSettings.navCtaUrl}
+          resumeUrl={siteSettings.resumeUrl}
+          caseStudiesPageEnabled={siteSettings.caseStudiesPageEnabled}
+        />
+
+        <main className="flex-grow z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-24 flex items-center justify-center">
+          <div className="text-center max-w-2xl mx-auto space-y-6 glass-panel p-12 rounded-3xl border-card-border shadow-lg">
+            <div className="w-16 h-16 rounded-2xl bg-accent-teal/10 border border-accent-teal/20 text-accent-teal flex items-center justify-center mx-auto text-2xl font-bold">
+              <span>✦</span>
+            </div>
+            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">Case Studies Coming Soon</h1>
+            <p className="text-foreground/80 leading-relaxed text-base">
+              The Product Case Studies section is currently undergoing updates. Detailed technical breakdowns and ROI evaluations will be published shortly.
+            </p>
+            <div className="pt-4 flex flex-wrap justify-center gap-4">
+              <Link
+                href="/teardowns"
+                className="px-6 py-3 rounded-xl bg-accent-teal text-background font-bold hover:bg-accent-cyan transition-all text-sm"
+              >
+                Explore Product Teardowns →
+              </Link>
+              <Link
+                href="/contact"
+                className="px-6 py-3 rounded-xl border border-card-border glass-panel hover:bg-card-border/20 text-foreground font-semibold transition-all text-sm"
+              >
+                Contact Chiagoziem
+              </Link>
+            </div>
+          </div>
+        </main>
+
+        <Footer
+          location={siteSettings.location}
+          socialLinks={siteSettings.socialLinks}
+          footerText={siteSettings.footerText}
+          footerLinks={siteSettings.footerLinks}
+        />
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col min-h-screen relative overflow-hidden bg-background text-foreground transition-colors duration-300">
+    <div className="flex flex-col min-h-screen relative overflow-hidden page-bg-casestudies text-foreground transition-colors duration-300">
       {/* Background glow effects */}
       <div className="absolute top-[10%] left-[-10%] w-[350px] sm:w-[500px] h-[350px] sm:h-[500px] rounded-full blur-[100px] glow-bg opacity-30 z-0"></div>
       <div className="absolute bottom-[20%] right-[-10%] w-[300px] sm:w-[450px] h-[300px] sm:h-[450px] rounded-full blur-[120px] glow-bg opacity-20 z-0"></div>
@@ -30,6 +81,7 @@ export default async function CaseStudiesPage() {
         navCtaLabel={siteSettings.navCtaLabel}
         navCtaUrl={siteSettings.navCtaUrl}
         resumeUrl={siteSettings.resumeUrl}
+        caseStudiesPageEnabled={siteSettings.caseStudiesPageEnabled}
       />
 
       <main className="flex-grow z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12">
@@ -143,14 +195,14 @@ export default async function CaseStudiesPage() {
           </section>
         )}
 
-        {/* Other Case Studies Grid */}
+        {/* Other Case Studies Grid (Flexbox centered last-row layout) */}
         {otherCaseStudies.length > 0 && (
-          <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <section className="flex flex-wrap justify-center gap-8">
             {otherCaseStudies.map((study) => (
               <Link
                 key={study.slug}
                 href={`/case-studies/${study.slug}`}
-                className="group rounded-3xl p-6 sm:p-8 glass-panel border-card-border/60 hover:border-accent-teal/40 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
+                className="group rounded-3xl p-6 sm:p-8 glass-panel border-card-border/60 hover:border-accent-teal/40 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 flex flex-col justify-between w-full md:w-[calc(50%-1rem)] max-w-[580px]"
               >
                 <div>
                   <div className="flex items-center justify-between text-[11px] font-mono text-foreground/50 mb-4">

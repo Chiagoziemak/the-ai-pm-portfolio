@@ -114,13 +114,13 @@ export default async function ProductsPage() {
         )}
 
         {/* Coming Soon Grid */}
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <section className="flex flex-wrap justify-center gap-8">
           {comingSoonProducts.map((product) => {
             const slug = (product.name || "product").toLowerCase().replace(/[^a-z0-9]/g, "-");
             return (
               <div 
                 key={slug} 
-                className="rounded-2xl p-8 md:p-10 transition-all duration-500 relative overflow-hidden group border border-card-border glass-panel hover:shadow-[0_0_30px_rgba(0,212,216,0.15)] hover:border-accent-teal/40"
+                className="rounded-2xl p-8 md:p-10 transition-all duration-500 relative overflow-hidden group border border-card-border glass-panel hover:shadow-[0_0_30px_rgba(0,212,216,0.15)] hover:border-accent-teal/40 w-full md:w-[calc(50%-1rem)] max-w-[580px]"
               >
                 {product.coverImage && (
                   <div className="absolute inset-0 opacity-5 group-hover:opacity-10 transition-opacity duration-500 pointer-events-none">
