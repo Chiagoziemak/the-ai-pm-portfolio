@@ -429,6 +429,8 @@ export default async function TeardownDetailPage({ params }: PageProps) {
 
       <Footer
         location={siteSettings.location}
+        footerTagline={siteSettings.footerTagline}
+        footerAvailabilityIcon={siteSettings.footerAvailabilityIcon}
         socialLinks={siteSettings.socialLinks}
         footerText={siteSettings.footerText}
         footerLinks={siteSettings.footerLinks}

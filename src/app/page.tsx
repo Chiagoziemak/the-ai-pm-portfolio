@@ -601,6 +601,8 @@ export default async function HomePage() {
 
       <Footer
         location={siteSettings.location}
+        footerTagline={siteSettings.footerTagline}
+        footerAvailabilityIcon={siteSettings.footerAvailabilityIcon}
         socialLinks={siteSettings.socialLinks}
         footerText={siteSettings.footerText}
         footerLinks={siteSettings.footerLinks}

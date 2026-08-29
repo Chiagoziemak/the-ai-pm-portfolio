@@ -47,6 +47,8 @@ export default async function TeardownsPage() {
 
       <Footer
         location={siteSettings.location}
+        footerTagline={siteSettings.footerTagline}
+        footerAvailabilityIcon={siteSettings.footerAvailabilityIcon}
         socialLinks={siteSettings.socialLinks}
         footerText={siteSettings.footerText}
         footerLinks={siteSettings.footerLinks}

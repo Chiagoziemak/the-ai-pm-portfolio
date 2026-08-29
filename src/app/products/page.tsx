@@ -225,6 +225,8 @@ export default async function ProductsPage() {
 
       <Footer
         location={siteSettings.location}
+        footerTagline={siteSettings.footerTagline}
+        footerAvailabilityIcon={siteSettings.footerAvailabilityIcon}
         socialLinks={siteSettings.socialLinks}
         footerText={siteSettings.footerText}
         footerLinks={siteSettings.footerLinks}

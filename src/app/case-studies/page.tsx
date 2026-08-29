@@ -74,6 +74,8 @@ export default async function CaseStudiesPage() {
 
         <Footer
           location={siteSettings.location}
+          footerTagline={siteSettings.footerTagline}
+          footerAvailabilityIcon={siteSettings.footerAvailabilityIcon}
           socialLinks={siteSettings.socialLinks}
           footerText={siteSettings.footerText}
           footerLinks={siteSettings.footerLinks}
@@ -264,6 +266,8 @@ export default async function CaseStudiesPage() {
 
       <Footer
         location={siteSettings.location}
+        footerTagline={siteSettings.footerTagline}
+        footerAvailabilityIcon={siteSettings.footerAvailabilityIcon}
         socialLinks={siteSettings.socialLinks}
         footerText={siteSettings.footerText}
         footerLinks={siteSettings.footerLinks}

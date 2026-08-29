@@ -43,12 +43,12 @@ export default function Navbar({
   ];
 
   const rawLinks = (Array.isArray(navLinks) && navLinks.length > 0)
-    ? navLinks.map((l) => ({ name: l.label, path: l.url }))
+    ? navLinks.filter((l) => Boolean(l && l.label && l.url)).map((l) => ({ name: l.label, path: l.url }))
     : defaultLinks;
 
-  const activeLinks = caseStudiesPageEnabled === false
+  const activeLinks = (caseStudiesPageEnabled === false
     ? rawLinks.filter((l) => !l.path.startsWith("/case-studies"))
-    : rawLinks;
+    : rawLinks).filter((l) => Boolean(l && l.name && l.path));
 
   const ctaLabel = navCtaLabel || "Resume";
   const ctaHref = navCtaUrl || resumeUrl || "/resume.pdf";

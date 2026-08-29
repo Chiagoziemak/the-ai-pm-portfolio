@@ -114,6 +114,8 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
         </main>
         <Footer
           location={siteSettings.location}
+          footerTagline={siteSettings.footerTagline}
+          footerAvailabilityIcon={siteSettings.footerAvailabilityIcon}
           socialLinks={siteSettings.socialLinks}
           footerText={siteSettings.footerText}
           footerLinks={siteSettings.footerLinks}
@@ -467,6 +469,8 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
 
       <Footer
         location={siteSettings.location}
+        footerTagline={siteSettings.footerTagline}
+        footerAvailabilityIcon={siteSettings.footerAvailabilityIcon}
         socialLinks={siteSettings.socialLinks}
         footerText={siteSettings.footerText}
         footerLinks={siteSettings.footerLinks}

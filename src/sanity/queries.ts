@@ -55,6 +55,8 @@ export interface SiteSettings {
   resumeUrl?: string;
   faviconUrl?: string;
   footerText?: string;
+  footerTagline?: string;
+  footerAvailabilityIcon?: string;
   footerLinks?: FooterLink[];
   contactEmail?: string;
 }
@@ -178,6 +180,8 @@ export async function getSiteSettings(): Promise<SiteSettings> {
         "resumeUrl": resumeFile.asset->url,
         "faviconUrl": favicon.asset->url,
         footerText,
+        footerTagline,
+        footerAvailabilityIcon,
         footerLinks[] { label, url },
         contactEmail
       }`,

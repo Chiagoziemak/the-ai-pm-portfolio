@@ -80,55 +80,61 @@ export default async function ContactPage() {
 
             {/* Contact Links */}
             <div className="space-y-4 sm:space-y-6">
-              <a
-                href={`mailto:${email}`}
-                className="flex items-center gap-4 group cursor-pointer p-2 rounded-2xl hover:bg-card-border/10 transition-colors"
-              >
-                <div className="w-12 h-12 rounded-xl border border-card-border glass-panel flex items-center justify-center text-accent-teal group-hover:bg-accent-teal/10 transition-colors text-lg flex-shrink-0">
-                  <span role="img" aria-label="email">@</span>
-                </div>
-                <div>
-                  <p className="text-[10px] font-mono text-foreground/60 uppercase tracking-widest font-semibold">
-                    Direct Email
-                  </p>
-                  <span className="text-foreground font-semibold hover:text-accent-teal transition-colors text-sm sm:text-base break-all">
-                    {email}
-                  </span>
-                </div>
-              </a>
+              {email && (
+                <a
+                  href={`mailto:${email}`}
+                  className="flex items-center gap-4 group cursor-pointer p-2 rounded-2xl hover:bg-card-border/10 transition-colors"
+                >
+                  <div className="w-12 h-12 rounded-xl border border-card-border glass-panel flex items-center justify-center text-accent-teal group-hover:bg-accent-teal/10 transition-colors text-lg flex-shrink-0">
+                    <span role="img" aria-label="email">@</span>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-mono text-foreground/60 uppercase tracking-widest font-semibold">
+                      Direct Email
+                    </p>
+                    <span className="text-foreground font-semibold hover:text-accent-teal transition-colors text-sm sm:text-base break-all">
+                      {email}
+                    </span>
+                  </div>
+                </a>
+              )}
 
-              <a
-                href={linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-4 group cursor-pointer p-2 rounded-2xl hover:bg-card-border/10 transition-colors"
-              >
-                <div className="w-12 h-12 rounded-xl border border-card-border glass-panel flex items-center justify-center text-accent-teal group-hover:bg-accent-teal/10 transition-colors font-bold text-sm flex-shrink-0">
-                  <span>in</span>
-                </div>
-                <div>
-                  <p className="text-[10px] font-mono text-foreground/60 uppercase tracking-widest font-semibold">
-                    LinkedIn Network
-                  </p>
-                  <span className="text-foreground font-semibold hover:text-accent-teal transition-colors text-sm sm:text-base">
-                    Chiagoziem Melvin Akobundu
-                  </span>
-                </div>
-              </a>
+              {linkedin && (
+                <a
+                  href={linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-4 group cursor-pointer p-2 rounded-2xl hover:bg-card-border/10 transition-colors"
+                >
+                  <div className="w-12 h-12 rounded-xl border border-card-border glass-panel flex items-center justify-center text-accent-teal group-hover:bg-accent-teal/10 transition-colors font-bold text-sm flex-shrink-0">
+                    <span>in</span>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-mono text-foreground/60 uppercase tracking-widest font-semibold">
+                      LinkedIn Network
+                    </p>
+                    <span className="text-foreground font-semibold hover:text-accent-teal transition-colors text-sm sm:text-base">
+                      Chiagoziem Melvin Akobundu
+                    </span>
+                  </div>
+                </a>
+              )}
             </div>
 
             {/* Status Badge */}
-            <div className="border border-card-border border-l-4 border-l-accent-teal glass-panel p-5 sm:p-6 rounded-2xl inline-block max-w-full">
-              <div className="flex items-center gap-3">
-                <div className="relative flex h-3 w-3 flex-shrink-0">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-teal opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-accent-teal"></span>
+            {statusMessage && (
+              <div className="border border-card-border border-l-4 border-l-accent-teal glass-panel p-5 sm:p-6 rounded-2xl inline-block max-w-full">
+                <div className="flex items-center gap-3">
+                  <div className="relative flex h-3 w-3 flex-shrink-0">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-teal opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-accent-teal"></span>
+                  </div>
+                  <span className="text-xs font-mono text-accent-teal font-bold leading-tight">
+                    {statusMessage}
+                  </span>
                 </div>
-                <span className="text-xs font-mono text-accent-teal font-bold leading-tight">
-                  {statusMessage}
-                </span>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Right Side - Form */}
@@ -140,6 +146,8 @@ export default async function ContactPage() {
 
       <Footer
         location={siteSettings.location}
+        footerTagline={siteSettings.footerTagline}
+        footerAvailabilityIcon={siteSettings.footerAvailabilityIcon}
         socialLinks={siteSettings.socialLinks}
         footerText={siteSettings.footerText}
         footerLinks={siteSettings.footerLinks}

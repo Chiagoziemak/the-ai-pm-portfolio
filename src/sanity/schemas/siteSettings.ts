@@ -85,10 +85,22 @@ export default defineType({
       type: "string",
     }),
     defineField({
-      name: "location",
-      title: "Location (e.g. Lagos, Nigeria)",
+      name: "footerTagline",
+      title: "Footer Tagline / Role Text",
       type: "string",
-      description: "Location string shown in footer or hero",
+      description: "Role or title text shown before the availability/location in the footer (e.g. 'AI Product Manager & Engineer'). If left blank, it is hidden.",
+    }),
+    defineField({
+      name: "location",
+      title: "Location / Availability Text (e.g. Lagos, Nigeria / Open to Remote)",
+      type: "string",
+      description: "Location or availability string shown in footer or hero",
+    }),
+    defineField({
+      name: "footerAvailabilityIcon",
+      title: "Footer Availability Icon",
+      type: "string",
+      description: "React-icons identifier for the icon next to the location/availability text (e.g. FiMapPin, FiGlobe, FiCompass). Defaults to FiMapPin if left blank.",
     }),
     defineField({
       name: "contactEmail",
