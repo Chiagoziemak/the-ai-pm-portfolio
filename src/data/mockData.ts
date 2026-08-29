@@ -85,6 +85,8 @@ export interface CaseStudy {
   date: string;
   category: string;
   summary: string;
+  liveUrl?: string;
+  liveUrlLabel?: string;
   readTime?: string;
   badgeLabel?: string;
   cardStats?: { value: string; label?: string }[];

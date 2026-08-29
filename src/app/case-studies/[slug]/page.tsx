@@ -8,7 +8,7 @@ import DynamicIcon from "@/components/DynamicIcon";
 import { getCaseStudyBySlug, getSiteSettings } from "@/sanity/queries";
 import { mockCaseStudies } from "@/data/mockData";
 import { constructMetadata, generateArticleJsonLd, getBaseUrl } from "@/lib/seo";
-import { ArrowLeft, ArrowUpRight } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, ExternalLink } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -132,6 +132,9 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
   const productDecisions = Array.isArray(study.productDecisions) ? study.productDecisions : [];
   const beforeAfter = study.beforeAfter;
 
+  const liveUrl = study.liveUrl;
+  const liveUrlLabel = study.liveUrlLabel || "View Project";
+
   const baseUrl = getBaseUrl(siteSettings);
   const articleJsonLd = generateArticleJsonLd({
     title: study.metaTitle || `${study.title} — Case Study`,
@@ -199,9 +202,24 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
             {study.title}
           </h1>
           {study.summary && (
-            <p className="text-foreground/80 text-base sm:text-lg md:text-xl leading-relaxed max-w-4xl">
+            <p className="text-foreground/80 text-base sm:text-lg md:text-xl leading-relaxed max-w-4xl mb-6">
               {study.summary}
             </p>
+          )}
+
+          {/* Optional Live URL Button in Header */}
+          {liveUrl && (
+            <div className="pt-2">
+              <a
+                href={liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-accent-teal text-background font-bold text-sm sm:text-base hover:bg-accent-cyan transition-all shadow-md shadow-accent-teal/20 hover:scale-[1.02] active:scale-[0.98] min-h-[44px]"
+              >
+                <span>{liveUrlLabel}</span>
+                <ArrowUpRight size={16} />
+              </a>
+            </div>
           )}
         </header>
 
@@ -246,6 +264,21 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
                   <span className="text-foreground font-semibold">{study.readTime || "8 min read"}</span>
                 </div>
               </div>
+
+              {/* Optional Live Link in Sidebar */}
+              {liveUrl && (
+                <div className="mt-6 pt-4 border-t border-card-border/60">
+                  <a
+                    href={liveUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-accent-teal text-background font-bold text-xs sm:text-sm hover:bg-accent-cyan transition-all shadow-sm min-h-[44px]"
+                  >
+                    <span>{liveUrlLabel}</span>
+                    <ArrowUpRight size={14} />
+                  </a>
+                </div>
+              )}
             </div>
 
             {/* Tools Card */}
@@ -407,12 +440,24 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
                 <h3 className="font-bold text-base sm:text-lg text-foreground">Interested in diving deeper?</h3>
                 <p className="text-xs sm:text-sm text-foreground/60 mt-1">Let's discuss how this strategy applies to your domain.</p>
               </div>
-              <Link
-                href="/contact"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-accent-teal text-background font-bold text-xs sm:text-sm hover:bg-accent-cyan transition-all min-h-[44px]"
-              >
-                Discuss This Case Study <ArrowUpRight size={14} />
-              </Link>
+              <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                {liveUrl && (
+                  <a
+                    href={liveUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-accent-teal text-background font-bold text-xs sm:text-sm hover:bg-accent-cyan transition-all min-h-[44px]"
+                  >
+                    {liveUrlLabel} <ArrowUpRight size={14} />
+                  </a>
+                )}
+                <Link
+                  href="/contact"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-card-border glass-panel hover:bg-card-border/20 text-foreground font-semibold text-xs sm:text-sm transition-all min-h-[44px]"
+                >
+                  Discuss This Case Study <ArrowUpRight size={14} />
+                </Link>
+              </div>
             </div>
 
           </article>

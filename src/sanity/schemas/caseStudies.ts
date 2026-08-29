@@ -73,6 +73,18 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: "liveUrl",
+      title: "Live Product / Prototype URL",
+      type: "url",
+      description: "Optional external link to the live deployment, interactive prototype, or demo.",
+    }),
+    defineField({
+      name: "liveUrlLabel",
+      title: "Live URL Button Label",
+      type: "string",
+      description: "Custom label for the live link button (e.g. 'View Prototype', 'Visit Live Platform', 'View Hackathon Demo'). Defaults to 'View Project' if left blank.",
+    }),
+    defineField({
       name: "featured",
       title: "Featured Case Study",
       type: "boolean",
