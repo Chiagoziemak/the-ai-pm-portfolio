@@ -4,38 +4,88 @@ import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import DynamicIcon from "@/components/DynamicIcon";
-import { getCaseStudyBySlug, getCaseStudies, getSiteSettings } from "@/sanity/queries";
+import { getCaseStudyBySlug, getSiteSettings } from "@/sanity/queries";
+import { mockCaseStudies } from "@/data/mockData";
+import { ArrowLeft, ArrowUpRight } from "lucide-react";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
-
-export default async function SingleCaseStudyPage({ params }: PageProps) {
+export default async function CaseStudyDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  const study = await getCaseStudyBySlug(slug);
-  if (!study) notFound();
+  const siteSettings = (await getSiteSettings()) || {};
+  const data = await getCaseStudyBySlug(slug);
+  const study = data || mockCaseStudies.find((s) => s.slug === slug);
 
-  const siteSettings = await getSiteSettings();
-  const allStudies = (await getCaseStudies()) || [];
-  const relatedStudies = Array.isArray(allStudies) ? allStudies.filter((s) => s.slug !== slug) : [];
-
-  const tools = Array.isArray(study.tools) ? study.tools : [];
-  const results = Array.isArray(study.results) ? study.results : [];
-
-  const bodyParagraphs: string[] = Array.isArray((study as any).body) && (study as any).body.length > 0
-    ? (study as any).body
-    : (typeof (study as any).challenge === "string" ? (study as any).challenge.split("\n").filter((p: string) => p.trim() !== "") : (study.summary ? [study.summary] : []));
-
-  const productDecisions = Array.isArray(study.productDecisions) ? study.productDecisions : [];
-  const beforeAfter = Array.isArray(study.beforeAfter) ? study.beforeAfter : [];
+  if (!study) {
+    notFound();
+  }
 
   const isEnabled = siteSettings.caseStudiesPageEnabled !== false;
 
+  if (!isEnabled) {
+    return (
+      <div className="min-h-screen flex flex-col page-bg-casestudies text-foreground transition-colors duration-300">
+        <Navbar
+          navTitleText={siteSettings.navTitleText}
+          navLogoUrl={siteSettings.navLogoUrl}
+          navLinks={siteSettings.navLinks}
+          navCtaLabel={siteSettings.navCtaLabel}
+          navCtaUrl={siteSettings.navCtaUrl}
+          resumeUrl={siteSettings.resumeUrl}
+          caseStudiesPageEnabled={siteSettings.caseStudiesPageEnabled}
+        />
+        <main className="flex-grow z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-20 sm:py-24 flex items-center justify-center">
+          <div className="text-center max-w-2xl mx-auto space-y-6 glass-panel p-8 sm:p-12 rounded-3xl border-card-border shadow-lg">
+            <div className="w-16 h-16 rounded-2xl bg-accent-teal/10 border border-accent-teal/20 text-accent-teal flex items-center justify-center mx-auto text-2xl font-bold">
+              <span>✦</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight">Case Study Coming Soon</h1>
+            <p className="text-foreground/80 leading-relaxed text-sm sm:text-base">
+              The Product Case Studies section is currently undergoing updates. Detailed technical breakdowns and ROI evaluations will be published shortly.
+            </p>
+            <div className="pt-4 flex flex-wrap justify-center gap-4">
+              <Link
+                href="/teardowns"
+                className="px-6 py-3 rounded-xl bg-accent-teal text-background font-bold hover:bg-accent-cyan transition-all text-sm min-h-[44px] flex items-center"
+              >
+                Explore Product Teardowns →
+              </Link>
+              <Link
+                href="/contact"
+                className="px-6 py-3 rounded-xl border border-card-border glass-panel hover:bg-card-border/20 text-foreground font-semibold transition-all text-sm min-h-[44px] flex items-center"
+              >
+                Contact Chiagoziem
+              </Link>
+            </div>
+          </div>
+        </main>
+        <Footer
+          location={siteSettings.location}
+          socialLinks={siteSettings.socialLinks}
+          footerText={siteSettings.footerText}
+          footerLinks={siteSettings.footerLinks}
+        />
+      </div>
+    );
+  }
+
+  const bodyParagraphs = Array.isArray(study.body) && study.body.length > 0
+    ? study.body
+    : (study.summary ? [study.summary] : []);
+
+  const tools = Array.isArray(study.tools) ? study.tools : [];
+  const results = Array.isArray(study.results) ? study.results : [];
+  const cardStats = Array.isArray(study.cardStats) ? study.cardStats : [];
+  const productDecisions = Array.isArray(study.productDecisions) ? study.productDecisions : [];
+  const beforeAfter = study.beforeAfter;
+
   return (
-    <div className="min-h-screen page-bg-casestudies text-foreground transition-colors duration-300">
+    <div className="min-h-screen flex flex-col page-bg-casestudies text-foreground transition-colors duration-300 overflow-x-hidden">
       <Navbar
         navTitleText={siteSettings.navTitleText}
         navLogoUrl={siteSettings.navLogoUrl}
@@ -46,36 +96,26 @@ export default async function SingleCaseStudyPage({ params }: PageProps) {
         caseStudiesPageEnabled={siteSettings.caseStudiesPageEnabled}
       />
 
-      {!isEnabled ? (
-        <main className="pt-32 pb-24 px-5 max-w-2xl mx-auto text-center space-y-6">
-          <div className="p-12 rounded-3xl glass-panel border-card-border space-y-6">
-            <div className="w-16 h-16 rounded-2xl bg-accent-teal/10 border border-accent-teal/20 text-accent-teal flex items-center justify-center mx-auto text-2xl font-bold">
-              <span>✦</span>
-            </div>
-            <h1 className="text-3xl font-extrabold tracking-tight">Case Studies Currently Disabled</h1>
-            <p className="text-foreground/80 leading-relaxed text-base">
-              The case studies section is currently undergoing maintenance and updates.
-            </p>
-            <div className="pt-2 flex justify-center gap-4">
-              <Link
-                href="/teardowns"
-                className="px-6 py-3 rounded-xl bg-accent-teal text-background font-bold hover:bg-accent-cyan transition-all text-sm"
-              >
-                View Teardowns →
-              </Link>
-            </div>
-          </div>
-        </main>
-      ) : (
-        <main className="pt-28 pb-24">
+      <main className="flex-grow pt-8 sm:pt-12 pb-16 sm:pb-24">
+        
+        {/* Back Link */}
+        <div className="max-w-[1280px] mx-auto px-4 sm:px-6 md:px-12 lg:px-16 mb-6 sm:mb-8">
+          <Link
+            href="/case-studies"
+            className="inline-flex items-center gap-2 text-xs sm:text-sm text-foreground/60 hover:text-accent-teal transition-colors font-medium min-h-[36px]"
+          >
+            <ArrowLeft size={16} /> Back to Case Studies
+          </Link>
+        </div>
+
         {/* Header */}
-        <header className="max-w-[1280px] mx-auto px-5 md:px-16 mb-16">
-          <div className="flex flex-wrap items-center gap-3 mb-6">
-            <span className="text-xs font-mono tracking-widest uppercase bg-[#00d3d7]/20 text-[#21dce0] px-3 py-1 rounded-full border border-[#47f0f4]/30 font-bold">
-              {study.category || "Case Study"}
+        <header className="max-w-[1280px] mx-auto px-4 sm:px-6 md:px-12 lg:px-16 mb-8 sm:mb-12">
+          <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 mb-4 sm:mb-6">
+            <span className="text-xs uppercase font-mono tracking-widest text-accent-teal px-3 py-1 rounded-full border border-accent-teal/30 bg-accent-teal/10 font-bold">
+              {study.category || "AI PM"}
             </span>
             {study.badgeLabel && (
-              <span className="px-3 py-1 rounded-full text-xs font-mono tracking-wider bg-[#bec2fc]/20 text-[#bec2fc] border border-[#bec2fc]/30">
+              <span className="px-3 py-1 rounded-full text-xs font-mono tracking-wider bg-accent-cyan/20 text-accent-cyan border border-accent-cyan/30">
                 {study.badgeLabel}
               </span>
             )}
@@ -84,23 +124,18 @@ export default async function SingleCaseStudyPage({ params }: PageProps) {
                 Placeholder Content
               </span>
             )}
-            <span className="text-xs text-[#91909a] font-mono ml-auto">
+            <span className="text-xs text-foreground/50 font-mono ml-auto">
               {study.date || "2024"}
             </span>
           </div>
 
           <h1
-            className="font-bold text-4xl sm:text-5xl md:text-6xl mb-6 tracking-tight leading-tight"
-            style={{
-              background: "linear-gradient(135deg, #bec2fc 0%, #47f0f4 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            }}
+            className="font-extrabold text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-4 sm:mb-6 tracking-tight leading-tight break-words"
           >
             {study.title}
           </h1>
           {study.summary && (
-            <p className="text-[#c7c5d0] text-lg sm:text-xl leading-relaxed max-w-4xl">
+            <p className="text-foreground/80 text-base sm:text-lg md:text-xl leading-relaxed max-w-4xl">
               {study.summary}
             </p>
           )}
@@ -108,55 +143,55 @@ export default async function SingleCaseStudyPage({ params }: PageProps) {
 
         {/* Cover Image */}
         {study.coverImage && (
-          <div className="w-full h-[350px] md:h-[500px] relative mb-16 overflow-hidden bg-gradient-to-br from-[#1a1f4e] via-[#0a0c1f] to-[#13140f] flex items-center justify-center border-y border-white/10">
+          <div className="w-full h-[240px] sm:h-[360px] md:h-[480px] relative mb-12 sm:mb-16 overflow-hidden bg-gradient-to-br from-[#1a1f4e] via-[#0a0c1f] to-[#13140f] flex items-center justify-center border-y border-card-border">
             <img src={study.coverImage} alt={study.title} className="absolute inset-0 w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0a0c1f] via-transparent to-transparent"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent"></div>
           </div>
         )}
 
         {/* Article Layout */}
-        <div className="max-w-[1280px] mx-auto px-5 md:px-16 grid grid-cols-1 lg:grid-cols-12 gap-12">
+        <div className="max-w-[1280px] mx-auto px-4 sm:px-6 md:px-12 lg:px-16 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
 
           {/* Sidebar */}
-          <aside className="lg:col-span-4 flex flex-col gap-8">
+          <aside className="lg:col-span-4 flex flex-col gap-6 sm:gap-8">
 
             {/* Summary Card */}
-            <div className="rounded-xl p-8 border border-white/10 bg-[#1a1f4e66] backdrop-blur-xl">
-              <h3 className="text-xl font-semibold mb-4 text-[#bec2fc] flex items-center gap-2">
-                <DynamicIcon name={(study as any).summaryIcon || "FiFileText"} size={20} className="text-[#bec2fc]" />
+            <div className="rounded-2xl p-6 sm:p-8 border border-card-border glass-panel shadow-sm">
+              <h3 className="text-lg sm:text-xl font-bold mb-4 text-foreground flex items-center gap-2">
+                <DynamicIcon name={(study as any).summaryIcon || "FiFileText"} size={20} className="text-accent-teal" />
                 Summary
               </h3>
-              <p className="text-[#c7c5d0] text-base mb-6 leading-relaxed">
+              <p className="text-foreground/80 text-xs sm:text-sm mb-6 leading-relaxed">
                 {study.summary}
               </p>
-              <div className="flex flex-col gap-4 text-sm">
-                <div className="flex justify-between border-b border-white/10 pb-2">
-                  <span className="text-[#91909a]">Category</span>
-                  <span className="text-[#e4e2db] font-semibold">{study.category || "AI PM"}</span>
+              <div className="flex flex-col gap-3 text-xs sm:text-sm font-mono">
+                <div className="flex justify-between border-b border-card-border/60 pb-2">
+                  <span className="text-foreground/50">Category</span>
+                  <span className="text-foreground font-semibold">{study.category || "AI PM"}</span>
                 </div>
-                <div className="flex justify-between border-b border-white/10 pb-2">
-                  <span className="text-[#91909a]">Date</span>
-                  <span className="text-[#e4e2db] font-semibold">{study.date || "2024"}</span>
+                <div className="flex justify-between border-b border-card-border/60 pb-2">
+                  <span className="text-foreground/50">Date</span>
+                  <span className="text-foreground font-semibold">{study.date || "2024"}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[#91909a]">Read Time</span>
-                  <span className="text-[#e4e2db] font-semibold">{study.readTime || "8 min read"}</span>
+                  <span className="text-foreground/50">Read Time</span>
+                  <span className="text-foreground font-semibold">{study.readTime || "8 min read"}</span>
                 </div>
               </div>
             </div>
 
             {/* Tools Card */}
             {tools.length > 0 && (
-              <div className="rounded-xl p-8 border-l-4 border-l-[#47f0f4] border border-white/10 bg-[#1a1f4e66] backdrop-blur-xl">
-                <h3 className="text-xs font-mono text-[#47f0f4] mb-6 tracking-widest uppercase flex items-center gap-2 font-bold">
-                  <DynamicIcon name={(study as any).toolsIcon || "FiCpu"} size={16} className="text-[#47f0f4]" />
+              <div className="rounded-2xl p-6 sm:p-8 border border-card-border glass-panel shadow-sm">
+                <h3 className="text-xs font-mono text-accent-teal mb-4 sm:mb-6 tracking-widest uppercase flex items-center gap-2 font-bold">
+                  <DynamicIcon name={(study as any).toolsIcon || "FiCpu"} size={16} className="text-accent-teal" />
                   Stack &amp; Methods
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {tools.map((tool) => (
                     <span
                       key={tool}
-                      className="px-3 py-1 bg-[#1a1f4e] text-[#8287bd] text-xs font-mono rounded"
+                      className="px-3 py-1 bg-card border border-card-border text-foreground/80 text-xs font-mono rounded-lg"
                     >
                       {tool}
                     </span>
@@ -165,153 +200,86 @@ export default async function SingleCaseStudyPage({ params }: PageProps) {
               </div>
             )}
 
+            {/* Key Metrics / Stat Pairs */}
+            {cardStats.length > 0 && (
+              <div className="rounded-2xl p-6 sm:p-8 border border-accent-teal/30 bg-accent-teal/5 glass-panel">
+                <h3 className="text-xs font-mono text-accent-teal mb-4 tracking-widest uppercase font-bold">
+                  Target Metrics
+                </h3>
+                <div className="grid grid-cols-2 gap-3">
+                  {cardStats.map((stat, i) => (
+                    <div key={i} className="p-3.5 rounded-xl bg-card border border-card-border text-center">
+                      <span className="block text-xl sm:text-2xl font-black text-accent-teal">{stat.value}</span>
+                      <span className="text-[10px] font-mono text-foreground/60 uppercase">{stat.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
           </aside>
 
           {/* Main Article */}
-          <article className="lg:col-span-8 flex flex-col gap-12">
+          <article className="lg:col-span-8 flex flex-col gap-8 sm:gap-12">
 
             {/* Body */}
             {bodyParagraphs.length > 0 && (
-              <section>
-                <h2 className="text-3xl font-semibold text-[#bec2fc] mb-6 tracking-tight flex items-center gap-2.5">
-                  <DynamicIcon name={(study as any).challengeIcon || "FiTarget"} size={24} className="text-[#47f0f4]" />
+              <section className="p-6 sm:p-8 rounded-2xl border border-card-border glass-panel">
+                <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-4 sm:mb-6 tracking-tight flex items-center gap-2.5">
+                  <DynamicIcon name={(study as any).challengeIcon || "FiTarget"} size={22} className="text-accent-teal" />
                   The Challenge
                 </h2>
-                <div className="space-y-4 text-[#c7c5d0] leading-relaxed">
+                <div className="space-y-4 text-foreground/80 leading-relaxed text-sm sm:text-base md:text-lg">
                   {bodyParagraphs.map((para, idx) => (
-                    <p key={idx} className="text-base sm:text-lg leading-relaxed">{para}</p>
+                    <p key={idx} className="leading-relaxed">{para}</p>
                   ))}
                 </div>
               </section>
             )}
 
-            {/* Product Decisions (Structured PM Log Section) */}
+            {/* Product Decisions */}
             {productDecisions.length > 0 && (
-              <section>
-                <h2 className="text-3xl font-semibold text-[#bec2fc] mb-6 tracking-tight flex items-center gap-2.5">
-                  <DynamicIcon name={(study as any).decisionsIcon || "FiLayers"} size={24} className="text-[#47f0f4]" />
+              <section className="space-y-6">
+                <h2 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight flex items-center gap-2.5">
+                  <DynamicIcon name={(study as any).decisionsIcon || "FiLayers"} size={22} className="text-accent-cyan" />
                   Product Decisions
                 </h2>
-                <div className="space-y-6">
-                  {productDecisions.map((pd, idx) => (
-                    <div
-                      key={idx}
-                      className="rounded-2xl p-6 sm:p-8 border border-white/10 bg-[#1a1f4e66] backdrop-blur-xl"
-                    >
-                      <h3 className="text-xl font-bold text-[#47f0f4] mb-3">{pd.decision}</h3>
-                      <p className="text-sm sm:text-base text-[#c7c5d0] leading-relaxed mb-4">
-                        <strong className="text-[#e4e2db]">Context:</strong> {pd.context}
-                      </p>
+                <div className="space-y-5">
+                  {productDecisions.map((pd: any, idx: number) => {
+                    const title = pd.decisionTitle || pd.decision || `Decision ${idx + 1}`;
+                    const status = pd.status || pd.outcome;
+                    const rationale = pd.rationale || pd.context;
+                    const tradeoff = pd.tradeoff || pd.tradeoffs;
 
-                      {Array.isArray(pd.options) && pd.options.length > 0 && (
-                        <div className="mb-4">
-                          <span className="text-xs font-mono text-[#91909a] uppercase tracking-wider block mb-2 font-bold">Options Considered:</span>
-                          <ul className="list-disc list-inside space-y-1 text-xs sm:text-sm text-[#c7c5d0]">
-                            {pd.options.map((opt, oIdx) => (
-                              <li key={oIdx} className={opt === pd.chosenOption ? "text-[#47f0f4] font-semibold" : ""}>
-                                {opt} {opt === pd.chosenOption ? "(Chosen)" : ""}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-
-                      <div className="p-4 rounded-xl bg-[#0a0c1f]/80 border border-white/5 space-y-2 text-xs sm:text-sm">
-                        <p className="text-[#c7c5d0]"><strong className="text-[#bec2fc]">Rationale:</strong> {pd.rationale}</p>
-                        {pd.tradeoffs && <p className="text-[#c7c5d0]"><strong className="text-[#ffb955]">Trade-offs:</strong> {pd.tradeoffs}</p>}
-                        {pd.outcome && <p className="text-[#c7c5d0]"><strong className="text-[#47f0f4]">Outcome:</strong> {pd.outcome}</p>}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* Before & After Comparison Section */}
-            {beforeAfter.length > 0 && (
-              <section>
-                <h2 className="text-3xl font-semibold text-[#bec2fc] mb-6 tracking-tight flex items-center gap-2.5">
-                  <DynamicIcon name={(study as any).beforeAfterIcon || "FiRefreshCw"} size={24} className="text-[#47f0f4]" />
-                  Before &amp; After Comparison
-                </h2>
-                <div className="space-y-8">
-                  {beforeAfter.map((block, idx) => (
-                    <div key={idx} className="rounded-2xl p-6 sm:p-8 border border-white/10 bg-[#1a1f4e66] backdrop-blur-xl">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                        {/* Before */}
-                        <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20">
-                          <span className="text-xs font-mono font-bold uppercase tracking-wider text-red-400 block mb-2">
-                            Before: {block.beforeLabel}
-                          </span>
-                          <p className="text-xs sm:text-sm text-[#c7c5d0] leading-relaxed mb-4">{block.beforeDescription}</p>
-                          {block.beforeImageUrl && (
-                            <img src={block.beforeImageUrl} alt={block.beforeLabel} className="w-full h-48 object-cover rounded-lg border border-red-500/20" />
-                          )}
-                        </div>
-
-                        {/* After */}
-                        <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-                          <span className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-400 block mb-2">
-                            After: {block.afterLabel}
-                          </span>
-                          <p className="text-xs sm:text-sm text-[#c7c5d0] leading-relaxed mb-4">{block.afterDescription}</p>
-                          {block.afterImageUrl && (
-                            <img src={block.afterImageUrl} alt={block.afterLabel} className="w-full h-48 object-cover rounded-lg border border-emerald-500/20" />
-                          )}
-                        </div>
-                      </div>
-
-                      {block.impact && (
-                        <div className="p-4 rounded-xl bg-[#47f0f4]/10 border border-[#47f0f4]/20 text-xs sm:text-sm text-[#47f0f4] font-medium">
-                          <strong>Impact Summary:</strong> {block.impact}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* Results Bento Grid */}
-            {results.length > 0 && (
-              <section>
-                <h2 className="text-3xl font-semibold text-[#bec2fc] mb-6 tracking-tight flex items-center gap-2.5">
-                  <DynamicIcon name={(study as any).resultsIcon || "FiTrendingUp"} size={24} className="text-[#47f0f4]" />
-                  Results &amp; Impact
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {results.map((result, idx) => {
-                    const match = typeof result === "string" ? result.match(/^([0-9.]+[x%]|\d+)\s(.*)/) : null;
-                    if (match) {
-                      const [_, stat, desc] = match;
-                      return (
-                        <div
-                          key={idx}
-                          className="rounded-xl p-6 flex flex-col items-center justify-center text-center border border-white/10 bg-[#1a1f4e66] backdrop-blur-xl"
-                        >
-                          <span
-                            className="font-bold text-5xl mb-2"
-                            style={{
-                              background: "linear-gradient(135deg, #47f0f4 0%, #bec2fc 100%)",
-                              WebkitBackgroundClip: "text",
-                              WebkitTextFillColor: "transparent",
-                            }}
-                          >
-                            {stat}
-                          </span>
-                          <span className="text-[#91909a] text-xs font-mono tracking-widest uppercase">
-                            {desc}
-                          </span>
-                        </div>
-                      );
-                    }
                     return (
                       <div
                         key={idx}
-                        className="rounded-xl p-5 border border-white/10 bg-[#1a1f4e66] backdrop-blur-xl text-sm text-[#c7c5d0] font-medium flex items-center gap-3"
+                        className="rounded-2xl p-6 sm:p-8 border border-card-border glass-panel shadow-sm"
                       >
-                        <span className="w-2 h-2 rounded-full bg-[#47f0f4] flex-shrink-0"></span>
-                        <span>{result}</span>
+                        <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                          <h3 className="text-lg sm:text-xl font-bold text-foreground">
+                            {title}
+                          </h3>
+                          {status && (
+                            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase bg-accent-teal/10 text-accent-teal border border-accent-teal/20 font-bold">
+                              {status}
+                            </span>
+                          )}
+                        </div>
+
+                        {rationale && (
+                          <div className="mb-4 text-xs sm:text-sm text-foreground/80 leading-relaxed">
+                            <strong className="text-foreground block mb-1 font-mono uppercase text-xs text-accent-teal">Rationale:</strong>
+                            {rationale}
+                          </div>
+                        )}
+
+                        {tradeoff && (
+                          <div className="p-3.5 rounded-xl bg-card border border-card-border text-xs text-foreground/75 italic">
+                            <strong className="not-italic text-accent-cyan font-mono block mb-0.5">Trade-off Considered:</strong>
+                            {tradeoff}
+                          </div>
+                        )}
                       </div>
                     );
                   })}
@@ -319,10 +287,70 @@ export default async function SingleCaseStudyPage({ params }: PageProps) {
               </section>
             )}
 
+            {/* Before / After Comparison */}
+            {beforeAfter && (
+              <section className="p-6 sm:p-8 rounded-2xl border border-card-border glass-panel">
+                <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-6 tracking-tight flex items-center gap-2.5">
+                  <DynamicIcon name={(study as any).beforeAfterIcon || "FiShuffle"} size={22} className="text-accent-teal" />
+                  Before &amp; After Transformation
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
+                  {((beforeAfter as any).before || (beforeAfter as any)[0]?.beforeDescription) && (
+                    <div className="p-5 sm:p-6 rounded-xl border border-red-500/30 bg-red-500/5">
+                      <span className="text-xs font-mono uppercase text-red-600 dark:text-red-400 font-bold block mb-2">Before</span>
+                      <p className="text-xs sm:text-sm text-foreground/85 leading-relaxed">
+                        {(beforeAfter as any).before || (beforeAfter as any)[0]?.beforeDescription}
+                      </p>
+                    </div>
+                  )}
+                  {((beforeAfter as any).after || (beforeAfter as any)[0]?.afterDescription) && (
+                    <div className="p-5 sm:p-6 rounded-xl border border-accent-teal/40 bg-accent-teal/5">
+                      <span className="text-xs font-mono uppercase text-accent-teal font-bold block mb-2">After</span>
+                      <p className="text-xs sm:text-sm text-foreground/85 leading-relaxed">
+                        {(beforeAfter as any).after || (beforeAfter as any)[0]?.afterDescription}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </section>
+            )}
+
+            {/* Measurable Results */}
+            {results.length > 0 && (
+              <section className="p-6 sm:p-8 rounded-2xl border border-accent-teal/30 bg-accent-teal/5 glass-panel">
+                <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-6 tracking-tight flex items-center gap-2.5">
+                  <DynamicIcon name={(study as any).resultsIcon || "FiAward"} size={22} className="text-accent-teal" />
+                  Measurable Results &amp; Business Outcomes
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                  {results.map((res, idx) => (
+                    <div key={idx} className="p-4 rounded-xl bg-card border border-card-border text-xs sm:text-sm font-medium text-foreground flex items-center gap-3">
+                      <span className="w-2 h-2 rounded-full bg-accent-teal flex-shrink-0"></span>
+                      <span>{res}</span>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Next Steps / Contact CTA */}
+            <div className="p-6 sm:p-8 rounded-2xl border border-card-border glass-panel flex flex-col sm:flex-row items-center justify-between gap-4 mt-6">
+              <div>
+                <h3 className="font-bold text-base sm:text-lg text-foreground">Interested in diving deeper?</h3>
+                <p className="text-xs sm:text-sm text-foreground/60 mt-1">Let's discuss how this strategy applies to your domain.</p>
+              </div>
+              <Link
+                href="/contact"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-accent-teal text-background font-bold text-xs sm:text-sm hover:bg-accent-cyan transition-all min-h-[44px]"
+              >
+                Discuss This Case Study <ArrowUpRight size={14} />
+              </Link>
+            </div>
+
           </article>
         </div>
+
       </main>
-      )}
 
       <Footer
         location={siteSettings.location}

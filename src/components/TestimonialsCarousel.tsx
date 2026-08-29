@@ -27,6 +27,8 @@ export default function TestimonialsCarousel({
   const [isFading, setIsFading] = useState(false);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
 
   const total = testimonials.length;
   const intervalSeconds = typeof scrollInterval === "number" ? scrollInterval : 5;
@@ -76,7 +78,7 @@ export default function TestimonialsCarousel({
     return () => resetTimer();
   }, [currentIndex, isPaused, intervalSeconds, total]);
 
-  // Keyboard navigation support
+  // Keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "ArrowLeft") {
       resetTimer();
@@ -85,6 +87,34 @@ export default function TestimonialsCarousel({
       resetTimer();
       handleNext();
     }
+  };
+
+  // Touch Swipe handlers for mobile
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStartX.current || !touchEndX.current) return;
+    const distance = touchStartX.current - touchEndX.current;
+    const minSwipeDistance = 45;
+
+    if (distance > minSwipeDistance) {
+      // Swiped left -> next
+      resetTimer();
+      handleNext();
+    } else if (distance < -minSwipeDistance) {
+      // Swiped right -> prev
+      resetTimer();
+      handlePrev();
+    }
+
+    touchStartX.current = null;
+    touchEndX.current = null;
   };
 
   if (total === 0) return null;
@@ -97,15 +127,17 @@ export default function TestimonialsCarousel({
   const nextItem = testimonials[nextIndex];
 
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 overflow-hidden">
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 overflow-hidden">
       {/* Section Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4 text-center sm:text-left">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-10 gap-4 text-center sm:text-left">
         <div>
           <span className="text-xs uppercase tracking-widest text-accent-teal font-extrabold">Endorsements</span>
-          <h2 className="text-3xl sm:text-4xl font-extrabold mt-2 tracking-tight text-foreground">Testimonials</h2>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mt-1.5 sm:mt-2 tracking-tight text-foreground">
+            Testimonials
+          </h2>
         </div>
 
-        {/* Top-Right Header Arrows (If > 1 item) */}
+        {/* Header Arrow Controls (Always visible when > 1 item) */}
         {total > 1 && (
           <div className="flex items-center justify-center sm:justify-end gap-3">
             <button
@@ -114,9 +146,9 @@ export default function TestimonialsCarousel({
                 handlePrev();
               }}
               aria-label="Previous testimonial"
-              className="w-10 h-10 rounded-full glass-panel border border-card-border/80 text-foreground hover:bg-card-border/40 hover:border-accent-teal/50 hover:text-accent-teal transition-all flex items-center justify-center shadow-sm active:scale-95"
+              className="w-11 h-11 sm:w-10 sm:h-10 rounded-full glass-panel border border-card-border/80 text-foreground hover:bg-card-border/40 hover:border-accent-teal/50 hover:text-accent-teal active:scale-95 transition-all flex items-center justify-center shadow-sm min-w-[44px] min-h-[44px]"
             >
-              <ChevronLeft size={18} />
+              <ChevronLeft size={20} />
             </button>
 
             <button
@@ -125,53 +157,56 @@ export default function TestimonialsCarousel({
                 handleNext();
               }}
               aria-label="Next testimonial"
-              className="w-10 h-10 rounded-full glass-panel border border-card-border/80 text-foreground hover:bg-card-border/40 hover:border-accent-teal/50 hover:text-accent-teal transition-all flex items-center justify-center shadow-sm active:scale-95"
+              className="w-11 h-11 sm:w-10 sm:h-10 rounded-full glass-panel border border-card-border/80 text-foreground hover:bg-card-border/40 hover:border-accent-teal/50 hover:text-accent-teal active:scale-95 transition-all flex items-center justify-center shadow-sm min-w-[44px] min-h-[44px]"
             >
-              <ChevronRight size={18} />
+              <ChevronRight size={20} />
             </button>
           </div>
         )}
       </div>
 
-      {/* Carousel Area with Side Peeking Cards */}
+      {/* Carousel Area */}
       <div
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
         onFocus={() => setIsPaused(true)}
         onBlur={() => setIsPaused(false)}
         onKeyDown={handleKeyDown}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
         tabIndex={0}
         aria-roledescription="carousel"
         aria-label="Testimonials Carousel"
-        className="relative flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-accent-teal/40 rounded-3xl py-4"
+        className="relative flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-accent-teal/40 rounded-3xl py-2 select-none"
       >
-        {/* If single testimonial: Simple centered card */}
+        {/* Single Testimonial */}
         {total === 1 ? (
-          <div className="w-full max-w-3xl p-8 md:p-12 rounded-3xl glass-panel border-card-border/80 bg-card/40 flex flex-col justify-between relative shadow-lg">
-            <div className="mb-8">
+          <div className="w-full max-w-3xl p-6 sm:p-10 md:p-12 rounded-3xl glass-panel border-card-border/80 bg-card/40 flex flex-col justify-between relative shadow-lg">
+            <div className="mb-6 sm:mb-8">
               {currentItem.context && (
-                <span className="inline-block text-xs font-mono text-accent-teal bg-accent-teal/10 border border-accent-teal/20 px-3.5 py-1 rounded-full mb-4 font-semibold">
+                <span className="inline-block text-[11px] sm:text-xs font-mono text-accent-teal bg-accent-teal/10 border border-accent-teal/20 px-3 py-0.5 sm:px-3.5 sm:py-1 rounded-full mb-3 sm:mb-4 font-semibold">
                   ✦ {currentItem.context}
                 </span>
               )}
               {currentItem.quote && (
-                <blockquote className="text-lg sm:text-xl md:text-2xl text-foreground/90 italic leading-relaxed font-serif">
+                <blockquote className="text-base sm:text-lg md:text-xl text-foreground/90 italic leading-relaxed font-serif">
                   "{currentItem.quote}"
                 </blockquote>
               )}
             </div>
 
-            <div className="flex flex-wrap items-center justify-between pt-6 border-t border-card-border/40 gap-4">
-              <div className="flex items-center gap-4">
+            <div className="flex flex-wrap items-center justify-between pt-5 sm:pt-6 border-t border-card-border/40 gap-4">
+              <div className="flex items-center gap-3 sm:gap-4">
                 {currentItem.authorPhotoUrl ? (
                   <img
                     src={currentItem.authorPhotoUrl}
                     alt={currentItem.authorName || "Author"}
-                    className="w-12 h-12 rounded-full object-cover border border-card-border/80 shadow-sm"
+                    className="w-11 h-11 sm:w-12 sm:h-12 rounded-full object-cover border border-card-border/80 shadow-sm"
                   />
                 ) : (
                   currentItem.authorName && (
-                    <div className="w-12 h-12 rounded-full bg-accent-teal/20 border border-accent-teal/40 flex items-center justify-center font-bold text-accent-teal text-base shadow-sm">
+                    <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-accent-teal/20 border border-accent-teal/40 flex items-center justify-center font-bold text-accent-teal text-base shadow-sm">
                       {currentItem.authorName.charAt(0)}
                     </div>
                   )
@@ -197,7 +232,7 @@ export default function TestimonialsCarousel({
                   href={currentItem.linkedinUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs font-bold text-accent-teal hover:underline flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-accent-teal/10 border border-accent-teal/20 hover:bg-accent-teal/20 transition-all"
+                  className="text-xs font-bold text-accent-teal hover:underline flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent-teal/10 border border-accent-teal/20 hover:bg-accent-teal/20 transition-all min-h-[36px]"
                 >
                   LinkedIn Profile <ArrowUpRight size={14} />
                 </a>
@@ -205,37 +240,37 @@ export default function TestimonialsCarousel({
             </div>
           </div>
         ) : (
-          /* Multi-item Carousel with Side Peeking Cards & Circular Edge Arrows */
-          <div className="w-full relative flex items-center justify-center min-h-[340px]">
+          /* Multi-item Carousel with Side Peeking Cards on Desktop & Fluid Card on Mobile */
+          <div className="w-full relative flex items-center justify-center min-h-[300px] sm:min-h-[340px]">
 
-            {/* Left Circular Arrow Button */}
+            {/* Left Circular Edge Arrow (Visible on tablet & desktop, hidden on small mobile) */}
             <button
               onClick={() => {
                 resetTimer();
                 handlePrev();
               }}
               aria-label="Previous testimonial"
-              className="absolute left-1 sm:left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full glass-panel border border-card-border bg-background/90 text-foreground shadow-xl hover:scale-110 hover:border-accent-teal hover:text-accent-teal transition-all flex items-center justify-center z-30 active:scale-95"
+              className="hidden sm:flex absolute left-2 lg:left-4 top-1/2 -translate-y-1/2 w-11 h-11 sm:w-12 sm:h-12 rounded-full glass-panel border border-card-border bg-background/90 text-foreground shadow-xl hover:scale-110 hover:border-accent-teal hover:text-accent-teal transition-all items-center justify-center z-30 active:scale-95 min-w-[44px] min-h-[44px]"
             >
               <ChevronLeft size={22} />
             </button>
 
-            {/* Right Circular Arrow Button */}
+            {/* Right Circular Edge Arrow (Visible on tablet & desktop, hidden on small mobile) */}
             <button
               onClick={() => {
                 resetTimer();
                 handleNext();
               }}
               aria-label="Next testimonial"
-              className="absolute right-1 sm:right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full glass-panel border border-card-border bg-background/90 text-foreground shadow-xl hover:scale-110 hover:border-accent-teal hover:text-accent-teal transition-all flex items-center justify-center z-30 active:scale-95"
+              className="hidden sm:flex absolute right-2 lg:right-4 top-1/2 -translate-y-1/2 w-11 h-11 sm:w-12 sm:h-12 rounded-full glass-panel border border-card-border bg-background/90 text-foreground shadow-xl hover:scale-110 hover:border-accent-teal hover:text-accent-teal transition-all items-center justify-center z-30 active:scale-95 min-w-[44px] min-h-[44px]"
             >
               <ChevronRight size={22} />
             </button>
 
             {/* Cards Stage Container */}
-            <div className="w-full flex items-center justify-center relative overflow-hidden px-8 sm:px-14">
+            <div className="w-full flex items-center justify-center relative overflow-hidden px-1 sm:px-12 md:px-14">
               
-              {/* Left Peeking Card */}
+              {/* Left Peeking Card (Desktop only) */}
               <div
                 onClick={() => {
                   resetTimer();
@@ -249,13 +284,13 @@ export default function TestimonialsCarousel({
 
               {/* CENTER ACTIVE CARD */}
               <div
-                className={`w-full max-w-2xl p-8 sm:p-10 md:p-12 rounded-3xl glass-panel border-card-border/80 bg-card/50 flex flex-col justify-between relative shadow-xl z-20 transition-all duration-500 transform ${
+                className={`w-full max-w-2xl p-6 sm:p-9 md:p-12 rounded-3xl glass-panel border-card-border/80 bg-card/50 flex flex-col justify-between relative shadow-xl z-20 transition-all duration-500 transform ${
                   isFading ? "opacity-30 scale-[0.98] blur-[2px]" : "opacity-100 scale-100 blur-0"
                 }`}
               >
-                <div className="mb-6">
+                <div className="mb-5 sm:mb-6">
                   {currentItem.context && (
-                    <span className="inline-block text-xs font-mono text-accent-teal bg-accent-teal/10 border border-accent-teal/20 px-3.5 py-1 rounded-full mb-4 font-semibold">
+                    <span className="inline-block text-[11px] sm:text-xs font-mono text-accent-teal bg-accent-teal/10 border border-accent-teal/20 px-3 py-0.5 sm:px-3.5 sm:py-1 rounded-full mb-3 sm:mb-4 font-semibold">
                       ✦ {currentItem.context}
                     </span>
                   )}
@@ -266,17 +301,17 @@ export default function TestimonialsCarousel({
                   )}
                 </div>
 
-                <div className="flex flex-wrap items-center justify-between pt-6 border-t border-card-border/40 gap-4">
-                  <div className="flex items-center gap-4">
+                <div className="flex flex-wrap items-center justify-between pt-5 sm:pt-6 border-t border-card-border/40 gap-4">
+                  <div className="flex items-center gap-3 sm:gap-4">
                     {currentItem.authorPhotoUrl ? (
                       <img
                         src={currentItem.authorPhotoUrl}
                         alt={currentItem.authorName || "Author"}
-                        className="w-12 h-12 rounded-full object-cover border border-card-border/80 shadow-sm"
+                        className="w-11 h-11 sm:w-12 sm:h-12 rounded-full object-cover border border-card-border/80 shadow-sm"
                       />
                     ) : (
                       currentItem.authorName && (
-                        <div className="w-12 h-12 rounded-full bg-accent-teal/20 border border-accent-teal/40 flex items-center justify-center font-bold text-accent-teal text-base shadow-sm">
+                        <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-accent-teal/20 border border-accent-teal/40 flex items-center justify-center font-bold text-accent-teal text-base shadow-sm">
                           {currentItem.authorName.charAt(0)}
                         </div>
                       )
@@ -302,7 +337,7 @@ export default function TestimonialsCarousel({
                       href={currentItem.linkedinUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xs font-bold text-accent-teal hover:underline flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent-teal/10 border border-accent-teal/20 hover:bg-accent-teal/20 transition-all"
+                      className="text-xs font-bold text-accent-teal hover:underline flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent-teal/10 border border-accent-teal/20 hover:bg-accent-teal/20 transition-all min-h-[36px]"
                     >
                       LinkedIn Profile <ArrowUpRight size={14} />
                     </a>
@@ -310,7 +345,7 @@ export default function TestimonialsCarousel({
                 </div>
               </div>
 
-              {/* Right Peeking Card */}
+              {/* Right Peeking Card (Desktop only) */}
               <div
                 onClick={() => {
                   resetTimer();
@@ -328,7 +363,7 @@ export default function TestimonialsCarousel({
 
         {/* Carousel Indicators / Dots (If total > 1) */}
         {total > 1 && (
-          <div className="flex items-center justify-center gap-2 mt-8">
+          <div className="flex items-center justify-center gap-2 mt-6 sm:mt-8">
             {testimonials.map((_, idx) => (
               <button
                 key={idx}
@@ -337,7 +372,7 @@ export default function TestimonialsCarousel({
                   handleSelect(idx);
                 }}
                 aria-label={`Go to testimonial ${idx + 1}`}
-                className={`h-2 rounded-full transition-all duration-300 ${
+                className={`h-2 rounded-full transition-all duration-300 min-h-[16px] py-1 flex items-center ${
                   idx === currentIndex
                     ? "w-8 bg-accent-teal"
                     : "w-2 bg-foreground/20 hover:bg-foreground/40"

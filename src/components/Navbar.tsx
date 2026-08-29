@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "./ThemeProvider";
@@ -29,6 +29,11 @@ export default function Navbar({
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
 
+  // Close mobile menu on route change
+  useEffect(() => {
+    setIsOpen(false);
+  }, [pathname]);
+
   const defaultLinks = [
     { name: "Teardowns", path: "/teardowns" },
     { name: "Case Studies", path: "/case-studies" },
@@ -48,17 +53,20 @@ export default function Navbar({
   const ctaLabel = navCtaLabel || "Resume";
   const ctaHref = navCtaUrl || resumeUrl || "/resume.pdf";
 
-  const toggleMenu = () => setIsOpen(!isOpen);
+  const toggleMenu = () => setIsOpen((prev) => !prev);
 
   return (
     <header className="sticky top-0 z-50 w-full glass-panel border-b border-card-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-16 sm:h-20">
           {/* Logo / Name */}
           <div className="flex-shrink-0">
-            <Link href="/" className="text-xl font-bold tracking-tight text-foreground hover:text-accent-teal transition-colors flex items-center gap-2">
+            <Link
+              href="/"
+              className="text-lg sm:text-xl font-bold tracking-tight text-foreground hover:text-accent-teal transition-colors flex items-center gap-2 py-2"
+            >
               {navLogoUrl ? (
-                <img src={navLogoUrl} alt={navTitleText || "Logo"} className="h-8 w-auto object-contain" />
+                <img src={navLogoUrl} alt={navTitleText || "Logo"} className="h-8 sm:h-9 w-auto object-contain" />
               ) : (
                 <span>{navTitleText || "The AI PM"}</span>
               )}
@@ -66,14 +74,14 @@ export default function Navbar({
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden md:flex items-center space-x-6 lg:space-x-8">
             {activeLinks.map((link, idx) => {
               const isActive = pathname === link.path || (link.path !== "/" && pathname?.startsWith(link.path + "/"));
               return (
                 <Link
                   key={idx}
                   href={link.path}
-                  className={`text-sm font-medium transition-colors hover:text-accent-teal ${
+                  className={`text-sm font-medium transition-colors hover:text-accent-teal py-2 ${
                     isActive ? "text-accent-teal font-semibold" : "text-foreground/80"
                   }`}
                 >
@@ -88,7 +96,7 @@ export default function Navbar({
                 href={ctaHref}
                 target={ctaHref.startsWith("http") || ctaHref.endsWith(".pdf") ? "_blank" : undefined}
                 rel={ctaHref.startsWith("http") || ctaHref.endsWith(".pdf") ? "noopener noreferrer" : undefined}
-                className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-lg bg-accent-teal text-background hover:bg-accent-teal/90 transition-all duration-300 shadow-sm hover:shadow-md cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-lg bg-accent-teal text-background hover:bg-accent-teal/90 transition-all duration-300 shadow-sm hover:shadow-md cursor-pointer min-h-[40px]"
               >
                 <FileText size={14} />
                 {ctaLabel}
@@ -98,28 +106,30 @@ export default function Navbar({
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-lg hover:bg-card-border/30 text-foreground transition-all duration-300 hover:rotate-12 cursor-pointer"
+              className="p-2.5 rounded-xl hover:bg-card-border/30 text-foreground transition-all duration-300 hover:rotate-12 cursor-pointer min-w-[44px] min-h-[44px] flex items-center justify-center"
               aria-label="Toggle theme"
             >
               {theme === "dark" ? <Sun size={18} className="text-accent-teal" /> : <Moon size={18} className="text-accent-cyan" />}
             </button>
           </nav>
 
-          {/* Mobile menu button */}
-          <div className="md:hidden flex items-center gap-2">
+          {/* Mobile Actions (Theme Toggle + Hamburger) */}
+          <div className="md:hidden flex items-center gap-1">
             {/* Theme Toggle Mobile */}
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-lg hover:bg-card-border/30 text-foreground transition-all duration-300 cursor-pointer"
+              className="p-2.5 rounded-xl hover:bg-card-border/30 text-foreground transition-all duration-300 cursor-pointer min-w-[44px] min-h-[44px] flex items-center justify-center"
               aria-label="Toggle theme"
             >
-              {theme === "dark" ? <Sun size={18} className="text-accent-teal" /> : <Moon size={18} className="text-accent-cyan" />}
+              {theme === "dark" ? <Sun size={19} className="text-accent-teal" /> : <Moon size={19} className="text-accent-cyan" />}
             </button>
             
+            {/* Hamburger Button */}
             <button
               onClick={toggleMenu}
-              className="p-2 rounded-lg hover:bg-card-border/30 text-foreground transition-all duration-300 cursor-pointer"
-              aria-label="Toggle main menu"
+              className="p-2.5 rounded-xl hover:bg-card-border/30 text-foreground transition-all duration-300 cursor-pointer min-w-[44px] min-h-[44px] flex items-center justify-center"
+              aria-label={isOpen ? "Close main menu" : "Open main menu"}
+              aria-expanded={isOpen}
             >
               {isOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -127,9 +137,9 @@ export default function Navbar({
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Dropdown */}
       {isOpen && (
-        <div className="md:hidden border-t border-card-border bg-background/95 backdrop-blur-md px-4 pt-2 pb-4 space-y-2 animate-fadeIn">
+        <div className="md:hidden border-t border-card-border bg-background/98 backdrop-blur-xl px-4 pt-3 pb-6 space-y-2 animate-fadeIn shadow-2xl">
           {activeLinks.map((link, idx) => {
             const isActive = pathname === link.path || (link.path !== "/" && pathname?.startsWith(link.path + "/"));
             return (
@@ -137,21 +147,25 @@ export default function Navbar({
                 key={idx}
                 href={link.path}
                 onClick={() => setIsOpen(false)}
-                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors hover:bg-card-border/20 ${
-                  isActive ? "text-accent-teal bg-card-border/10" : "text-foreground/80"
+                className={`flex items-center px-4 py-3 rounded-xl text-base font-medium transition-colors min-h-[48px] ${
+                  isActive
+                    ? "text-accent-teal bg-accent-teal/10 font-semibold border border-accent-teal/20"
+                    : "text-foreground/90 hover:bg-card-border/20 active:bg-card-border/30"
                 }`}
               >
                 {link.name}
               </Link>
             );
           })}
+
           {ctaHref && (
-            <div className="pt-4 pb-2 border-t border-card-border px-3">
+            <div className="pt-3 border-t border-card-border/60">
               <a
                 href={ctaHref}
                 target={ctaHref.startsWith("http") || ctaHref.endsWith(".pdf") ? "_blank" : undefined}
                 rel={ctaHref.startsWith("http") || ctaHref.endsWith(".pdf") ? "noopener noreferrer" : undefined}
-                className="flex w-full items-center justify-center gap-1.5 px-4 py-2.5 text-sm font-semibold rounded-lg bg-accent-teal text-background hover:bg-accent-teal/90 transition-all duration-300"
+                onClick={() => setIsOpen(false)}
+                className="flex w-full items-center justify-center gap-2 px-4 py-3.5 text-sm font-bold rounded-xl bg-accent-teal text-background hover:bg-accent-teal/90 active:scale-[0.99] transition-all min-h-[48px] shadow-sm"
               >
                 <FileText size={16} />
                 {ctaLabel}

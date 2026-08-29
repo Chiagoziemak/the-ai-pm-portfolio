@@ -1,10 +1,10 @@
 import React from "react";
+import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import DynamicIcon from "@/components/DynamicIcon";
-import Link from "next/link";
 import { getProducts, getSiteSettings } from "@/sanity/queries";
 import { mockProducts } from "@/data/mockData";
+import { Sparkles, ArrowUpRight } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -14,12 +14,14 @@ export default async function ProductsPage() {
   const siteSettings = (await getSiteSettings()) || {};
   const products = Array.isArray(data) && data.length > 0 ? data : mockProducts;
 
-  // featured product is usually "In Development" (like ResumeGenie)
-  const featuredProduct = products.find((p) => p?.status === "In Development") || products[0] || mockProducts[0];
+  const isCaseStudiesEnabled = siteSettings.caseStudiesPageEnabled !== false;
+
+  // Split into Featured Product vs other products
+  const featuredProduct = products.find((p: any) => p.isFeatured || p.featured) || products[0];
   const comingSoonProducts = products.filter((p) => p !== featuredProduct);
 
   return (
-    <div className="min-h-screen page-bg-products text-foreground transition-colors duration-300">
+    <div className="min-h-screen page-bg-products text-foreground transition-colors duration-300 flex flex-col">
       <Navbar
         navTitleText={siteSettings.navTitleText}
         navLogoUrl={siteSettings.navLogoUrl}
@@ -27,13 +29,15 @@ export default async function ProductsPage() {
         navCtaLabel={siteSettings.navCtaLabel}
         navCtaUrl={siteSettings.navCtaUrl}
         resumeUrl={siteSettings.resumeUrl}
+        caseStudiesPageEnabled={siteSettings.caseStudiesPageEnabled}
       />
-      <main className="pt-32 pb-24 px-5 md:px-16 max-w-[1280px] mx-auto">
+      
+      <main className="flex-grow pt-24 sm:pt-28 md:pt-32 pb-16 md:pb-24 px-4 sm:px-6 md:px-12 lg:px-16 max-w-[1280px] mx-auto w-full">
         
         {/* Header */}
-        <header className="mb-16 md:mb-24 text-center md:text-left">
-          <h1 className="font-bold text-5xl mb-4 tracking-tight">Products</h1>
-          <p className="text-foreground/80 max-w-2xl text-base leading-relaxed">
+        <header className="mb-12 sm:mb-16 md:mb-20 text-center md:text-left">
+          <h1 className="font-bold text-3xl sm:text-4xl md:text-5xl mb-3 sm:mb-4 tracking-tight">Products</h1>
+          <p className="text-foreground/80 max-w-2xl text-sm sm:text-base leading-relaxed">
             AI tools I am building to solve real problems. A collection of experimental 
             and production-ready applications focusing on high-density utility and elegant engineering.
           </p>
@@ -41,28 +45,28 @@ export default async function ProductsPage() {
 
         {/* Featured Product Card */}
         {featuredProduct && (
-          <section className="mb-12">
-            <div className="rounded-2xl overflow-hidden transition-all duration-500 group flex flex-col lg:flex-row min-h-[500px] border border-card-border glass-panel hover:shadow-[0_0_30px_rgba(0,212,216,0.15)] hover:border-accent-teal/40">
+          <section className="mb-12 sm:mb-16">
+            <div className="rounded-3xl overflow-hidden transition-all duration-500 group flex flex-col lg:flex-row min-h-[440px] border border-card-border glass-panel hover:shadow-[0_0_30px_rgba(0,212,216,0.15)] hover:border-accent-teal/40">
               
               {/* Image side */}
-              <div className="w-full lg:w-1/2 relative overflow-hidden bg-card/60">
+              <div className="w-full lg:w-1/2 relative overflow-hidden bg-card/60 aspect-video sm:aspect-auto sm:min-h-[280px] lg:min-h-[440px]">
                 {featuredProduct.coverImage ? (
                   <img 
                     src={featuredProduct.coverImage} 
                     alt={featuredProduct.name}
-                    className="w-full h-full object-cover min-h-[300px] group-hover:scale-105 transition-transform duration-700" 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
                   />
                 ) : (
-                  <div className="w-full h-full min-h-[300px] bg-gradient-to-br from-accent-teal/10 via-card to-background flex items-center justify-center">
-                    <span className="text-accent-teal/20 text-9xl">✦</span>
+                  <div className="w-full h-full bg-gradient-to-br from-accent-teal/10 via-card to-background flex items-center justify-center">
+                    <span className="text-accent-teal/20 text-7xl sm:text-9xl">✦</span>
                   </div>
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent lg:bg-gradient-to-r"></div>
               </div>
 
               {/* Content side */}
-              <div className="w-full lg:w-1/2 p-8 md:p-12 flex flex-col justify-center">
-                <div className="flex items-center gap-3 mb-6 flex-wrap">
+              <div className="w-full lg:w-1/2 p-6 sm:p-8 md:p-12 flex flex-col justify-center">
+                <div className="flex items-center gap-3 mb-4 sm:mb-6 flex-wrap">
                   <span className="text-xs tracking-widest text-accent-teal uppercase bg-accent-teal/10 px-3 py-1 rounded-full border border-accent-teal/30 font-mono font-bold">
                     {featuredProduct.name}
                   </span>
@@ -72,39 +76,60 @@ export default async function ProductsPage() {
                   </div>
                 </div>
 
-                <h2 className="text-3xl font-semibold mb-4 leading-tight tracking-tight text-foreground">
+                <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4 leading-tight tracking-tight text-foreground">
                   {featuredProduct.tagline}
                 </h2>
-                <p className="text-foreground/80 text-base mb-8 leading-relaxed">
+                <p className="text-foreground/80 text-sm sm:text-base mb-6 sm:mb-8 leading-relaxed">
                   {featuredProduct.description}
                 </p>
 
-                <div className="flex flex-wrap gap-4">
+                <div className="flex flex-wrap gap-3 sm:gap-4">
                   {featuredProduct.linkType === "Case Study" && (featuredProduct as any).caseStudySlug ? (
-                    <Link
-                      href={`/case-studies/${(featuredProduct as any).caseStudySlug}`}
-                      className="bg-accent-teal text-background px-8 py-3 rounded-xl font-bold transition-all hover:bg-accent-cyan active:scale-95 flex items-center gap-2 shadow-sm"
-                    >
-                      {featuredProduct.linkLabel || "View Case Study →"}
-                    </Link>
+                    isCaseStudiesEnabled ? (
+                      <Link
+                        href={`/case-studies/${(featuredProduct as any).caseStudySlug}`}
+                        className="w-full sm:w-auto bg-accent-teal text-background px-6 sm:px-8 py-3 rounded-xl font-bold transition-all hover:bg-accent-cyan active:scale-95 flex items-center justify-center gap-2 shadow-sm text-sm sm:text-base min-h-[44px]"
+                      >
+                        {featuredProduct.linkLabel || "View Case Study →"}
+                      </Link>
+                    ) : (
+                      <Link
+                        href="/contact"
+                        className="w-full sm:w-auto bg-accent-teal text-background px-6 sm:px-8 py-3 rounded-xl font-bold transition-all hover:bg-accent-cyan active:scale-95 flex items-center justify-center gap-2 shadow-sm text-sm sm:text-base min-h-[44px]"
+                      >
+                        Get In Touch →
+                      </Link>
+                    )
                   ) : featuredProduct.externalUrl ? (
                     <a
                       href={featuredProduct.externalUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="bg-accent-teal text-background px-8 py-3 rounded-xl font-bold transition-all hover:bg-accent-cyan active:scale-95 flex items-center gap-2 shadow-sm"
+                      className="w-full sm:w-auto bg-accent-teal text-background px-6 sm:px-8 py-3 rounded-xl font-bold transition-all hover:bg-accent-cyan active:scale-95 flex items-center justify-center gap-2 shadow-sm text-sm sm:text-base min-h-[44px]"
                     >
                       {featuredProduct.linkLabel || "View Product →"}
                     </a>
                   ) : (
-                    <Link
-                      href="/case-studies/resumegenie-ai-agent"
-                      className="bg-accent-teal text-background px-8 py-3 rounded-xl font-bold transition-all hover:bg-accent-cyan active:scale-95 flex items-center gap-2 shadow-sm"
-                    >
-                      {featuredProduct.linkLabel || "View Case Study →"}
-                    </Link>
+                    isCaseStudiesEnabled ? (
+                      <Link
+                        href="/case-studies/resumegenie-ai-agent"
+                        className="w-full sm:w-auto bg-accent-teal text-background px-6 sm:px-8 py-3 rounded-xl font-bold transition-all hover:bg-accent-cyan active:scale-95 flex items-center justify-center gap-2 shadow-sm text-sm sm:text-base min-h-[44px]"
+                      >
+                        {featuredProduct.linkLabel || "View Case Study →"}
+                      </Link>
+                    ) : (
+                      <Link
+                        href="/contact"
+                        className="w-full sm:w-auto bg-accent-teal text-background px-6 sm:px-8 py-3 rounded-xl font-bold transition-all hover:bg-accent-cyan active:scale-95 flex items-center justify-center gap-2 shadow-sm text-sm sm:text-base min-h-[44px]"
+                      >
+                        Get In Touch →
+                      </Link>
+                    )
                   )}
-                  <Link href="/contact" className="border border-card-border bg-card text-foreground px-8 py-3 rounded-xl font-semibold hover:bg-card-border/20 transition-all">
+                  <Link
+                    href="/contact"
+                    className="w-full sm:w-auto border border-card-border bg-card text-foreground px-6 sm:px-8 py-3 rounded-xl font-semibold hover:bg-card-border/20 transition-all text-center flex items-center justify-center text-sm sm:text-base min-h-[44px]"
+                  >
                     Technical Spec
                   </Link>
                 </div>
@@ -113,77 +138,78 @@ export default async function ProductsPage() {
           </section>
         )}
 
-        {/* Coming Soon Grid */}
-        <section className="flex flex-wrap justify-center gap-8">
+        {/* Other Products Grid */}
+        <section className="flex flex-wrap justify-center gap-6 sm:gap-8">
           {comingSoonProducts.map((product) => {
             const slug = (product.name || "product").toLowerCase().replace(/[^a-z0-9]/g, "-");
             return (
               <div 
-                key={slug} 
-                className="rounded-2xl p-8 md:p-10 transition-all duration-500 relative overflow-hidden group border border-card-border glass-panel hover:shadow-[0_0_30px_rgba(0,212,216,0.15)] hover:border-accent-teal/40 w-full md:w-[calc(50%-1rem)] max-w-[580px]"
+                key={product.name} 
+                className="w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1.334rem)] max-w-[400px] border border-card-border glass-panel rounded-3xl p-6 sm:p-8 flex flex-col justify-between hover:border-accent-teal/40 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 group"
               >
-                {product.coverImage && (
-                  <div className="absolute inset-0 opacity-5 group-hover:opacity-10 transition-opacity duration-500 pointer-events-none">
-                    <img src={product.coverImage} alt={product.name} className="w-full h-full object-cover" />
-                  </div>
-                )}
-                <div className="relative z-10 h-full flex flex-col">
-                  <div className="flex items-center justify-between mb-8">
-                    <div className="w-12 h-12 rounded-xl bg-accent-teal/10 flex items-center justify-center border border-accent-teal/20 text-accent-teal">
-                      <DynamicIcon name={product.icon} size={22} />
-                    </div>
-                    <span className="text-xs text-foreground/60 uppercase tracking-widest font-mono font-semibold">
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-xs font-mono font-bold tracking-widest text-accent-teal uppercase">
+                      {product.name}
+                    </span>
+                    <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-card-border/40 text-foreground/70 uppercase font-semibold">
                       {product.status}
                     </span>
                   </div>
-                  <h3 className="text-2xl font-semibold mb-2 tracking-tight text-foreground">{product.name}</h3>
-                  <p className="text-xs font-mono text-accent-teal mb-4 uppercase tracking-wider font-bold">{product.tagline}</p>
-                  <p className="text-foreground/80 text-base mb-auto leading-relaxed">
+
+                  <h3 className="text-xl font-bold mb-2 text-foreground group-hover:text-accent-teal transition-colors">
+                    {product.tagline}
+                  </h3>
+
+                  <p className="text-foreground/75 text-xs sm:text-sm mb-6 leading-relaxed">
                     {product.description}
                   </p>
-                  <div className="mt-8 pt-6 border-t border-card-border/60">
-                    {product.externalUrl ? (
-                      <a
-                        href={product.externalUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-accent-teal text-xs flex items-center gap-2 hover:translate-x-1 transition-transform font-mono tracking-widest uppercase font-bold"
-                      >
-                        {product.linkLabel || "EXPLORE PRODUCT →"}
-                      </a>
-                    ) : (
-                      <Link
-                        href="/contact"
-                        className="text-accent-teal text-xs flex items-center gap-2 hover:translate-x-1 transition-transform font-mono tracking-widest uppercase font-bold"
-                      >
-                        {product.linkLabel || "GET NOTIFIED →"}
-                      </Link>
-                    )}
-                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-card-border/40 flex items-center justify-between">
+                  <span className="text-xs font-mono text-foreground/50">Status: {product.status}</span>
+                  {product.externalUrl ? (
+                    <a
+                      href={product.externalUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs font-bold text-accent-teal hover:underline flex items-center gap-1 min-h-[36px]"
+                    >
+                      {product.linkLabel || "Explore"} <ArrowUpRight size={14} />
+                    </a>
+                  ) : (
+                    <Link
+                      href="/contact"
+                      className="text-xs font-bold text-accent-teal hover:underline flex items-center gap-1 min-h-[36px]"
+                    >
+                      Inquire <ArrowUpRight size={14} />
+                    </Link>
+                  )}
                 </div>
               </div>
             );
           })}
         </section>
 
-        {/* CTA Section */}
-        <section className="mt-24 text-center border border-dashed border-card-border glass-panel py-16 rounded-3xl">
-          <h2 className="text-3xl font-semibold mb-6 tracking-tight text-foreground">
-            Have a problem worth solving with AI?
+        {/* Bottom CTA Banner */}
+        <div className="mt-16 sm:mt-24 p-8 sm:p-12 rounded-3xl border border-card-border glass-panel text-center max-w-3xl mx-auto shadow-sm">
+          <Sparkles size={36} className="text-accent-teal mx-auto mb-4" />
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground mb-3 tracking-tight">
+            Have a product concept to build?
           </h2>
-          <p className="text-foreground/80 max-w-xl mx-auto mb-10 text-base leading-relaxed">
-            I'm always looking for complex bottlenecks that can be streamlined with 
-            agentic workflows or predictive modeling. Let's discuss your architecture.
+          <p className="text-foreground/80 text-sm sm:text-base mb-6 max-w-xl mx-auto leading-relaxed">
+            I collaborate with teams and founders to design, prototype, and build production-grade AI applications.
           </p>
           <Link
             href="/contact"
-            className="bg-accent-teal text-background px-10 py-4 rounded-xl font-bold transition-all hover:bg-accent-cyan active:scale-95 inline-block shadow-sm"
+            className="inline-flex items-center justify-center px-8 py-3.5 rounded-xl bg-accent-teal text-background font-bold text-sm sm:text-base hover:bg-accent-cyan active:scale-95 transition-all shadow-md min-h-[44px]"
           >
-            Contact Chiagoziem
+            Start a Conversation →
           </Link>
-        </section>
+        </div>
 
       </main>
+
       <Footer
         location={siteSettings.location}
         socialLinks={siteSettings.socialLinks}
