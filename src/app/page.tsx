@@ -1,4 +1,5 @@
 import React from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -7,10 +8,31 @@ import TestimonialsCarousel from "@/components/TestimonialsCarousel";
 import { getTeardowns, getCaseStudies, getHomePageData, getSiteSettings, MarqueeItem } from "@/sanity/queries";
 import { urlForImage } from "@/sanity/image";
 import { mockTeardowns, mockCaseStudies } from "@/data/mockData";
+import { constructMetadata, generatePersonJsonLd } from "@/lib/seo";
 import { ArrowUpRight, Brain, Compass } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const [homeData, siteSettings] = await Promise.all([
+    getHomePageData(),
+    getSiteSettings(),
+  ]);
+
+  const title = homeData.metaTitle || siteSettings.siteTitle || "Chiagoziem Melvin Akobundu | AI Product Manager & Engineer";
+  const description = homeData.metaDescription || homeData.introText || siteSettings.metaDescription;
+  const image = homeData.heroImageUrl || siteSettings.ogImageUrl;
+
+  return constructMetadata({
+    title,
+    description,
+    image,
+    imageAlt: homeData.heroImageAlt || "Chiagoziem Melvin Akobundu — AI Product Manager",
+    urlPath: "/",
+    siteSettings,
+  });
+}
 
 export default async function HomePage() {
   const [teardownsData, caseStudiesData, homeData, siteSettings] = await Promise.all([
@@ -45,7 +67,7 @@ export default async function HomePage() {
 
   const heroTagChips = Array.isArray(homeData.heroTagChips) ? homeData.heroTagChips : [];
   const heroImageUrl = (homeData.heroImage ? urlForImage(homeData.heroImage)?.width(800).url() : null) || homeData.heroImageUrl || "/profile-hero.jpg";
-  const heroImageAlt = homeData.heroImageAlt || heroHeading;
+  const heroImageAlt = homeData.heroImageAlt || "Chiagoziem Melvin Akobundu — AI Product Manager";
   const heroImagePosition = homeData.heroImagePosition || "right";
 
   const processSteps = Array.isArray(homeData.processSteps) ? homeData.processSteps : [];
@@ -71,31 +93,35 @@ export default async function HomePage() {
   const marqueeItems = (Array.isArray(homeData.marqueeItems) && homeData.marqueeItems.length > 0)
     ? homeData.marqueeItems
     : defaultMarqueeItems;
-  const marqueeEnabled = homeData.marqueeEnabled !== false;
-  const marqueeSpeedSeconds = typeof homeData.marqueeSpeed === "number" ? homeData.marqueeSpeed : 25;
 
+  const marqueeEnabled = homeData.marqueeEnabled !== false;
+  const marqueeSpeed = typeof homeData.marqueeSpeed === "number" ? homeData.marqueeSpeed : 25;
+
+  const personJsonLd = generatePersonJsonLd(siteSettings, heroImageUrl);
+
+  // Section Renderer
   const renderSectionByKey = (key: string) => {
     switch (key) {
       case "featuredWorkStrip":
         if (!marqueeEnabled || marqueeItems.length === 0) return null;
         return (
-          <section key="featuredWorkStrip" className="w-full border-y border-card-border/40 py-3.5 sm:py-4 bg-background/50 backdrop-blur-md overflow-hidden relative my-6 sm:my-8">
-            <div
-              className="flex w-max gap-6 sm:gap-8 animate-marquee"
-              style={{ animationDuration: `${marqueeSpeedSeconds}s` }}
-            >
+          <section key="featuredWorkStrip" className="w-full py-8 overflow-hidden relative border-y border-card-border/40 bg-card/10">
+            <div className="flex w-max animate-marquee" style={{ animationDuration: `${marqueeSpeed}s` }}>
               {[...marqueeItems, ...marqueeItems].map((item, index) => {
-                const badgeColor = item.color || "from-cyan-500/20 to-teal-500/20";
                 const cardContent = (
-                  <div className="flex items-center gap-2.5 sm:gap-3 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl glass-panel border-card-border/50 text-xs font-semibold whitespace-nowrap hover:border-accent-teal/40 transition-all">
-                    <span className={`w-2 h-2 rounded-full bg-gradient-to-r ${badgeColor}`}></span>
-                    <span className="text-foreground">{item.title}</span>
-                    {item.desc && <span className="text-foreground/40 font-mono text-[10px] uppercase">[{item.desc}]</span>}
+                  <div className="flex items-center gap-3 px-6 py-2.5 rounded-2xl glass-panel border-card-border/60 mx-3 hover:border-accent-teal/40 transition-all">
+                    <span className={`w-2.5 h-2.5 rounded-full bg-gradient-to-tr ${item.color || "from-accent-teal to-accent-cyan"}`}></span>
+                    <span className="text-xs font-bold text-foreground tracking-wide whitespace-nowrap">{item.title}</span>
+                    {item.desc && (
+                      <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-md bg-accent-teal/10 text-accent-teal border border-accent-teal/20 whitespace-nowrap">
+                        {item.desc}
+                      </span>
+                    )}
                   </div>
                 );
 
                 return item.url ? (
-                  <Link key={index} href={item.url}>
+                  <Link key={index} href={item.url} className="hover:opacity-80 transition-opacity">
                     {cardContent}
                   </Link>
                 ) : (
@@ -300,35 +326,33 @@ export default async function HomePage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {processSteps.map((step, idx) => (
-                <div
-                  key={idx}
-                  className="p-6 rounded-3xl glass-panel border-card-border/60 bg-card/30 flex flex-col justify-between hover:border-accent-teal/40 transition-all duration-300 group shadow-sm"
-                >
+                <div key={idx} className="p-6 rounded-3xl glass-panel border-card-border/60 hover:border-accent-teal/40 transition-all duration-300 flex flex-col justify-between">
                   <div>
                     <div className="flex items-center justify-between mb-4">
-                      <span className="text-2xl font-black font-mono text-accent-teal/60 group-hover:text-accent-teal transition-colors">
-                        {step.number || `0${idx + 1}`}
-                      </span>
-                      {step.icon && (
-                        <div className="p-2 rounded-xl bg-card-border/30 text-accent-teal flex items-center justify-center">
-                          <DynamicIcon name={step.icon} size={18} />
-                        </div>
-                      )}
+                      <span className="text-2xl font-mono font-black text-accent-teal/50">{step.number}</span>
+                      <div className="w-10 h-10 rounded-xl bg-accent-teal/10 border border-accent-teal/20 text-accent-teal flex items-center justify-center">
+                        <DynamicIcon name={step.icon || "FiCpu"} size={20} />
+                      </div>
                     </div>
-                    <h3 className="text-base sm:text-lg font-bold text-foreground mb-2">{step.title}</h3>
-                    {step.description && <p className="text-xs sm:text-sm text-foreground/75 leading-relaxed mb-4">{step.description}</p>}
+
+                    <h3 className="text-base sm:text-lg font-bold text-foreground mb-2 leading-snug">
+                      {step.title}
+                    </h3>
+
+                    <p className="text-xs sm:text-sm text-foreground/75 leading-relaxed mb-4">
+                      {step.description}
+                    </p>
                   </div>
 
                   {Array.isArray(step.deliverables) && step.deliverables.length > 0 && (
-                    <div className="pt-4 border-t border-card-border/30">
-                      <span className="text-[10px] font-mono uppercase text-accent-teal/80 font-bold block mb-1.5">Deliverables</span>
-                      <div className="flex flex-wrap gap-1">
-                        {step.deliverables.map((del, dIdx) => (
-                          <span key={dIdx} className="text-[10px] font-mono px-2 py-0.5 rounded bg-card-border/30 text-foreground/70">
-                            {del}
-                          </span>
-                        ))}
-                      </div>
+                    <div className="pt-4 border-t border-card-border/30 space-y-1.5">
+                      <span className="text-[10px] font-mono text-accent-cyan uppercase tracking-wider block font-bold">Key Deliverables:</span>
+                      {step.deliverables.map((deliv, dIdx) => (
+                        <div key={dIdx} className="text-xs text-foreground/70 flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-accent-teal flex-shrink-0"></span>
+                          <span>{deliv}</span>
+                        </div>
+                      ))}
                     </div>
                   )}
                 </div>
@@ -351,30 +375,25 @@ export default async function HomePage() {
           <section key="learningTrack" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
             <div className="mb-8 sm:mb-10">
               <span className="text-xs uppercase tracking-widest text-accent-teal font-extrabold">Continuous Evolution</span>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mt-1.5 sm:mt-2 tracking-tight">Learning Path</h2>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mt-1.5 sm:mt-2 tracking-tight">Active Learning &amp; Upskilling</h2>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               {learningTrack.map((item, idx) => (
-                <div
-                  key={idx}
-                  className="p-6 rounded-3xl glass-panel border-card-border/60 bg-card/30 flex flex-col justify-between hover:border-accent-teal/40 transition-all duration-300 shadow-sm"
-                >
+                <div key={idx} className="p-6 rounded-3xl glass-panel border-card-border/60 hover:border-accent-teal/40 transition-all duration-300 flex flex-col justify-between">
                   <div>
-                    {(item.provider || item.status) && (
-                      <div className="flex items-center justify-between gap-2 mb-3">
-                        {item.provider && (
-                          <span className="text-xs font-mono text-accent-cyan tracking-wider font-semibold">
-                            {item.provider}
-                          </span>
-                        )}
-                        {item.status && (
-                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-accent-teal/15 text-accent-teal border border-accent-teal/30">
-                            {item.status}
-                          </span>
-                        )}
-                      </div>
-                    )}
+                    <div className="flex items-center justify-between gap-2 mb-3">
+                      {item.provider && (
+                        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-accent-teal bg-accent-teal/10 border border-accent-teal/20 px-2 py-0.5 rounded-full">
+                          {item.provider}
+                        </span>
+                      )}
+                      {item.status && (
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-accent-cyan/10 text-accent-cyan border border-accent-cyan/20">
+                          {item.status}
+                        </span>
+                      )}
+                    </div>
 
                     <h3 className="text-base sm:text-lg font-bold text-foreground mb-2 leading-snug">
                       {item.title}
@@ -409,6 +428,12 @@ export default async function HomePage() {
 
   return (
     <div className="flex flex-col min-h-screen relative overflow-hidden page-bg-home text-foreground transition-colors duration-300">
+      {/* Structured Data (JSON-LD Person Schema) */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+      />
+
       {/* Background glow effects */}
       <div className="absolute top-[10%] left-[-10%] w-[350px] sm:w-[500px] h-[350px] sm:h-[500px] rounded-full blur-[100px] glow-bg opacity-40 z-0 pointer-events-none"></div>
       <div className="absolute top-[40%] right-[-10%] w-[300px] sm:w-[450px] h-[300px] sm:h-[450px] rounded-full blur-[120px] glow-bg opacity-30 z-0 pointer-events-none"></div>

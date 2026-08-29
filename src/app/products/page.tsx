@@ -1,13 +1,27 @@
 import React from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { getProducts, getSiteSettings } from "@/sanity/queries";
 import { mockProducts } from "@/data/mockData";
+import { constructMetadata } from "@/lib/seo";
 import { Sparkles, ArrowUpRight } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const siteSettings = await getSiteSettings();
+
+  return constructMetadata({
+    title: "AI Products & Autonomous Systems | Chiagoziem Melvin Akobundu",
+    description:
+      "Explore AI products and software built by Chiagoziem Melvin Akobundu, including ResumeGenie AI agent and production tools.",
+    urlPath: "/products",
+    siteSettings,
+  });
+}
 
 export default async function ProductsPage() {
   const data = await getProducts();
@@ -53,7 +67,7 @@ export default async function ProductsPage() {
                 {featuredProduct.coverImage ? (
                   <img 
                     src={featuredProduct.coverImage} 
-                    alt={featuredProduct.name}
+                    alt={featuredProduct.coverImageAlt || `${featuredProduct.name} — Product Preview`}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
                   />
                 ) : (
@@ -141,7 +155,6 @@ export default async function ProductsPage() {
         {/* Other Products Grid */}
         <section className="flex flex-wrap justify-center gap-6 sm:gap-8">
           {comingSoonProducts.map((product) => {
-            const slug = (product.name || "product").toLowerCase().replace(/[^a-z0-9]/g, "-");
             return (
               <div 
                 key={product.name} 

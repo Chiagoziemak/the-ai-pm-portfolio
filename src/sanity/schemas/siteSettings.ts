@@ -17,6 +17,27 @@ export default defineType({
       type: "text",
     }),
     defineField({
+      name: "siteUrl",
+      title: "Primary Site URL",
+      type: "url",
+      description: "Base canonical URL for your portfolio (e.g. https://chiagoziemak.dev or https://theaipm.com)",
+    }),
+    defineField({
+      name: "ogImage",
+      title: "Default Social Share / Open Graph Image",
+      type: "image",
+      description: "Sitewide fallback image used for Twitter Cards and Open Graph previews (1200x630px recommended).",
+      options: { hotspot: true },
+      fields: [
+        defineField({
+          name: "alt",
+          title: "Alternative Text",
+          type: "string",
+          description: "Descriptive alt text for the social share image.",
+        }),
+      ],
+    }),
+    defineField({
       name: "metaKeywords",
       title: "Meta Keywords",
       type: "array",

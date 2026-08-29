@@ -48,12 +48,15 @@ export interface BeforeAfterBlock {
 
 export interface Teardown {
   title: string;
+  metaTitle?: string;
+  metaDescription?: string;
   slug: string;
   date: string;
   category: string;
   summary: string;
   readTime: string;
   coverImage: string;
+  coverImageAlt?: string;
   myRole: string;
   researchDetails?: {
     overview: string;
@@ -76,6 +79,8 @@ export interface Teardown {
 
 export interface CaseStudy {
   title: string;
+  metaTitle?: string;
+  metaDescription?: string;
   slug: string;
   date: string;
   category: string;
@@ -85,6 +90,7 @@ export interface CaseStudy {
   cardStats?: { value: string; label?: string }[];
   tools: string[];
   coverImage: string;
+  coverImageAlt?: string;
   featured?: boolean;
   isPlaceholder?: boolean;
   body: string[];
@@ -96,6 +102,8 @@ export interface CaseStudy {
 
 export interface Product {
   name: string;
+  metaTitle?: string;
+  metaDescription?: string;
   tagline: string;
   description: string;
   status?: string;
@@ -105,10 +113,15 @@ export interface Product {
   externalUrl?: string;
   linkLabel?: string;
   coverImage?: string;
+  coverImageAlt?: string;
 }
 
 export interface AboutData {
   bio: string;
+  headline?: string;
+  introText?: string;
+  headshotUrl?: string;
+  headshotAlt?: string;
   skills: {
     category: string;
     items: { name: string; level: number }[];

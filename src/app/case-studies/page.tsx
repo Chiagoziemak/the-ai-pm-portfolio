@@ -1,13 +1,27 @@
 import React from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { getCaseStudies, getSiteSettings } from "@/sanity/queries";
 import { mockCaseStudies } from "@/data/mockData";
+import { constructMetadata } from "@/lib/seo";
 import { ArrowUpRight, Sparkles } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const siteSettings = await getSiteSettings();
+
+  return constructMetadata({
+    title: "AI Product Case Studies & Strategy Breakdowns | Chiagoziem Melvin Akobundu",
+    description:
+      "Deep dive case studies on building autonomous AI agents, evaluating LLM systems, user research synthesis, product metrics, and engineering execution.",
+    urlPath: "/case-studies",
+    siteSettings,
+  });
+}
 
 export default async function CaseStudiesPage() {
   const data = await getCaseStudies();
@@ -106,7 +120,7 @@ export default async function CaseStudiesPage() {
                   {featuredCaseStudy.coverImage ? (
                     <img 
                       src={featuredCaseStudy.coverImage} 
-                      alt={featuredCaseStudy.title} 
+                      alt={featuredCaseStudy.coverImageAlt || `${featuredCaseStudy.title} — Case Study Cover`} 
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-750" 
                     />
                   ) : (

@@ -29,6 +29,9 @@ export interface SiteSettings {
   siteTitle?: string;
   metaDescription?: string;
   metaKeywords?: string[];
+  siteUrl?: string;
+  ogImageUrl?: string;
+  ogImageAlt?: string;
   location?: string;
   navTitleText?: string;
   navLogoUrl?: string;
@@ -90,6 +93,8 @@ export interface MarqueeItem {
 }
 
 export interface HomePageData {
+  metaTitle?: string;
+  metaDescription?: string;
   heroHeading?: string;
   heroSubheading?: string;
   introText?: string;
@@ -115,15 +120,20 @@ export interface HomePageData {
 }
 
 export interface AboutPageData extends AboutData {
+  metaTitle?: string;
+  metaDescription?: string;
   headline?: string;
   introText?: string;
   headshotUrl?: string;
+  headshotAlt?: string;
   taglineChips?: string[];
   closingHeadline?: string;
   closingText?: string;
 }
 
 export interface ContactPageData {
+  metaTitle?: string;
+  metaDescription?: string;
   headline?: string;
   introText?: string;
   statusMessage?: string;
@@ -136,7 +146,8 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     console.warn("[Sanity Fallback] NEXT_PUBLIC_SANITY_PROJECT_ID not set. Using default site settings.");
     return {
       siteTitle: "Chiagoziem Melvin Akobundu | AI Product Manager Portfolio",
-      metaDescription: "Experienced SaaS Product Manager & Certified Scrum Master transitioning to AI Product Management and AI Engineering.",
+      metaDescription: "Experienced SaaS Product Manager & Certified Scrum Master transitioning to AI Product Management and AI Engineering. Builder of ResumeGenie.",
+      siteUrl: "https://chiagoziemak.dev",
       location: "Lagos, Nigeria",
       contactEmail: "melvynmatthews19@gmail.com",
       socialLinks: {
@@ -152,6 +163,9 @@ export async function getSiteSettings(): Promise<SiteSettings> {
         siteTitle,
         metaDescription,
         metaKeywords,
+        siteUrl,
+        "ogImageUrl": ogImage.asset->url,
+        "ogImageAlt": ogImage.alt,
         location,
         navTitleText,
         "navLogoUrl": navLogoImage.asset->url,
@@ -172,12 +186,22 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     );
     if (!res) {
       console.warn("[Sanity Fallback] Site settings document 'siteSettings' not found in Sanity. Using fallback values.");
-      return { contactEmail: "melvynmatthews19@gmail.com", location: "Lagos, Nigeria" };
+      return {
+        siteTitle: "Chiagoziem Melvin Akobundu | AI Product Manager Portfolio",
+        metaDescription: "Experienced SaaS Product Manager & Certified Scrum Master transitioning to AI Product Management and AI Engineering.",
+        contactEmail: "melvynmatthews19@gmail.com",
+        location: "Lagos, Nigeria",
+      };
     }
     return res;
   } catch (error) {
     console.error("Error fetching site settings from Sanity:", error);
-    return { contactEmail: "melvynmatthews19@gmail.com", location: "Lagos, Nigeria" };
+    return {
+      siteTitle: "Chiagoziem Melvin Akobundu | AI Product Manager Portfolio",
+      metaDescription: "Experienced SaaS Product Manager & Certified Scrum Master transitioning to AI Product Management and AI Engineering.",
+      contactEmail: "melvynmatthews19@gmail.com",
+      location: "Lagos, Nigeria",
+    };
   }
 }
 
@@ -186,14 +210,120 @@ export async function getHomePageData(): Promise<HomePageData> {
     console.warn("[Sanity Fallback] Using mock home page data.");
     return {
       heroHeading: "Chiagoziem Melvin Akobundu",
-      heroSubheading: "SaaS PM & Certified PO transitioning to AI Product Management & AI Engineering",
-      introText: "Experienced SaaS Product Manager with CSPO and CSM credentials. Pivoting to AI Engineering and AI PM, currently building ResumeGenie—an agentic job application platform.",
-      availabilityBadge: "Available for Roles & Opportunities",
+      heroSubheading: "AI Product Manager & Engineer",
+      introText:
+        "Architecting and evaluating agentic AI workflows, LLM applications, and high-growth consumer products. CSPO certified with expertise in technical product management and full-stack software development.",
+      heroImageUrl: "/profile-hero.jpg",
+      heroImageAlt: "Chiagoziem Melvin Akobundu — AI Product Manager",
+      availabilityBadge: "Available for AI PM Roles",
+      currentStack: ["LangChain", "Next.js", "Python", "OpenAI / Claude API", "FastAPI", "Vector DBs"],
+      heroTagChips: ["CSPO Certified", "Agentic AI", "Next.js & Python"],
+      credentialsShown: [
+        { label: "CSPO®", sublabel: "Scrum Alliance" },
+        { label: "CSM®", sublabel: "Scrum Alliance" },
+        { label: "DeepLearning.AI", sublabel: "GenAI Fundamentals" },
+      ],
+      processSteps: [
+        {
+          number: "01",
+          title: "Discovery & Problem Framing",
+          description: "Rigorous user research, cohort interviews, and pain point quantification to find genuine product opportunities.",
+          icon: "FiSearch",
+          deliverables: ["User Research Synthesis", "Opportunity Solution Tree", "Pain Point Mapping"],
+        },
+        {
+          number: "02",
+          title: "Hypothesis & Quantitative Validation",
+          description: "Formulating testable product hypotheses, defining North Star metrics, and prioritizing features with RICE & Kano frameworks.",
+          icon: "FiTarget",
+          deliverables: ["RICE Scoring Matrix", "Hypothesis Log", "Success Metrics Doc"],
+        },
+        {
+          number: "03",
+          title: "Technical Architecture & Prototyping",
+          description: "Translating PRDs into functional AI prototypes, designing prompt chains, and evaluating LLM latency vs. accuracy tradeoffs.",
+          icon: "FiCpu",
+          deliverables: ["PRD & System Specs", "Interactive Prototype", "API Schema Definition"],
+        },
+        {
+          number: "04",
+          title: "Agile Execution & Growth Loops",
+          description: "Leading sprints, establishing feedback analytics loops, and iterating rapidly based on real user behavioral data.",
+          icon: "FiTrendingUp",
+          deliverables: ["Sprint Backlogs", "Funnel Analytics Dashboard", "Iteration Roadmap"],
+        },
+      ],
+      testimonials: [
+        {
+          quote: "Chiagoziem brings exceptional analytical clarity to ambiguous product challenges. His teardowns dissect complex platform UX and business strategy with engineer-level precision.",
+          authorName: "Marcus Vance",
+          authorRole: "Principal AI Architect",
+          authorCompany: "VentureScale Labs",
+          authorPhotoUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+          linkedinUrl: "https://linkedin.com",
+          context: "Platform Strategy Collaboration",
+        },
+        {
+          quote: "Working with Chiagoziem on ResumeGenie was inspiring. He balances deep AI architecture knowledge with practical user empathy, ensuring every feature drives measurable engagement.",
+          authorName: "Sarah Chen",
+          authorRole: "Lead Product Designer",
+          authorCompany: "Apex Studio",
+          authorPhotoUrl: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=80",
+          linkedinUrl: "https://linkedin.com",
+          context: "ResumeGenie AI Development",
+        },
+        {
+          quote: "One of the sharpest product minds in the modern AI space. His data-driven hypothesis framing and CSPO rigor elevate cross-functional velocity immediately.",
+          authorName: "David Okafor",
+          authorRole: "Engineering VP",
+          authorCompany: "FinTech Africa",
+          authorPhotoUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+          linkedinUrl: "https://linkedin.com",
+          context: "Agile Product Coaching",
+        },
+      ],
+      testimonialScrollInterval: 5,
+      marqueeEnabled: true,
+      marqueeSpeed: 25,
+      marqueeItems: [
+        { title: "ResumeGenie AI Agent", desc: "AI Autopilot", color: "from-cyan-500/20 to-teal-500/20" },
+        { title: "Netflix Localization & Pricing", desc: "Teardown", color: "from-red-500/20 to-pink-500/20" },
+        { title: "Claude AI Strategy Teardown", desc: "Teardown", color: "from-purple-500/20 to-indigo-500/20" },
+        { title: "Canva Creator Workflows", desc: "Teardown", color: "from-blue-500/20 to-cyan-500/20" },
+        { title: "Chowdeck Marketplace Study", desc: "Teardown", color: "from-amber-500/20 to-orange-500/20" },
+        { title: "WhatsApp Media & Status Controls", desc: "Teardown", color: "from-emerald-500/20 to-teal-500/20" },
+      ],
+      learningTrack: [
+        {
+          title: "DeepLearning.AI — Building Agentic AI Workflows",
+          provider: "DeepLearning.AI",
+          status: "In Progress",
+          tags: ["LangChain", "AutoGen", "Multi-Agent"],
+          description: "Architecting multi-agent collaboration systems, autonomous tool usage, and reflection-based LLM architectures.",
+        },
+        {
+          title: "Reforge — Advanced Product Management",
+          provider: "Reforge",
+          status: "Completed",
+          tags: ["Product Strategy", "Growth Loops", "Retention"],
+          description: "Systemic approaches to product-led growth, qualitative user insights, and retention monetization frameworks.",
+        },
+        {
+          title: "FastAPI & Vector Database Production Deployment",
+          provider: "Self-Directed Lab",
+          status: "Completed",
+          tags: ["Python", "Pinecone", "Qdrant", "FastAPI"],
+          description: "Building production RAG vector search pipelines with hybrid sparse/dense retrieval and reranking models.",
+        },
+      ],
+      sectionOrder: ["featuredWorkStrip", "caseStudies", "teardowns", "howIWork", "testimonials", "learningTrack"],
     };
   }
   try {
     const data = await sanityClient.fetch(
       `*[_type == "homePage"][0] {
+        metaTitle,
+        metaDescription,
         heroHeading,
         heroSubheading,
         introText,
@@ -235,6 +365,8 @@ export async function getHomePageData(): Promise<HomePageData> {
         credentialsShown,
         "featuredCaseStudies": featuredCaseStudies[]-> {
           title,
+          metaTitle,
+          metaDescription,
           "slug": slug.current,
           date,
           category,
@@ -243,6 +375,7 @@ export async function getHomePageData(): Promise<HomePageData> {
           badgeLabel,
           cardStats,
           "coverImage": coverImage.asset->url,
+          "coverImageAlt": coverImage.alt,
           featured,
           isPlaceholder,
           "tools": stackMethods,
@@ -269,12 +402,15 @@ export async function getHomePageData(): Promise<HomePageData> {
         },
         "featuredTeardowns": featuredTeardowns[]-> {
           title,
+          metaTitle,
+          metaDescription,
           "slug": slug.current,
           date,
           category,
           summary,
           readTime,
           "coverImage": coverImage.asset->url,
+          "coverImageAlt": coverImage.alt,
           "myRole": role,
           body,
           keyFindings,
@@ -297,7 +433,6 @@ export async function getHomePageData(): Promise<HomePageData> {
       {},
       fetchOptions
     );
-    console.log("[Sanity HomePage Debug] Testimonials count:", data?.testimonials?.length, "ProcessSteps count:", data?.processSteps?.length);
     return data || {};
   } catch (error) {
     console.error("Error fetching home page data from Sanity:", error);
@@ -310,6 +445,10 @@ export async function getAboutPageData(): Promise<AboutPageData> {
     console.warn("[Sanity Fallback] Using mock about page data.");
     return {
       bio: mockAboutData.bio,
+      headline: mockAboutData.headline,
+      introText: mockAboutData.introText,
+      headshotUrl: mockAboutData.headshotUrl,
+      headshotAlt: mockAboutData.headshotAlt,
       skills: mockAboutData.skills,
       journey: mockAboutData.journey,
       certifications: mockAboutData.certifications,
@@ -318,9 +457,12 @@ export async function getAboutPageData(): Promise<AboutPageData> {
   try {
     const data = await sanityClient.fetch(
       `*[_type == "aboutPage"][0] {
+        metaTitle,
+        metaDescription,
         headline,
         introText,
         "headshotUrl": headshot.asset->url,
+        "headshotAlt": headshot.alt,
         taglineChips,
         "skills": technicalProficiency[] {
           category,
@@ -351,6 +493,10 @@ export async function getAboutPageData(): Promise<AboutPageData> {
       console.warn("[Sanity Fallback] About Page document 'aboutPage' not found in Sanity. Falling back to mockAboutData.");
       return {
         bio: mockAboutData.bio,
+        headline: mockAboutData.headline,
+        introText: mockAboutData.introText,
+        headshotUrl: mockAboutData.headshotUrl,
+        headshotAlt: mockAboutData.headshotAlt,
         skills: mockAboutData.skills,
         journey: mockAboutData.journey,
         certifications: mockAboutData.certifications,
@@ -367,6 +513,10 @@ export async function getAboutPageData(): Promise<AboutPageData> {
     console.error("Error fetching about page data from Sanity:", error);
     return {
       bio: mockAboutData.bio,
+      headline: mockAboutData.headline,
+      introText: mockAboutData.introText,
+      headshotUrl: mockAboutData.headshotUrl,
+      headshotAlt: mockAboutData.headshotAlt,
       skills: mockAboutData.skills,
       journey: mockAboutData.journey,
       certifications: mockAboutData.certifications,
@@ -386,6 +536,8 @@ export async function getContactPageData(): Promise<ContactPageData> {
   try {
     const res = await sanityClient.fetch(
       `*[_type == "contactPage"][0] {
+        metaTitle,
+        metaDescription,
         headline,
         introText,
         statusMessage
@@ -413,12 +565,15 @@ export async function getTeardowns(): Promise<Teardown[]> {
     const teardowns = await sanityClient.fetch(
       `*[_type == "teardown"] | order(_createdAt desc) {
         title,
+        metaTitle,
+        metaDescription,
         "slug": slug.current,
         "date": select(defined(year) => year, "2024"),
         category,
         summary,
         readTime,
         "coverImage": select(defined(coverImage.asset) => coverImage.asset->url, coverImage),
+        "coverImageAlt": coverImage.alt,
         "myRole": role,
         researchEvidence,
         researchStats,
@@ -467,12 +622,15 @@ export async function getTeardownBySlug(slug: string): Promise<Teardown | null> 
     const teardown = await sanityClient.fetch(
       `*[_type == "teardown" && slug.current == $slug][0] {
         title,
+        metaTitle,
+        metaDescription,
         "slug": slug.current,
         "date": select(defined(year) => year, "2024"),
         category,
         summary,
         readTime,
         "coverImage": select(defined(coverImage.asset) => coverImage.asset->url, coverImage),
+        "coverImageAlt": coverImage.alt,
         "myRole": role,
         researchEvidence,
         researchStats,
@@ -502,7 +660,8 @@ export async function getTeardownBySlug(slug: string): Promise<Teardown | null> 
           "slug": slug.current,
           category,
           readTime,
-          "coverImage": coverImage.asset->url
+          "coverImage": coverImage.asset->url,
+          "coverImageAlt": coverImage.alt
         }
       }`,
       { slug },
@@ -604,6 +763,7 @@ export async function getTeardownBySlug(slug: string): Promise<Teardown | null> 
       date: teardown.date || mockMatch?.date || "2024",
       summary: teardown.summary || mockMatch?.summary || "",
       coverImage: teardown.coverImage || mockMatch?.coverImage || "",
+      coverImageAlt: teardown.coverImageAlt || mockMatch?.coverImageAlt || `${teardown.title} cover`,
     };
   } catch (error) {
     console.error(`Failed to fetch teardown for slug ${slug}:`, error);
@@ -620,6 +780,8 @@ export async function getCaseStudies(): Promise<CaseStudy[]> {
     const caseStudies = await sanityClient.fetch(
       `*[_type == "caseStudy"] | order(date desc) {
         title,
+        metaTitle,
+        metaDescription,
         "slug": slug.current,
         date,
         category,
@@ -631,6 +793,7 @@ export async function getCaseStudies(): Promise<CaseStudy[]> {
         isPlaceholder,
         "tools": stackMethods,
         "coverImage": coverImage.asset->url,
+        "coverImageAlt": coverImage.alt,
         results,
         lessonsLearned,
         productDecisions[] {
@@ -675,6 +838,8 @@ export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null
     const caseStudy = await sanityClient.fetch(
       `*[_type == "caseStudy" && slug.current == $slug][0] {
         title,
+        metaTitle,
+        metaDescription,
         "slug": slug.current,
         date,
         category,
@@ -688,6 +853,7 @@ export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null
         toolsIcon,
         "tools": stackMethods,
         "coverImage": coverImage.asset->url,
+        "coverImageAlt": coverImage.alt,
         challengeIcon,
         challenge,
         resultsIcon,
@@ -719,7 +885,8 @@ export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null
           category,
           badgeLabel,
           cardStats,
-          "coverImage": coverImage.asset->url
+          "coverImage": coverImage.asset->url,
+          "coverImageAlt": coverImage.alt
         }
       }`,
       { slug },
@@ -780,6 +947,7 @@ export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null
       readTime: caseStudy.readTime || mockMatch?.readTime || "8 min",
       summary: caseStudy.summary || mockMatch?.summary || "",
       coverImage: caseStudy.coverImage || mockMatch?.coverImage || "",
+      coverImageAlt: caseStudy.coverImageAlt || mockMatch?.coverImageAlt || `${caseStudy.title} cover`,
     };
   } catch (error) {
     console.error(`Failed to fetch case study for slug ${slug}:`, error);
@@ -804,7 +972,8 @@ export async function getProducts(): Promise<Product[]> {
         "caseStudySlug": caseStudyRef->slug.current,
         externalUrl,
         linkLabel,
-        "coverImage": productImage.asset->url
+        "coverImage": select(defined(coverImage.asset) => coverImage.asset->url, productImage.asset->url),
+        "coverImageAlt": select(defined(coverImage.alt) => coverImage.alt, name)
       }`,
       {},
       fetchOptions

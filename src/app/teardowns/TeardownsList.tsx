@@ -78,7 +78,7 @@ export default function TeardownsList({ initialTeardowns }: TeardownsListProps) 
                 {teardown.coverImage ? (
                   <img 
                     src={teardown.coverImage} 
-                    alt={teardown.title} 
+                    alt={teardown.coverImageAlt || `${teardown.title} — Product Teardown Cover`} 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
                   />
                 ) : (

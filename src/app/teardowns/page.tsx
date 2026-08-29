@@ -1,12 +1,26 @@
 import React from "react";
+import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import TeardownsList from "./TeardownsList";
 import { getTeardowns, getSiteSettings } from "@/sanity/queries";
 import { mockTeardowns } from "@/data/mockData";
+import { constructMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const siteSettings = await getSiteSettings();
+
+  return constructMetadata({
+    title: "Product Teardowns & Strategy Analyses | Chiagoziem Melvin Akobundu",
+    description:
+      "Comprehensive product management teardowns analyzing user research, friction points, RICE prioritization, and strategic product roadmaps for leading AI and consumer platforms.",
+    urlPath: "/teardowns",
+    siteSettings,
+  });
+}
 
 export default async function TeardownsPage() {
   const data = await getTeardowns();

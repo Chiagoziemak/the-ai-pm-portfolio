@@ -6,6 +6,19 @@ export const homePage = defineType({
   type: "document",
   fields: [
     defineField({
+      name: "metaTitle",
+      title: "Meta Title (SEO)",
+      type: "string",
+      description: "Custom browser tab & search engine title for homepage. If left blank, defaults to Site Settings title.",
+    }),
+    defineField({
+      name: "metaDescription",
+      title: "Meta Description (SEO)",
+      type: "text",
+      rows: 3,
+      description: "Custom search engine description for homepage. If left blank, defaults to Site Settings description.",
+    }),
+    defineField({
       name: "heroHeading",
       title: "Hero Heading (Name)",
       type: "string",
@@ -33,7 +46,7 @@ export const homePage = defineType({
           name: "alt",
           title: "Alternative Text",
           type: "string",
-          validation: (Rule) => Rule.required(),
+          description: "Descriptive alt text for the hero photo.",
         }),
       ],
     }),
@@ -194,6 +207,19 @@ export const aboutPage = defineType({
   type: "document",
   fields: [
     defineField({
+      name: "metaTitle",
+      title: "Meta Title (SEO)",
+      type: "string",
+      description: "Custom browser tab & search engine title. If left blank, defaults to 'About Chiagoziem Melvin Akobundu | AI Product Manager'.",
+    }),
+    defineField({
+      name: "metaDescription",
+      title: "Meta Description (SEO)",
+      type: "text",
+      rows: 3,
+      description: "Custom search engine snippet. If left blank, defaults to bio summary.",
+    }),
+    defineField({
       name: "headline",
       title: "Main Headline",
       type: "string",
@@ -215,6 +241,7 @@ export const aboutPage = defineType({
           name: "alt",
           title: "Alternative Text",
           type: "string",
+          description: "Descriptive alt text for the headshot photo.",
         }),
       ],
     }),
@@ -266,6 +293,19 @@ export const contactPage = defineType({
   title: "Contact Page",
   type: "document",
   fields: [
+    defineField({
+      name: "metaTitle",
+      title: "Meta Title (SEO)",
+      type: "string",
+      description: "Custom browser tab & search engine title. If left blank, defaults to 'Contact Chiagoziem Melvin Akobundu | AI Product Manager'.",
+    }),
+    defineField({
+      name: "metaDescription",
+      title: "Meta Description (SEO)",
+      type: "text",
+      rows: 3,
+      description: "Custom search engine snippet. If left blank, defaults to contact intro.",
+    }),
     defineField({
       name: "headline",
       title: "Headline",

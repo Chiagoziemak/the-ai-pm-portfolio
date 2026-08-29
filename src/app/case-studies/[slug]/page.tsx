@@ -1,4 +1,5 @@
 import React from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
@@ -6,6 +7,7 @@ import Footer from "@/components/Footer";
 import DynamicIcon from "@/components/DynamicIcon";
 import { getCaseStudyBySlug, getSiteSettings } from "@/sanity/queries";
 import { mockCaseStudies } from "@/data/mockData";
+import { constructMetadata, generateArticleJsonLd, getBaseUrl } from "@/lib/seo";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -13,6 +15,52 @@ export const revalidate = 0;
 
 interface PageProps {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const [data, siteSettings] = await Promise.all([
+    getCaseStudyBySlug(slug),
+    getSiteSettings(),
+  ]);
+
+  const study = data || mockCaseStudies.find((s) => s.slug === slug);
+  if (!study) {
+    return constructMetadata({
+      title: "Case Study Not Found",
+      description: "The requested case study could not be found.",
+      urlPath: `/case-studies/${slug}`,
+      siteSettings,
+      noIndex: true,
+    });
+  }
+
+  const isEnabled = siteSettings.caseStudiesPageEnabled !== false;
+  if (!isEnabled) {
+    return constructMetadata({
+      title: "Case Study Coming Soon | Chiagoziem Melvin Akobundu",
+      description: "Product Case Studies are currently undergoing updates and will be available shortly.",
+      urlPath: `/case-studies/${slug}`,
+      siteSettings,
+    });
+  }
+
+  const title =
+    study.metaTitle ||
+    `${study.title} — Case Study | Chiagoziem Melvin Akobundu`;
+  const description = study.metaDescription || study.summary;
+  const image = study.coverImage || siteSettings.ogImageUrl;
+
+  return constructMetadata({
+    title,
+    description,
+    image,
+    imageAlt: study.coverImageAlt || `${study.title} — Case Study Cover`,
+    urlPath: `/case-studies/${slug}`,
+    type: "article",
+    publishedTime: study.date,
+    siteSettings,
+  });
 }
 
 export default async function CaseStudyDetailPage({ params }: PageProps) {
@@ -84,8 +132,24 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
   const productDecisions = Array.isArray(study.productDecisions) ? study.productDecisions : [];
   const beforeAfter = study.beforeAfter;
 
+  const baseUrl = getBaseUrl(siteSettings);
+  const articleJsonLd = generateArticleJsonLd({
+    title: study.metaTitle || `${study.title} — Case Study`,
+    description: study.metaDescription || study.summary,
+    url: `${baseUrl}/case-studies/${slug}`,
+    imageUrl: study.coverImage,
+    datePublished: study.date,
+    siteSettings,
+  });
+
   return (
     <div className="min-h-screen flex flex-col page-bg-casestudies text-foreground transition-colors duration-300 overflow-x-hidden">
+      {/* Structured Data (JSON-LD Article Schema) */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
+
       <Navbar
         navTitleText={siteSettings.navTitleText}
         navLogoUrl={siteSettings.navLogoUrl}
@@ -144,7 +208,11 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
         {/* Cover Image */}
         {study.coverImage && (
           <div className="w-full h-[240px] sm:h-[360px] md:h-[480px] relative mb-12 sm:mb-16 overflow-hidden bg-gradient-to-br from-[#1a1f4e] via-[#0a0c1f] to-[#13140f] flex items-center justify-center border-y border-card-border">
-            <img src={study.coverImage} alt={study.title} className="absolute inset-0 w-full h-full object-cover" />
+            <img
+              src={study.coverImage}
+              alt={study.coverImageAlt || `${study.title} — Case Study Cover`}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
             <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent"></div>
           </div>
         )}

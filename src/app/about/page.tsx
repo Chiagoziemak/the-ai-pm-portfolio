@@ -1,12 +1,37 @@
 import React from "react";
+import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { getAboutPageData, getSiteSettings } from "@/sanity/queries";
 import { mockAboutData } from "@/data/mockData";
+import { constructMetadata, generatePersonJsonLd } from "@/lib/seo";
 import { Award } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const [data, siteSettings] = await Promise.all([
+    getAboutPageData(),
+    getSiteSettings(),
+  ]);
+
+  const title = data?.metaTitle || "About Chiagoziem Melvin Akobundu | AI Product Manager";
+  const description =
+    data?.metaDescription ||
+    (typeof data?.introText === "string" ? data.introText : null) ||
+    "Learn more about Chiagoziem Melvin Akobundu — CSPO certified SaaS Product Manager transitioning into AI Product Management, agentic systems, and full-stack software development.";
+  const image = data?.headshotUrl || siteSettings.ogImageUrl;
+
+  return constructMetadata({
+    title,
+    description,
+    image,
+    imageAlt: data?.headshotAlt || "Chiagoziem Melvin Akobundu — Headshot",
+    urlPath: "/about",
+    siteSettings,
+  });
+}
 
 export default async function AboutPage() {
   const data = await getAboutPageData();
@@ -21,6 +46,7 @@ export default async function AboutPage() {
   
   const taglineChips = Array.isArray(data?.taglineChips) ? data.taglineChips : [];
   const headshotUrl = data?.headshotUrl || "/profile-hero.jpg";
+  const headshotAlt = data?.headshotAlt || "Chiagoziem Melvin Akobundu — Professional Headshot";
   const journey = (Array.isArray(data?.journey) && data.journey.length > 0)
     ? data.journey
     : mockAboutData.journey;
@@ -31,8 +57,16 @@ export default async function AboutPage() {
     ? data.skills
     : mockAboutData.skills;
 
+  const personJsonLd = generatePersonJsonLd(siteSettings, headshotUrl);
+
   return (
     <div className="min-h-screen page-bg-about text-foreground overflow-x-hidden flex flex-col transition-colors duration-300">
+      {/* Structured Data (JSON-LD Person Schema) */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+      />
+
       <Navbar
         navTitleText={siteSettings.navTitleText}
         navLogoUrl={siteSettings.navLogoUrl}
@@ -53,7 +87,7 @@ export default async function AboutPage() {
             <div className="md:col-span-5 relative group max-w-sm sm:max-w-md mx-auto w-full">
               <div className="absolute -inset-1 bg-gradient-to-r from-accent-teal to-accent-cyan rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
               <div className="relative overflow-hidden rounded-2xl border border-card-border aspect-[4/5] glass-panel flex items-center justify-center shadow-lg">
-                <img src={headshotUrl} alt={headline || "Chiagoziem Headshot"} className="w-full h-full object-cover" />
+                <img src={headshotUrl} alt={headshotAlt} className="w-full h-full object-cover" />
               </div>
             </div>
           )}

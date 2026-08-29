@@ -12,6 +12,19 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: "metaTitle",
+      title: "Meta Title (SEO)",
+      type: "string",
+      description: "Custom browser tab & search engine title. If left blank, defaults to '[Title] — Product Teardown | Chiagoziem Melvin Akobundu'.",
+    }),
+    defineField({
+      name: "metaDescription",
+      title: "Meta Description (SEO)",
+      type: "text",
+      rows: 3,
+      description: "Custom search engine snippet. If left blank, defaults to the Executive Summary.",
+    }),
+    defineField({
       name: "slug",
       title: "Slug",
       type: "slug",
@@ -49,7 +62,7 @@ export default defineType({
           name: "alt",
           title: "Alternative Text",
           type: "string",
-          validation: (Rule) => Rule.required(),
+          description: "Descriptive alt text for accessibility and search engines.",
         }),
       ],
     }),
