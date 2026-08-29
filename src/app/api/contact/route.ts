@@ -5,16 +5,38 @@ import { createClient } from "@sanity/client";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { name, email, message } = body;
+    const { firstName, lastName, name, phone, email, message } = body;
 
-    // Server-side validation
-    if (!name || typeof name !== "string" || name.trim() === "") {
+    // Derive first and last name (support both split fields and legacy single name)
+    const resolvedFirstName = (firstName || "").trim();
+    const resolvedLastName = (lastName || "").trim();
+    const fallbackFullName = (name || "").trim();
+
+    let combinedName = "";
+    if (resolvedFirstName && resolvedLastName) {
+      combinedName = `${resolvedFirstName} ${resolvedLastName}`;
+    } else if (resolvedFirstName) {
+      combinedName = resolvedFirstName;
+    } else if (fallbackFullName) {
+      combinedName = fallbackFullName;
+    }
+
+    // Validation: First name & Last name
+    if (!resolvedFirstName && !fallbackFullName) {
       return NextResponse.json(
-        { success: false, error: "Please enter your name." },
+        { success: false, error: "Please enter your first name." },
         { status: 400 }
       );
     }
 
+    if (!resolvedLastName && !fallbackFullName) {
+      return NextResponse.json(
+        { success: false, error: "Please enter your last name." },
+        { status: 400 }
+      );
+    }
+
+    // Validation: Email
     if (!email || typeof email !== "string" || !email.includes("@")) {
       return NextResponse.json(
         { success: false, error: "Please enter a valid email address." },
@@ -22,6 +44,20 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Validation: Phone (Optional, but if supplied validate reasonable characters)
+    const trimmedPhone = typeof phone === "string" ? phone.trim() : "";
+    if (trimmedPhone) {
+      // Allow international formats: optional leading +, digits, spaces, hyphens, parentheses, 7-25 chars
+      const phoneRegex = /^[+]?[\d\s().-]{7,25}$/;
+      if (!phoneRegex.test(trimmedPhone)) {
+        return NextResponse.json(
+          { success: false, error: "Please enter a valid phone number or leave it blank." },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Validation: Message
     if (!message || typeof message !== "string" || message.trim() === "") {
       return NextResponse.json(
         { success: false, error: "Please enter your message." },
@@ -39,6 +75,51 @@ export async function POST(req: NextRequest) {
 
     if (resendApiKey) {
       try {
+        const textContent = [
+          `First Name: ${resolvedFirstName || combinedName}`,
+          `Last Name: ${resolvedLastName || ""}`,
+          `Full Name: ${combinedName}`,
+          `Email: ${email.trim()}`,
+          `Phone: ${trimmedPhone || "Not provided"}`,
+          ``,
+          `Message:`,
+          message.trim(),
+        ].join("\n");
+
+        const htmlContent = `
+          <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff; color: #1e293b;">
+            <div style="border-bottom: 2px solid #0d9488; padding-bottom: 12px; margin-bottom: 20px;">
+              <h2 style="color: #0d9488; margin: 0; font-size: 20px; font-weight: 700;">New Portfolio Contact Inquiry</h2>
+            </div>
+            
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+              <tr>
+                <td style="padding: 6px 0; color: #64748b; font-size: 13px; width: 120px;"><strong>Name:</strong></td>
+                <td style="padding: 6px 0; color: #0f172a; font-size: 14px; font-weight: 600;">${combinedName}</td>
+              </tr>
+              <tr>
+                <td style="padding: 6px 0; color: #64748b; font-size: 13px;"><strong>Email:</strong></td>
+                <td style="padding: 6px 0; font-size: 14px;"><a href="mailto:${email.trim()}" style="color: #0d9488; text-decoration: none;">${email.trim()}</a></td>
+              </tr>
+              <tr>
+                <td style="padding: 6px 0; color: #64748b; font-size: 13px;"><strong>Phone:</strong></td>
+                <td style="padding: 6px 0; font-size: 14px;">
+                  ${trimmedPhone ? `<a href="tel:${trimmedPhone}" style="color: #0d9488; text-decoration: none;">${trimmedPhone}</a>` : '<span style="color: #94a3b8; font-style: italic;">Not provided</span>'}
+                </td>
+              </tr>
+            </table>
+
+            <div style="margin-top: 20px;">
+              <h3 style="color: #0f172a; margin: 0 0 10px 0; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em;">Message</h3>
+              <div style="white-space: pre-wrap; background: #f8fafc; padding: 16px; border-radius: 8px; color: #334155; line-height: 1.6; border: 1px solid #e2e8f0; font-size: 14px;">${message.trim()}</div>
+            </div>
+
+            <div style="margin-top: 24px; padding-top: 12px; border-top: 1px solid #f1f5f9; text-align: right; color: #94a3b8; font-size: 11px;">
+              Transmitted via Chiagoziem PM Portfolio
+            </div>
+          </div>
+        `;
+
         const resendRes = await fetch("https://api.resend.com/emails", {
           method: "POST",
           headers: {
@@ -48,19 +129,10 @@ export async function POST(req: NextRequest) {
           body: JSON.stringify({
             from: "Portfolio Contact Form <onboarding@resend.dev>",
             to: destinationEmail,
-            reply_to: email,
-            subject: `[Portfolio Inquiry] New message from ${name}`,
-            text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
-            html: `
-              <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; rounded: 8px;">
-                <h2 style="color: #0d9488; margin-top: 0;">New Contact Inquiry</h2>
-                <p><strong>Name:</strong> ${name}</p>
-                <p><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
-                <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
-                <h3 style="color: #333;">Message:</h3>
-                <p style="white-space: pre-wrap; background: #f9f9f9; padding: 15px; border-radius: 6px; color: #444;">${message}</p>
-              </div>
-            `,
+            reply_to: email.trim(),
+            subject: `[Portfolio Inquiry] New message from ${combinedName}`,
+            text: textContent,
+            html: htmlContent,
           }),
         });
 
@@ -96,8 +168,11 @@ export async function POST(req: NextRequest) {
 
         await writeClient.create({
           _type: "contactSubmission",
-          name: name.trim(),
+          firstName: resolvedFirstName || (fallbackFullName.split(" ")[0] || ""),
+          lastName: resolvedLastName || (fallbackFullName.split(" ").slice(1).join(" ") || ""),
+          name: combinedName,
           email: email.trim(),
+          phone: trimmedPhone || undefined,
           message: message.trim(),
           submittedAt: new Date().toISOString(),
         });

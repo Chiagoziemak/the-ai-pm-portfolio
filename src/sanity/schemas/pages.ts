@@ -330,8 +330,11 @@ export const contactSubmission = defineType({
   type: "document",
   readOnly: true,
   fields: [
-    defineField({ name: "name", title: "Sender Name", type: "string" }),
+    defineField({ name: "firstName", title: "First Name", type: "string" }),
+    defineField({ name: "lastName", title: "Last Name", type: "string" }),
+    defineField({ name: "name", title: "Full Name", type: "string" }),
     defineField({ name: "email", title: "Sender Email", type: "string" }),
+    defineField({ name: "phone", title: "Phone Number", type: "string" }),
     defineField({ name: "message", title: "Message", type: "text" }),
     defineField({ name: "submittedAt", title: "Submitted At", type: "datetime" }),
   ],

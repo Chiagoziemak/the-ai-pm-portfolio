@@ -4,8 +4,10 @@ import React, { useState } from "react";
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({
-    name: "",
+    firstName: "",
+    lastName: "",
     email: "",
+    phone: "",
     message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -24,20 +26,66 @@ export default function ContactForm() {
     setIsSubmitting(true);
     setErrorMessage("");
 
+    // Client-side validation
+    if (!formData.firstName.trim()) {
+      setErrorMessage("Please enter your first name.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!formData.lastName.trim()) {
+      setErrorMessage("Please enter your last name.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!formData.email.trim() || !formData.email.includes("@")) {
+      setErrorMessage("Please enter a valid email address.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (formData.phone.trim()) {
+      const phoneRegex = /^[+]?[\d\s().-]{7,25}$/;
+      if (!phoneRegex.test(formData.phone.trim())) {
+        setErrorMessage("Please enter a valid phone number (e.g. +1 555 123 4567) or leave it blank.");
+        setIsSubmitting(false);
+        return;
+      }
+    }
+
+    if (!formData.message.trim()) {
+      setErrorMessage("Please enter your message.");
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          firstName: formData.firstName.trim(),
+          lastName: formData.lastName.trim(),
+          email: formData.email.trim(),
+          phone: formData.phone.trim() || undefined,
+          message: formData.message.trim(),
+        }),
       });
 
       const data = await res.json();
 
       if (res.ok && data.success) {
         setIsSuccess(true);
-        setFormData({ name: "", email: "", message: "" });
+        setFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          phone: "",
+          message: "",
+        });
       } else {
         setErrorMessage(data.error || "Failed to send message. Please try again.");
       }
@@ -72,38 +120,62 @@ export default function ContactForm() {
           </button>
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8 relative z-10">
+        <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6 relative z-10">
           {errorMessage && (
             <div className="p-4 rounded-xl border border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-300 text-sm font-medium">
               {errorMessage}
             </div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
+          {/* First Name & Last Name (Side by Side on Desktop) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             <div className="space-y-2">
               <label
-                htmlFor="name"
+                htmlFor="firstName"
                 className="text-xs font-mono text-foreground/75 uppercase tracking-widest font-semibold block"
               >
-                Full Name
+                First Name <span className="text-accent-teal">*</span>
               </label>
               <input
                 type="text"
-                id="name"
-                name="name"
-                value={formData.name}
+                id="firstName"
+                name="firstName"
+                value={formData.firstName}
                 onChange={handleInputChange}
-                placeholder="Jane Doe"
+                placeholder="Jane"
                 required
-                className="w-full bg-card border border-card-border rounded-xl px-4 sm:px-6 py-3.5 sm:py-4 text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-accent-teal/50 focus:border-accent-teal transition-all text-base min-h-[48px]"
+                className="w-full bg-card border border-card-border rounded-xl px-4 sm:px-5 py-3 sm:py-3.5 text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-accent-teal/50 focus:border-accent-teal transition-all text-base min-h-[48px]"
               />
             </div>
+
+            <div className="space-y-2">
+              <label
+                htmlFor="lastName"
+                className="text-xs font-mono text-foreground/75 uppercase tracking-widest font-semibold block"
+              >
+                Last Name <span className="text-accent-teal">*</span>
+              </label>
+              <input
+                type="text"
+                id="lastName"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleInputChange}
+                placeholder="Doe"
+                required
+                className="w-full bg-card border border-card-border rounded-xl px-4 sm:px-5 py-3 sm:py-3.5 text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-accent-teal/50 focus:border-accent-teal transition-all text-base min-h-[48px]"
+              />
+            </div>
+          </div>
+
+          {/* Email Address & Phone Number (Side by Side on Desktop) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             <div className="space-y-2">
               <label
                 htmlFor="email"
                 className="text-xs font-mono text-foreground/75 uppercase tracking-widest font-semibold block"
               >
-                Email Address
+                Email Address <span className="text-accent-teal">*</span>
               </label>
               <input
                 type="email"
@@ -113,30 +185,51 @@ export default function ContactForm() {
                 onChange={handleInputChange}
                 placeholder="jane@example.com"
                 required
-                className="w-full bg-card border border-card-border rounded-xl px-4 sm:px-6 py-3.5 sm:py-4 text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-accent-teal/50 focus:border-accent-teal transition-all text-base min-h-[48px]"
+                className="w-full bg-card border border-card-border rounded-xl px-4 sm:px-5 py-3 sm:py-3.5 text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-accent-teal/50 focus:border-accent-teal transition-all text-base min-h-[48px]"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label
+                htmlFor="phone"
+                className="text-xs font-mono text-foreground/75 uppercase tracking-widest font-semibold flex items-center justify-between"
+              >
+                <span>Phone Number</span>
+                <span className="text-[10px] text-foreground/50 font-normal lowercase">(optional)</span>
+              </label>
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                value={formData.phone}
+                onChange={handleInputChange}
+                placeholder="+1 (555) 000-0000"
+                className="w-full bg-card border border-card-border rounded-xl px-4 sm:px-5 py-3 sm:py-3.5 text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-accent-teal/50 focus:border-accent-teal transition-all text-base min-h-[48px]"
               />
             </div>
           </div>
 
+          {/* Message Area */}
           <div className="space-y-2">
             <label
               htmlFor="message"
               className="text-xs font-mono text-foreground/75 uppercase tracking-widest font-semibold block"
             >
-              Message
+              Message <span className="text-accent-teal">*</span>
             </label>
             <textarea
               id="message"
               name="message"
               value={formData.message}
               onChange={handleInputChange}
-              placeholder="Tell me about your project..."
+              placeholder="Tell me about your project, team, or opportunity..."
               required
               rows={5}
-              className="w-full bg-card border border-card-border rounded-xl px-4 sm:px-6 py-3.5 sm:py-4 text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-accent-teal/50 focus:border-accent-teal transition-all text-base resize-none min-h-[140px]"
+              className="w-full bg-card border border-card-border rounded-xl px-4 sm:px-5 py-3 sm:py-3.5 text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-accent-teal/50 focus:border-accent-teal transition-all text-base resize-none min-h-[140px]"
             />
           </div>
 
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={isSubmitting}
