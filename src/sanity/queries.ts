@@ -127,6 +127,7 @@ export interface AboutPageData extends AboutData {
   taglineChips?: string[];
   closingHeadline?: string;
   closingText?: string;
+  learningVector?: { name: string; percent: number }[];
 }
 
 export interface ContactPageData {

@@ -1,10 +1,11 @@
 import React from "react";
 import type { Metadata } from "next";
+import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { getAboutPageData, getSiteSettings } from "@/sanity/queries";
 import { constructMetadata, generatePersonJsonLd } from "@/lib/seo";
-import { Award } from "lucide-react";
+import { Award, ArrowRight } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -55,6 +56,12 @@ export default async function AboutPage() {
   const skillsGroups = (Array.isArray(data?.skills) && data.skills.length > 0)
     ? data.skills
     : [];
+  const learningVector = (Array.isArray(data?.learningVector) && data.learningVector.length > 0)
+    ? data.learningVector
+    : [];
+
+  const closingHeadline = data?.closingHeadline;
+  const closingText = data?.closingText;
 
   const personJsonLd = generatePersonJsonLd(siteSettings, headshotUrl);
 
@@ -76,7 +83,7 @@ export default async function AboutPage() {
         caseStudiesPageEnabled={siteSettings.caseStudiesPageEnabled}
       />
 
-      <main className="flex-grow pt-24 sm:pt-28 md:pt-32 pb-16 md:pb-24 px-4 sm:px-6 md:px-12 lg:px-16 max-w-[1280px] mx-auto w-full">
+      <main className="flex-grow pt-24 sm:pt-28 md:pt-32 pb-16 md:pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
 
         {/* Hero & Bio Section */}
         <section className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center mb-16 sm:mb-24">
@@ -93,8 +100,8 @@ export default async function AboutPage() {
 
           {/* Bio */}
           <div className={`${headshotUrl ? "md:col-span-7" : "md:col-span-12"} space-y-6 sm:space-y-8`}>
-            <div className="space-y-3 sm:space-y-4">
-              <div className="flex flex-wrap gap-2 items-center">
+            <div className="space-y-3 sm:space-y-4 text-center md:text-left">
+              <div className="flex flex-wrap gap-2 items-center justify-center md:justify-start">
                 <span className="text-xs font-mono text-accent-teal tracking-[0.2em] uppercase font-bold">
                   The Architectural Evolution
                 </span>
@@ -123,30 +130,37 @@ export default async function AboutPage() {
         {/* Technical Proficiency & Skills */}
         {skillsGroups.length > 0 && (
           <section className="mb-16 sm:mb-24">
-            <h2 className="text-2xl sm:text-3xl font-extrabold mb-6 sm:mb-8 text-foreground tracking-tight">
-              Technical &amp; Product Capability
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            <div className="text-center md:text-left mb-6 sm:mb-8">
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
+                Technical &amp; Product Capability
+              </h2>
+            </div>
+            <div className="flex flex-wrap justify-center gap-6">
               {skillsGroups.map((group: any, idx: number) => {
                 if (!group) return null;
                 const items = Array.isArray(group.items) ? group.items : [];
                 return (
-                  <div key={idx} className="p-6 sm:p-7 rounded-2xl border border-card-border glass-panel shadow-sm">
-                    {group.category && (
-                      <h3 className="text-xs font-mono text-accent-teal mb-4 uppercase tracking-widest font-bold">
-                        {group.category}
-                      </h3>
-                    )}
-                    <div className="flex flex-wrap gap-2">
-                      {items.map((item: any, iIdx: number) => {
-                        if (!item) return null;
-                        const label = typeof item === "string" ? item : (item.name || item.label || String(item));
-                        return (
-                          <span key={iIdx} className="px-3 py-1 bg-card border border-card-border text-foreground text-xs font-mono rounded-lg">
-                            {label}
-                          </span>
-                        );
-                      })}
+                  <div
+                    key={idx}
+                    className="w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] max-w-[380px] p-6 sm:p-7 rounded-2xl border border-card-border glass-panel shadow-sm flex flex-col justify-between"
+                  >
+                    <div>
+                      {group.category && (
+                        <h3 className="text-xs font-mono text-accent-teal mb-4 uppercase tracking-widest font-bold">
+                          {group.category}
+                        </h3>
+                      )}
+                      <div className="flex flex-wrap gap-2">
+                        {items.map((item: any, iIdx: number) => {
+                          if (!item) return null;
+                          const label = typeof item === "string" ? item : (item.name || item.label || String(item));
+                          return (
+                            <span key={iIdx} className="px-3 py-1 bg-card border border-card-border text-foreground text-xs font-mono rounded-lg">
+                              {label}
+                            </span>
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
                 );
@@ -155,12 +169,44 @@ export default async function AboutPage() {
           </section>
         )}
 
+        {/* Learning Vector & Growth Focus (if defined) */}
+        {learningVector.length > 0 && (
+          <section className="mb-16 sm:mb-24">
+            <div className="text-center md:text-left mb-6 sm:mb-8">
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
+                Learning Vector &amp; Growth Focus
+              </h2>
+            </div>
+            <div className="flex flex-wrap justify-center gap-6">
+              {learningVector.map((skill, idx) => (
+                <div
+                  key={idx}
+                  className="w-full sm:w-[calc(50%-0.75rem)] max-w-[480px] p-5 sm:p-6 rounded-2xl border border-card-border glass-panel shadow-sm"
+                >
+                  <div className="flex justify-between items-center mb-2 font-mono text-xs sm:text-sm">
+                    <span className="font-bold text-foreground">{skill.name}</span>
+                    <span className="text-accent-teal font-semibold">{skill.percent}%</span>
+                  </div>
+                  <div className="w-full bg-card-border/30 h-2 rounded-full overflow-hidden">
+                    <div
+                      className="bg-gradient-to-r from-accent-teal to-accent-cyan h-full rounded-full transition-all duration-500"
+                      style={{ width: `${Math.min(100, Math.max(0, skill.percent))}%` }}
+                    ></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
         {/* Professional Trajectory (Timeline Layout: 1 column on mobile, alternating on desktop) */}
         {journey.length > 0 && (
-          <section className="mb-16 sm:mb-24">
-            <h2 className="text-2xl sm:text-3xl font-extrabold mb-8 sm:mb-12 text-foreground tracking-tight">
-              Professional Trajectory
-            </h2>
+          <section className="mb-16 sm:mb-24 max-w-5xl mx-auto w-full">
+            <div className="text-center md:text-left mb-8 sm:mb-12">
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
+                Professional Trajectory
+              </h2>
+            </div>
             
             <div className="relative">
               {/* Connecting Timeline Line (Left on mobile, center on desktop) */}
@@ -219,12 +265,14 @@ export default async function AboutPage() {
 
         {/* Certifications & Credentials */}
         {certifications.length > 0 && (
-          <section className="mb-12 sm:mb-16">
-            <h2 className="text-2xl sm:text-3xl font-extrabold mb-6 sm:mb-8 text-foreground tracking-tight flex items-center gap-2.5">
-              <Award size={26} className="text-accent-teal" />
-              Certifications &amp; Credentials
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <section className="mb-16 sm:mb-24">
+            <div className="text-center md:text-left mb-6 sm:mb-8">
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight flex items-center justify-center md:justify-start gap-2.5">
+                <Award size={26} className="text-accent-teal" />
+                <span>Certifications &amp; Credentials</span>
+              </h2>
+            </div>
+            <div className="flex flex-wrap justify-center gap-6">
               {certifications.map((cert: any, idx: number) => {
                 const certName = typeof cert === "string" ? cert : (cert.name || cert.title || "");
                 const issuer = typeof cert === "string" ? "" : (cert.issuer || cert.organization || "");
@@ -234,7 +282,7 @@ export default async function AboutPage() {
                 return (
                   <div
                     key={idx}
-                    className="p-5 sm:p-6 rounded-2xl border border-card-border glass-panel hover:border-accent-teal/40 transition-all duration-300 flex items-start gap-4 shadow-sm"
+                    className="w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] max-w-[380px] p-5 sm:p-6 rounded-2xl border border-card-border glass-panel hover:border-accent-teal/40 transition-all duration-300 flex items-start gap-4 shadow-sm"
                   >
                     <div className="w-10 h-10 rounded-xl bg-accent-teal/10 border border-accent-teal/20 text-accent-teal flex items-center justify-center flex-shrink-0">
                       <Award size={20} />
@@ -262,6 +310,36 @@ export default async function AboutPage() {
                   </div>
                 );
               })}
+            </div>
+          </section>
+        )}
+
+        {/* Closing Callout Section with CTA */}
+        {(closingHeadline || closingText) && (
+          <section className="mt-16 sm:mt-24 mb-4">
+            <div className="p-8 sm:p-12 md:p-16 rounded-3xl border border-card-border glass-panel text-center max-w-3xl mx-auto relative overflow-hidden shadow-sm">
+              <div className="absolute top-0 right-0 -mr-16 -mt-16 w-48 h-48 bg-accent-teal/10 rounded-full blur-3xl pointer-events-none"></div>
+              <div className="relative z-10 space-y-4 sm:space-y-6">
+                {closingHeadline && (
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-foreground tracking-tight leading-snug">
+                    {closingHeadline}
+                  </h2>
+                )}
+                {closingText && (
+                  <p className="text-foreground/80 text-sm sm:text-base md:text-lg max-w-xl mx-auto leading-relaxed">
+                    {closingText}
+                  </p>
+                )}
+                <div className="pt-2 sm:pt-4">
+                  <Link
+                    href="/contact"
+                    className="inline-flex items-center justify-center gap-2 px-8 py-3.5 sm:py-4 rounded-xl bg-accent-teal text-background font-bold text-sm sm:text-base hover:bg-accent-cyan hover:shadow-[0_0_20px_rgba(0,212,216,0.3)] active:scale-95 transition-all duration-300 min-h-[48px] shadow-sm"
+                  >
+                    <span>Let's Talk</span>
+                    <ArrowRight size={16} />
+                  </Link>
+                </div>
+              </div>
             </div>
           </section>
         )}
