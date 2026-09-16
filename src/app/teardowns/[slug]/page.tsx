@@ -6,7 +6,6 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import DynamicIcon from "@/components/DynamicIcon";
 import { getTeardowns, getTeardownBySlug, getSiteSettings } from "@/sanity/queries";
-import { mockTeardowns } from "@/data/mockData";
 import { constructMetadata, generateArticleJsonLd, getBaseUrl } from "@/lib/seo";
 import { ArrowLeft, Clock, Calendar, Tag, ArrowUpRight, Layers } from "lucide-react";
 
@@ -24,7 +23,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     getSiteSettings(),
   ]);
 
-  const teardown = data || mockTeardowns.find((t) => t.slug === slug);
+  const teardown = data;
   if (!teardown) {
     return constructMetadata({
       title: "Teardown Not Found",
@@ -57,7 +56,7 @@ export default async function TeardownDetailPage({ params }: PageProps) {
   const { slug } = await params;
   const siteSettings = (await getSiteSettings()) || {};
   const data = await getTeardownBySlug(slug);
-  const teardown = data || mockTeardowns.find((t) => t.slug === slug);
+  const teardown = data;
 
   if (!teardown) {
     notFound();
@@ -76,8 +75,7 @@ export default async function TeardownDetailPage({ params }: PageProps) {
   const painPoints = Array.isArray(teardown.painPoints) ? teardown.painPoints : [];
 
   const allTeardowns = await getTeardowns();
-  const list = allTeardowns.length > 0 ? allTeardowns : mockTeardowns;
-  const relatedTeardowns = list.filter((t) => t.slug !== slug).slice(0, 3);
+  const relatedTeardowns = allTeardowns.filter((t) => t.slug !== slug).slice(0, 3);
 
   const baseUrl = getBaseUrl(siteSettings);
   const articleJsonLd = generateArticleJsonLd({

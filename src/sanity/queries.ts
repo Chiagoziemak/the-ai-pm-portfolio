@@ -1,10 +1,6 @@
 import { sanityClient, sanityConfigured } from "./client";
 import { urlForImage } from "./image";
-import {
-  mockTeardowns,
-  mockCaseStudies,
-  mockProducts,
-  mockAboutData,
+import type {
   Teardown,
   CaseStudy,
   Product,
@@ -448,16 +444,12 @@ export async function getHomePageData(): Promise<HomePageData> {
 
 export async function getAboutPageData(): Promise<AboutPageData> {
   if (!sanityConfigured) {
-    console.warn("[Sanity Fallback] Using mock about page data.");
     return {
-      bio: mockAboutData.bio,
-      headline: mockAboutData.headline,
-      introText: mockAboutData.introText,
-      headshotUrl: mockAboutData.headshotUrl,
-      headshotAlt: mockAboutData.headshotAlt,
-      skills: mockAboutData.skills,
-      journey: mockAboutData.journey,
-      certifications: mockAboutData.certifications,
+      bio: "",
+      headline: "Chiagoziem Melvin Akobundu",
+      skills: [],
+      journey: [],
+      certifications: [],
     };
   }
   try {
@@ -496,43 +488,37 @@ export async function getAboutPageData(): Promise<AboutPageData> {
     );
 
     if (!data) {
-      console.warn("[Sanity Fallback] About Page document 'aboutPage' not found in Sanity. Falling back to mockAboutData.");
       return {
-        bio: mockAboutData.bio,
-        headline: mockAboutData.headline,
-        introText: mockAboutData.introText,
-        headshotUrl: mockAboutData.headshotUrl,
-        headshotAlt: mockAboutData.headshotAlt,
-        skills: mockAboutData.skills,
-        journey: mockAboutData.journey,
-        certifications: mockAboutData.certifications,
+        bio: "",
+        headline: "Chiagoziem Melvin Akobundu",
+        skills: [],
+        journey: [],
+        certifications: [],
       };
     }
     return {
-      bio: data.introText || mockAboutData.bio,
-      skills: data.skills || mockAboutData.skills,
-      journey: data.journey || mockAboutData.journey,
-      certifications: data.certifications ? data.certifications.map((c: any) => c.name) : mockAboutData.certifications,
+      bio: data.introText || "",
+      skills: Array.isArray(data.skills) ? data.skills : [],
+      journey: Array.isArray(data.journey) ? data.journey : [],
+      certifications: Array.isArray(data.certifications)
+        ? data.certifications.map((c: any) => (typeof c === "string" ? c : c.name || c.title || ""))
+        : [],
       ...data,
     };
   } catch (error) {
     console.error("Error fetching about page data from Sanity:", error);
     return {
-      bio: mockAboutData.bio,
-      headline: mockAboutData.headline,
-      introText: mockAboutData.introText,
-      headshotUrl: mockAboutData.headshotUrl,
-      headshotAlt: mockAboutData.headshotAlt,
-      skills: mockAboutData.skills,
-      journey: mockAboutData.journey,
-      certifications: mockAboutData.certifications,
+      bio: "",
+      headline: "Chiagoziem Melvin Akobundu",
+      skills: [],
+      journey: [],
+      certifications: [],
     };
   }
 }
 
 export async function getContactPageData(): Promise<ContactPageData> {
   if (!sanityConfigured) {
-    console.warn("[Sanity Fallback] Using default contact page content.");
     return {
       headline: "Let's Connect & Collaborate",
       introText: "Whether you're looking for an AI Product Manager, exploring strategic teardowns, or want to discuss agentic AI systems, reach out below.",
@@ -564,8 +550,7 @@ export async function getContactPageData(): Promise<ContactPageData> {
 
 export async function getTeardowns(): Promise<Teardown[]> {
   if (!sanityConfigured) {
-    console.warn("[Sanity Fallback] Using mockTeardowns.");
-    return mockTeardowns;
+    return [];
   }
   try {
     const teardowns = await sanityClient.fetch(
@@ -608,21 +593,16 @@ export async function getTeardowns(): Promise<Teardown[]> {
       {},
       fetchOptions
     );
-    if (!teardowns || teardowns.length === 0) {
-      console.warn("[Sanity Fallback] No teardown documents published in Sanity. Falling back to mockTeardowns.");
-      return mockTeardowns;
-    }
-    return teardowns;
+    return Array.isArray(teardowns) ? teardowns : [];
   } catch (error) {
     console.error("Failed to fetch teardowns from Sanity:", error);
-    return mockTeardowns;
+    return [];
   }
 }
 
 export async function getTeardownBySlug(slug: string): Promise<Teardown | null> {
   if (!sanityConfigured) {
-    console.warn(`[Sanity Fallback] Using mock data for teardown slug '${slug}'.`);
-    return mockTeardowns.find((t) => t.slug === slug) || null;
+    return null;
   }
   try {
     const teardown = await sanityClient.fetch(
@@ -675,20 +655,15 @@ export async function getTeardownBySlug(slug: string): Promise<Teardown | null> 
     );
 
     if (!teardown) {
-      console.warn(`[Sanity Fallback] Teardown slug '${slug}' not found in Sanity. Searching mockTeardowns.`);
-      return mockTeardowns.find((t) => t.slug === slug) || null;
+      return null;
     }
-
-    const mockMatch = mockTeardowns.find((t) => t.slug === slug);
 
     let body: string[] = [];
     if (Array.isArray(teardown.body) && teardown.body.length > 0) {
       body = teardown.body;
     } else if (typeof teardown.researchEvidence === "string" && teardown.researchEvidence.trim() !== "") {
       body = teardown.researchEvidence.split("\n").filter((p: string) => p.trim() !== "");
-    } else if (mockMatch && Array.isArray(mockMatch.body)) {
-      body = mockMatch.body;
-    } else if (typeof teardown.summary === "string") {
+    } else if (typeof teardown.summary === "string" && teardown.summary.trim() !== "") {
       body = [teardown.summary];
     }
 
@@ -697,8 +672,6 @@ export async function getTeardownBySlug(slug: string): Promise<Teardown | null> 
       keyFindings = teardown.keyFindings.map((item: any) =>
         typeof item === "string" ? item : (item?.text || item?.finding || item?.title || JSON.stringify(item))
       );
-    } else if (mockMatch && Array.isArray(mockMatch.keyFindings)) {
-      keyFindings = mockMatch.keyFindings;
     }
 
     let researchDetails = teardown.researchDetails;
@@ -714,8 +687,6 @@ export async function getTeardownBySlug(slug: string): Promise<Teardown | null> 
               )
             : [],
         };
-      } else if (mockMatch?.researchDetails) {
-        researchDetails = mockMatch.researchDetails;
       }
     }
 
@@ -730,28 +701,11 @@ export async function getTeardownBySlug(slug: string): Promise<Teardown | null> 
           effort: typeof r.effort === "number" ? r.effort : undefined,
           rice: typeof r.score === "number" ? r.score : (typeof r.rice === "number" ? r.rice : 0),
         }));
-      } else if (mockMatch?.riceScores) {
-        riceScores = mockMatch.riceScores;
       }
     }
 
-    let recommendations = teardown.recommendations;
-    if (!Array.isArray(recommendations) || recommendations.length === 0) {
-      if (mockMatch?.recommendations) {
-        recommendations = mockMatch.recommendations;
-      } else {
-        recommendations = [];
-      }
-    }
-
-    let projectLinks = teardown.projectLinks;
-    if (!Array.isArray(projectLinks) || projectLinks.length === 0) {
-      if (mockMatch?.projectLinks) {
-        projectLinks = mockMatch.projectLinks;
-      } else {
-        projectLinks = [];
-      }
-    }
+    let recommendations = Array.isArray(teardown.recommendations) ? teardown.recommendations : [];
+    let projectLinks = Array.isArray(teardown.projectLinks) ? teardown.projectLinks : [];
 
     return {
       ...teardown,
@@ -763,24 +717,23 @@ export async function getTeardownBySlug(slug: string): Promise<Teardown | null> 
       projectLinks,
       insightCards: Array.isArray(teardown.insightCards) ? teardown.insightCards : [],
       painPoints: Array.isArray(teardown.painPoints) ? teardown.painPoints : [],
-      myRole: teardown.myRole || mockMatch?.myRole || "",
-      category: teardown.category || mockMatch?.category || "Product Strategy",
-      readTime: teardown.readTime || mockMatch?.readTime || "8 min",
-      date: teardown.date || mockMatch?.date || "2024",
-      summary: teardown.summary || mockMatch?.summary || "",
-      coverImage: teardown.coverImage || mockMatch?.coverImage || "",
-      coverImageAlt: teardown.coverImageAlt || mockMatch?.coverImageAlt || `${teardown.title} cover`,
+      myRole: teardown.myRole || "",
+      category: teardown.category || "Product Strategy",
+      readTime: teardown.readTime || "",
+      date: teardown.date || "2024",
+      summary: teardown.summary || "",
+      coverImage: teardown.coverImage || "",
+      coverImageAlt: teardown.coverImageAlt || `${teardown.title} cover`,
     };
   } catch (error) {
     console.error(`Failed to fetch teardown for slug ${slug}:`, error);
-    return mockTeardowns.find((t) => t.slug === slug) || null;
+    return null;
   }
 }
 
 export async function getCaseStudies(): Promise<CaseStudy[]> {
   if (!sanityConfigured) {
-    console.warn("[Sanity Fallback] Using mockCaseStudies.");
-    return mockCaseStudies;
+    return [];
   }
   try {
     const caseStudies = await sanityClient.fetch(
@@ -826,21 +779,16 @@ export async function getCaseStudies(): Promise<CaseStudy[]> {
       {},
       fetchOptions
     );
-    if (!caseStudies || caseStudies.length === 0) {
-      console.warn("[Sanity Fallback] No caseStudy documents in Sanity. Falling back to mockCaseStudies.");
-      return mockCaseStudies;
-    }
-    return caseStudies;
+    return Array.isArray(caseStudies) ? caseStudies : [];
   } catch (error) {
     console.error("Failed to fetch case studies from Sanity:", error);
-    return mockCaseStudies;
+    return [];
   }
 }
 
 export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null> {
   if (!sanityConfigured) {
-    console.warn(`[Sanity Fallback] Using mock data for case study slug '${slug}'.`);
-    return mockCaseStudies.find((s) => s.slug === slug) || null;
+    return null;
   }
   try {
     const caseStudy = await sanityClient.fetch(
@@ -904,44 +852,25 @@ export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null
     );
 
     if (!caseStudy) {
-      console.warn(`[Sanity Fallback] Case Study slug '${slug}' not found in Sanity. Searching mockCaseStudies.`);
-      return mockCaseStudies.find((s) => s.slug === slug) || null;
+      return null;
     }
 
-    const mockMatch = mockCaseStudies.find((s) => s.slug === slug);
-
-    let tools: string[] = [];
-    if (Array.isArray(caseStudy.tools) && caseStudy.tools.length > 0) {
-      tools = caseStudy.tools;
-    } else if (mockMatch && Array.isArray(mockMatch.tools)) {
-      tools = mockMatch.tools;
-    }
-
+    let tools: string[] = Array.isArray(caseStudy.tools) ? caseStudy.tools : [];
     let body: string[] = [];
     if (Array.isArray(caseStudy.body) && caseStudy.body.length > 0) {
       body = caseStudy.body;
     } else if (typeof caseStudy.challenge === "string" && caseStudy.challenge.trim() !== "") {
       body = caseStudy.challenge.split("\n").filter((p: string) => p.trim() !== "");
-    } else if (mockMatch && Array.isArray(mockMatch.body)) {
-      body = mockMatch.body;
-    } else if (typeof caseStudy.summary === "string") {
+    } else if (typeof caseStudy.summary === "string" && caseStudy.summary.trim() !== "") {
       body = [caseStudy.summary];
     }
 
-    let results: string[] = [];
-    if (Array.isArray(caseStudy.results) && caseStudy.results.length > 0) {
-      results = caseStudy.results;
-    } else if (mockMatch && Array.isArray(mockMatch.body)) {
-      results = mockMatch.results;
-    }
-
+    let results: string[] = Array.isArray(caseStudy.results) ? caseStudy.results : [];
     let lessons: string[] = [];
     if (Array.isArray(caseStudy.lessons) && caseStudy.lessons.length > 0) {
       lessons = caseStudy.lessons;
     } else if (Array.isArray(caseStudy.lessonsLearned) && caseStudy.lessonsLearned.length > 0) {
       lessons = caseStudy.lessonsLearned;
-    } else if (mockMatch && Array.isArray(mockMatch.lessons)) {
-      lessons = mockMatch.lessons;
     }
 
     return {
@@ -952,23 +881,22 @@ export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null
       lessons,
       productDecisions: Array.isArray(caseStudy.productDecisions) ? caseStudy.productDecisions : [],
       beforeAfter: Array.isArray(caseStudy.beforeAfter) ? caseStudy.beforeAfter : [],
-      category: caseStudy.category || mockMatch?.category || "AI Product Case Study",
-      date: caseStudy.date || mockMatch?.date || "2024",
-      readTime: caseStudy.readTime || mockMatch?.readTime || "8 min",
-      summary: caseStudy.summary || mockMatch?.summary || "",
-      coverImage: caseStudy.coverImage || mockMatch?.coverImage || "",
-      coverImageAlt: caseStudy.coverImageAlt || mockMatch?.coverImageAlt || `${caseStudy.title} cover`,
+      category: caseStudy.category || "AI Product Case Study",
+      date: caseStudy.date || "2024",
+      readTime: caseStudy.readTime || "",
+      summary: caseStudy.summary || "",
+      coverImage: caseStudy.coverImage || "",
+      coverImageAlt: caseStudy.coverImageAlt || `${caseStudy.title} cover`,
     };
   } catch (error) {
     console.error(`Failed to fetch case study for slug ${slug}:`, error);
-    return mockCaseStudies.find((s) => s.slug === slug) || null;
+    return null;
   }
 }
 
 export async function getProducts(): Promise<Product[]> {
   if (!sanityConfigured) {
-    console.warn("[Sanity Fallback] Using mockProducts.");
-    return mockProducts;
+    return [];
   }
   try {
     const products = await sanityClient.fetch(
@@ -988,13 +916,9 @@ export async function getProducts(): Promise<Product[]> {
       {},
       fetchOptions
     );
-    if (!products || products.length === 0) {
-      console.warn("[Sanity Fallback] No product documents in Sanity. Falling back to mockProducts.");
-      return mockProducts;
-    }
-    return products;
+    return Array.isArray(products) ? products : [];
   } catch (error) {
     console.error("Failed to fetch products from Sanity:", error);
-    return mockProducts;
+    return [];
   }
 }

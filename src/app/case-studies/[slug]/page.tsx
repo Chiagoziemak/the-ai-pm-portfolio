@@ -6,7 +6,6 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import DynamicIcon from "@/components/DynamicIcon";
 import { getCaseStudyBySlug, getSiteSettings } from "@/sanity/queries";
-import { mockCaseStudies } from "@/data/mockData";
 import { constructMetadata, generateArticleJsonLd, getBaseUrl } from "@/lib/seo";
 import { ArrowLeft, ArrowUpRight, ExternalLink } from "lucide-react";
 
@@ -24,7 +23,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     getSiteSettings(),
   ]);
 
-  const study = data || mockCaseStudies.find((s) => s.slug === slug);
+  const study = data;
   if (!study) {
     return constructMetadata({
       title: "Case Study Not Found",
@@ -67,7 +66,7 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
   const { slug } = await params;
   const siteSettings = (await getSiteSettings()) || {};
   const data = await getCaseStudyBySlug(slug);
-  const study = data || mockCaseStudies.find((s) => s.slug === slug);
+  const study = data;
 
   if (!study) {
     notFound();

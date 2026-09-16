@@ -4,7 +4,6 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { getProducts, getSiteSettings } from "@/sanity/queries";
-import { mockProducts } from "@/data/mockData";
 import { constructMetadata } from "@/lib/seo";
 import { Sparkles, ArrowUpRight } from "lucide-react";
 
@@ -26,12 +25,12 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function ProductsPage() {
   const data = await getProducts();
   const siteSettings = (await getSiteSettings()) || {};
-  const products = Array.isArray(data) && data.length > 0 ? data : mockProducts;
+  const products = Array.isArray(data) ? data : [];
 
   const isCaseStudiesEnabled = siteSettings.caseStudiesPageEnabled !== false;
 
   // Split into Featured Product vs other products
-  const featuredProduct = products.find((p: any) => p.isFeatured || p.featured) || products[0];
+  const featuredProduct = products.find((p: any) => p.isFeatured || p.featured) || (products.length > 0 ? products[0] : null);
   const comingSoonProducts = products.filter((p) => p !== featuredProduct);
 
   return (
@@ -126,10 +125,10 @@ export default async function ProductsPage() {
                   ) : (
                     isCaseStudiesEnabled ? (
                       <Link
-                        href="/case-studies/resumegenie-ai-agent"
+                        href="/case-studies"
                         className="w-full sm:w-auto bg-accent-teal text-background px-6 sm:px-8 py-3 rounded-xl font-bold transition-all hover:bg-accent-cyan active:scale-95 flex items-center justify-center gap-2 shadow-sm text-sm sm:text-base min-h-[44px]"
                       >
-                        {featuredProduct.linkLabel || "View Case Study →"}
+                        {featuredProduct.linkLabel || "View Case Studies →"}
                       </Link>
                     ) : (
                       <Link
@@ -152,8 +151,25 @@ export default async function ProductsPage() {
           </section>
         )}
 
+        {/* Empty state if 0 products */}
+        {products.length === 0 && (
+          <div className="text-center max-w-xl mx-auto py-16 px-6 glass-panel rounded-3xl border border-card-border">
+            <h3 className="text-2xl font-bold mb-3">Products Coming Soon</h3>
+            <p className="text-foreground/75 text-sm sm:text-base mb-6">
+              New AI products and case studies are currently being finalized.
+            </p>
+            <Link
+              href="/contact"
+              className="inline-flex items-center px-6 py-3 rounded-xl bg-accent-teal text-background font-bold hover:bg-accent-cyan transition-all text-sm min-h-[44px]"
+            >
+              Get In Touch
+            </Link>
+          </div>
+        )}
+
         {/* Other Products Grid */}
-        <section className="flex flex-wrap justify-center gap-6 sm:gap-8">
+        {comingSoonProducts.length > 0 && (
+          <section className="flex flex-wrap justify-center gap-6 sm:gap-8">
           {comingSoonProducts.map((product) => {
             return (
               <div 
@@ -202,7 +218,8 @@ export default async function ProductsPage() {
               </div>
             );
           })}
-        </section>
+          </section>
+        )}
 
         {/* Bottom CTA Banner */}
         <div className="mt-16 sm:mt-24 p-8 sm:p-12 rounded-3xl border border-card-border glass-panel text-center max-w-3xl mx-auto shadow-sm">

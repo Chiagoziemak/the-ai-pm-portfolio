@@ -4,7 +4,6 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import TeardownsList from "./TeardownsList";
 import { getTeardowns, getSiteSettings } from "@/sanity/queries";
-import { mockTeardowns } from "@/data/mockData";
 import { constructMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -25,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function TeardownsPage() {
   const data = await getTeardowns();
   const siteSettings = (await getSiteSettings()) || {};
-  const teardowns = data.length > 0 ? data : mockTeardowns;
+  const teardowns = Array.isArray(data) ? data : [];
 
   return (
     <div className="flex flex-col min-h-screen relative overflow-hidden page-bg-teardowns text-foreground transition-colors duration-300">

@@ -7,7 +7,6 @@ import DynamicIcon from "@/components/DynamicIcon";
 import TestimonialsCarousel from "@/components/TestimonialsCarousel";
 import { getTeardowns, getCaseStudies, getHomePageData, getSiteSettings, MarqueeItem } from "@/sanity/queries";
 import { urlForImage } from "@/sanity/image";
-import { mockTeardowns, mockCaseStudies } from "@/data/mockData";
 import { constructMetadata, generatePersonJsonLd } from "@/lib/seo";
 import { ArrowUpRight, Brain, Compass } from "lucide-react";
 
@@ -42,21 +41,23 @@ export default async function HomePage() {
     getSiteSettings(),
   ]);
 
-  const teardowns = Array.isArray(teardownsData) && teardownsData.length > 0
-    ? teardownsData
-    : mockTeardowns;
+  const teardowns = Array.isArray(homeData.featuredTeardowns) && homeData.featuredTeardowns.length > 0
+    ? homeData.featuredTeardowns.filter(Boolean)
+    : (Array.isArray(teardownsData) ? teardownsData : []);
 
-  const caseStudies = Array.isArray(caseStudiesData) && caseStudiesData.length > 0
-    ? caseStudiesData
-    : mockCaseStudies;
+  const rawCaseStudies = (Array.isArray(homeData.featuredCaseStudies) && homeData.featuredCaseStudies.length > 0)
+    ? homeData.featuredCaseStudies
+    : (Array.isArray(caseStudiesData) ? caseStudiesData : []);
+
+  const caseStudies = rawCaseStudies.filter(Boolean);
 
   const isCaseStudiesEnabled = siteSettings.caseStudiesPageEnabled !== false;
 
-  const featuredCaseStudy = caseStudies[0] || mockCaseStudies[0];
-  const otherCaseStudy = caseStudies[1] || mockCaseStudies[1];
+  const featuredCaseStudy = caseStudies.length > 0 ? caseStudies[0] : null;
+  const otherCaseStudy = caseStudies.length > 1 ? caseStudies[1] : null;
   const featuredTeardowns = teardowns.slice(0, 3);
 
-  // Home Page custom fields with mock fallbacks
+  // Home Page custom fields with clean fallbacks
   const heroHeading = homeData.heroHeading || "Chiagoziem Melvin Akobundu";
   const heroSubheading = homeData.heroSubheading || "AI Product Manager & Engineer";
   const introText = homeData.introText || "Architecting and evaluating agentic AI workflows, LLM applications, and high-growth consumer products. CSPO certified.";
@@ -149,10 +150,10 @@ export default async function HomePage() {
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
+            <div className={otherCaseStudy ? "grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8" : "flex justify-center"}>
               {/* Main Featured Case Study */}
               {featuredCaseStudy && (
-                <div className="lg:col-span-7 group rounded-3xl overflow-hidden glass-panel border-card-border/60 hover:border-accent-teal/40 hover:-translate-y-1 hover:shadow-2xl transition-all duration-500 flex flex-col justify-between p-6 sm:p-8 relative">
+                <div className={`${otherCaseStudy ? "lg:col-span-7" : "w-full max-w-4xl"} group rounded-3xl overflow-hidden glass-panel border-card-border/60 hover:border-accent-teal/40 hover:-translate-y-1 hover:shadow-2xl transition-all duration-500 flex flex-col justify-between p-6 sm:p-8 relative`}>
                   <div className="absolute top-0 right-0 w-48 h-48 rounded-full blur-3xl bg-accent-teal/5 pointer-events-none"></div>
                   <div>
                     <div className="flex flex-wrap gap-2 items-center mb-4">

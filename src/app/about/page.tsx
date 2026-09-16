@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { getAboutPageData, getSiteSettings } from "@/sanity/queries";
-import { mockAboutData } from "@/data/mockData";
 import { constructMetadata, generatePersonJsonLd } from "@/lib/seo";
 import { Award } from "lucide-react";
 
@@ -42,20 +41,20 @@ export default async function AboutPage() {
     ? [data.introText]
     : (Array.isArray((data as any)?.bio)
       ? (data as any).bio
-      : (data?.bio ? [data.bio] : (typeof mockAboutData.bio === "string" ? [mockAboutData.bio] : [])));
+      : (data?.bio ? [data.bio] : []));
   
   const taglineChips = Array.isArray(data?.taglineChips) ? data.taglineChips : [];
   const headshotUrl = data?.headshotUrl || "/profile-hero.jpg";
   const headshotAlt = data?.headshotAlt || "Chiagoziem Melvin Akobundu — Professional Headshot";
   const journey = (Array.isArray(data?.journey) && data.journey.length > 0)
     ? data.journey
-    : mockAboutData.journey;
+    : [];
   const certifications = (Array.isArray(data?.certifications) && data.certifications.length > 0)
     ? data.certifications
-    : (mockAboutData.certifications || []);
+    : [];
   const skillsGroups = (Array.isArray(data?.skills) && data.skills.length > 0)
     ? data.skills
-    : mockAboutData.skills;
+    : [];
 
   const personJsonLd = generatePersonJsonLd(siteSettings, headshotUrl);
 

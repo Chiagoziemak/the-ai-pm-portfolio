@@ -4,7 +4,6 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { getCaseStudies, getSiteSettings } from "@/sanity/queries";
-import { mockCaseStudies } from "@/data/mockData";
 import { constructMetadata } from "@/lib/seo";
 import { ArrowUpRight, Sparkles } from "lucide-react";
 
@@ -26,14 +25,14 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function CaseStudiesPage() {
   const data = await getCaseStudies();
   const siteSettings = await getSiteSettings();
-  const caseStudies = Array.isArray(data) && data.length > 0 ? data : mockCaseStudies;
+  const caseStudies = Array.isArray(data) ? data : [];
 
-  const featuredCaseStudy = caseStudies[0] || mockCaseStudies[0];
+  const featuredCaseStudy = caseStudies.length > 0 ? caseStudies[0] : null;
   const otherCaseStudies = caseStudies.length > 1 ? caseStudies.slice(1) : [];
 
   const isEnabled = siteSettings.caseStudiesPageEnabled !== false;
 
-  if (!isEnabled) {
+  if (!isEnabled || caseStudies.length === 0) {
     return (
       <div className="flex flex-col min-h-screen relative overflow-hidden page-bg-casestudies text-foreground transition-colors duration-300">
         <Navbar
@@ -51,7 +50,9 @@ export default async function CaseStudiesPage() {
             <div className="w-16 h-16 rounded-2xl bg-accent-teal/10 border border-accent-teal/20 text-accent-teal flex items-center justify-center mx-auto text-2xl font-bold">
               <span>✦</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">Case Studies Coming Soon</h1>
+            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+              {!isEnabled ? "Case Studies Coming Soon" : "Case Studies Coming Soon"}
+            </h1>
             <p className="text-foreground/80 leading-relaxed text-base">
               The Product Case Studies section is currently undergoing updates. Detailed technical breakdowns and ROI evaluations will be published shortly.
             </p>
