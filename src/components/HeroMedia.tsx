@@ -63,7 +63,7 @@ export default function HeroMedia({
             label: item.label?.trim() || undefined,
             caption: item.caption?.trim() || undefined,
             linkUrl: item.linkUrl?.trim() || undefined,
-            linkLabel: item.buttonLabel?.trim() || item.linkLabel?.trim() || "Visit Platform",
+            linkLabel: item.linkLabel?.trim() || "Visit Platform",
           };
         })
         .filter((item) => Boolean(item.imageUrl && item.imageUrl.trim() !== ""))

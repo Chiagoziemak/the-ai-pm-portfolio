@@ -424,13 +424,11 @@ export async function getHomePageData(): Promise<HomePageData> {
           surfacesIcon,
           productSurfaces[] {
             "name": select(defined(name) => name, label),
-            "label": select(defined(label) => label, name),
             description,
             accessType,
             platformType,
             url,
             "buttonLabel": select(defined(buttonLabel) => buttonLabel, linkLabel),
-            "linkLabel": select(defined(linkLabel) => linkLabel, buttonLabel),
             enabled
           }
         },
@@ -660,7 +658,6 @@ export async function getTeardownBySlug(slug: string): Promise<Teardown | null> 
           label,
           caption,
           linkUrl,
-          "buttonLabel": select(defined(buttonLabel) => buttonLabel, linkLabel),
           "linkLabel": select(defined(linkLabel) => linkLabel, buttonLabel)
         },
         heroSliderAutoplay,
@@ -828,13 +825,11 @@ export async function getCaseStudies(): Promise<CaseStudy[]> {
         surfacesIcon,
         productSurfaces[] {
           "name": select(defined(name) => name, label),
-          "label": select(defined(label) => label, name),
           description,
           accessType,
           platformType,
           url,
           "buttonLabel": select(defined(buttonLabel) => buttonLabel, linkLabel),
-          "linkLabel": select(defined(linkLabel) => linkLabel, buttonLabel),
           enabled
         }
       }`,
@@ -885,7 +880,6 @@ export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null
           label,
           caption,
           linkUrl,
-          "buttonLabel": select(defined(buttonLabel) => buttonLabel, linkLabel),
           "linkLabel": select(defined(linkLabel) => linkLabel, buttonLabel)
         },
         heroSliderAutoplay,
@@ -920,13 +914,11 @@ export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null
         surfacesIcon,
         productSurfaces[] {
           "name": select(defined(name) => name, label),
-          "label": select(defined(label) => label, name),
           description,
           accessType,
           platformType,
           url,
           "buttonLabel": select(defined(buttonLabel) => buttonLabel, linkLabel),
-          "linkLabel": select(defined(linkLabel) => linkLabel, buttonLabel),
           enabled
         },
         "relatedCaseStudies": relatedCaseStudies[]-> {

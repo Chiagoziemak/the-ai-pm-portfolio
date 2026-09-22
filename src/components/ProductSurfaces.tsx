@@ -42,7 +42,7 @@ export default function ProductSurfaces({
           const hasValidUrl = typeof surface.url === "string" && surface.url.trim() !== "";
           // Strict safety: Only public surfaces with a valid URL render a clickable action button
           const isClickable = !isInternal && hasValidUrl;
-          const buttonLabel = surface.buttonLabel || surface.linkLabel || "Visit Platform";
+          const buttonLabel = surface.buttonLabel?.trim() || "Visit Platform";
           const platform = surface.platformType ? surface.platformType.trim() : null;
 
           return (
