@@ -128,14 +128,46 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
   }
 
   const bodyParagraphs = Array.isArray(study.body) && study.body.length > 0
-    ? study.body
+    ? study.body.filter((p: string) => Boolean(p && typeof p === "string" && p.trim() !== ""))
     : (study.summary ? [study.summary] : []);
 
-  const tools = Array.isArray(study.tools) ? study.tools : [];
-  const results = Array.isArray(study.results) ? study.results : [];
-  const cardStats = Array.isArray(study.cardStats) ? study.cardStats : [];
-  const productDecisions = Array.isArray(study.productDecisions) ? study.productDecisions : [];
-  const beforeAfter = study.beforeAfter;
+  const tools = Array.isArray(study.tools) ? study.tools.filter(Boolean) : [];
+  const results = Array.isArray(study.results) ? study.results.filter(Boolean) : [];
+  const cardStats = Array.isArray(study.cardStats) ? study.cardStats.filter((cs: any) => Boolean(cs && cs.value)) : [];
+  const productDecisions = Array.isArray(study.productDecisions)
+    ? study.productDecisions.filter((pd: any) => Boolean(pd && (pd.decision || pd.decisionTitle || pd.rationale || pd.context || pd.tradeoffs || pd.tradeoff || pd.status || pd.outcome)))
+    : [];
+
+  const rawBeforeAfter = study.beforeAfter as any;
+  const beforeAfterList = Array.isArray(rawBeforeAfter)
+    ? rawBeforeAfter.filter((item: any) =>
+        Boolean(
+          item &&
+            (item.beforeDescription ||
+              item.afterDescription ||
+              item.before ||
+              item.after ||
+              item.beforeImageUrl ||
+              item.afterImageUrl ||
+              item.impact)
+        )
+      )
+    : rawBeforeAfter &&
+      typeof rawBeforeAfter === "object" &&
+      (rawBeforeAfter.beforeDescription ||
+        rawBeforeAfter.afterDescription ||
+        rawBeforeAfter.before ||
+        rawBeforeAfter.after)
+    ? [rawBeforeAfter]
+    : [];
+
+  const lessons = Array.isArray(study.lessons) && study.lessons.length > 0
+    ? study.lessons.filter(Boolean)
+    : (Array.isArray(study.lessonsLearned) ? study.lessonsLearned.filter(Boolean) : []);
+
+  const relatedCaseStudies = Array.isArray(study.relatedCaseStudies)
+    ? study.relatedCaseStudies.filter((rc: any) => Boolean(rc && rc.title && rc.slug))
+    : [];
 
   const liveUrl = study.liveUrl;
   const liveUrlLabel = study.liveUrlLabel || "View Project";
@@ -387,29 +419,73 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
             )}
 
             {/* Before / After Comparison */}
-            {beforeAfter && (
+            {beforeAfterList.length > 0 && (
               <section className="p-6 sm:p-8 rounded-2xl border border-card-border glass-panel">
                 <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-6 tracking-tight flex items-center gap-2.5">
                   <DynamicIcon name={(study as any).beforeAfterIcon || "FiShuffle"} size={22} className="text-accent-teal" />
                   Before &amp; After Transformation
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
-                  {((beforeAfter as any).before || (beforeAfter as any)[0]?.beforeDescription) && (
-                    <div className="p-5 sm:p-6 rounded-xl border border-red-500/30 bg-red-500/5">
-                      <span className="text-xs font-mono uppercase text-red-600 dark:text-red-400 font-bold block mb-2">Before</span>
-                      <p className="text-xs sm:text-sm text-foreground/85 leading-relaxed">
-                        {(beforeAfter as any).before || (beforeAfter as any)[0]?.beforeDescription}
-                      </p>
-                    </div>
-                  )}
-                  {((beforeAfter as any).after || (beforeAfter as any)[0]?.afterDescription) && (
-                    <div className="p-5 sm:p-6 rounded-xl border border-accent-teal/40 bg-accent-teal/5">
-                      <span className="text-xs font-mono uppercase text-accent-teal font-bold block mb-2">After</span>
-                      <p className="text-xs sm:text-sm text-foreground/85 leading-relaxed">
-                        {(beforeAfter as any).after || (beforeAfter as any)[0]?.afterDescription}
-                      </p>
-                    </div>
-                  )}
+                <div className="space-y-6">
+                  {beforeAfterList.map((item: any, idx: number) => {
+                    const beforeText = item.beforeDescription || item.before;
+                    const afterText = item.afterDescription || item.after;
+                    const beforeLabel = item.beforeLabel || "Before";
+                    const afterLabel = item.afterLabel || "After";
+                    const beforeImg = item.beforeImageUrl;
+                    const afterImg = item.afterImageUrl;
+                    const impact = item.impact;
+
+                    return (
+                      <div key={idx} className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
+                          {(beforeText || beforeImg) && (
+                            <div className="p-5 sm:p-6 rounded-xl border border-red-500/30 bg-red-500/5 flex flex-col justify-between">
+                              <div>
+                                <span className="text-xs font-mono uppercase text-red-600 dark:text-red-400 font-bold block mb-2">
+                                  {beforeLabel}
+                                </span>
+                                {beforeText && (
+                                  <p className="text-xs sm:text-sm text-foreground/85 leading-relaxed">
+                                    {beforeText}
+                                  </p>
+                                )}
+                              </div>
+                              {beforeImg && (
+                                <div className="mt-4 rounded-lg overflow-hidden border border-red-500/20">
+                                  <img src={beforeImg} alt={`${beforeLabel} state`} className="w-full h-auto object-cover" />
+                                </div>
+                              )}
+                            </div>
+                          )}
+                          {(afterText || afterImg) && (
+                            <div className="p-5 sm:p-6 rounded-xl border border-accent-teal/40 bg-accent-teal/5 flex flex-col justify-between">
+                              <div>
+                                <span className="text-xs font-mono uppercase text-accent-teal font-bold block mb-2">
+                                  {afterLabel}
+                                </span>
+                                {afterText && (
+                                  <p className="text-xs sm:text-sm text-foreground/85 leading-relaxed">
+                                    {afterText}
+                                  </p>
+                                )}
+                              </div>
+                              {afterImg && (
+                                <div className="mt-4 rounded-lg overflow-hidden border border-accent-teal/20">
+                                  <img src={afterImg} alt={`${afterLabel} state`} className="w-full h-auto object-cover" />
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                        {impact && (
+                          <div className="p-4 rounded-xl bg-card border border-accent-teal/30 text-xs sm:text-sm text-foreground/90 flex items-center gap-2">
+                            <span className="font-mono text-xs uppercase font-bold text-accent-teal">Impact:</span>
+                            <span>{impact}</span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </section>
             )}
@@ -432,31 +508,87 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
               </section>
             )}
 
+            {/* Key Takeaways & Lessons Learned */}
+            {lessons.length > 0 && (
+              <section className="p-6 sm:p-8 rounded-2xl border border-card-border glass-panel">
+                <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-6 tracking-tight flex items-center gap-2.5">
+                  <DynamicIcon name={(study as any).lessonsIcon || "FiBookOpen"} size={22} className="text-accent-cyan" />
+                  Key Takeaways &amp; Lessons Learned
+                </h2>
+                <div className="space-y-3">
+                  {lessons.map((lesson: string, idx: number) => (
+                    <div key={idx} className="p-4 rounded-xl bg-card border border-card-border text-xs sm:text-sm font-medium text-foreground flex items-start gap-3">
+                      <span className="w-2 h-2 rounded-full bg-accent-cyan flex-shrink-0 mt-1.5"></span>
+                      <span className="leading-relaxed">{lesson}</span>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Related Case Studies */}
+            {relatedCaseStudies.length > 0 && (
+              <section className="space-y-6 pt-4">
+                <h2 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight flex items-center gap-2.5">
+                  <DynamicIcon name="FiGrid" size={22} className="text-accent-teal" />
+                  Related Case Studies
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
+                  {relatedCaseStudies.map((rel: any, idx: number) => (
+                    <Link
+                      key={idx}
+                      href={`/case-studies/${rel.slug}`}
+                      className="group block p-6 rounded-2xl border border-card-border glass-panel hover:border-accent-teal/50 hover:shadow-lg transition-all"
+                    >
+                      {rel.category && (
+                        <span className="text-[10px] uppercase font-mono tracking-widest text-accent-teal font-bold block mb-2">
+                          {rel.category}
+                        </span>
+                      )}
+                      <h3 className="text-base sm:text-lg font-bold text-foreground group-hover:text-accent-teal transition-colors flex items-center justify-between gap-2">
+                        <span>{rel.title}</span>
+                        <ArrowUpRight size={16} className="text-foreground/50 group-hover:text-accent-teal group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all flex-shrink-0" />
+                      </h3>
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            )}
+
             {/* Next Steps / Contact CTA */}
-            <div className="p-6 sm:p-8 rounded-2xl border border-card-border glass-panel flex flex-col sm:flex-row items-center justify-between gap-4 mt-6">
-              <div>
-                <h3 className="font-bold text-base sm:text-lg text-foreground">Interested in diving deeper?</h3>
-                <p className="text-xs sm:text-sm text-foreground/60 mt-1">Let's discuss how this strategy applies to your domain.</p>
-              </div>
-              <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-                {liveUrl && (
-                  <a
-                    href={liveUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-accent-teal text-background font-bold text-xs sm:text-sm hover:bg-accent-cyan transition-all min-h-[44px]"
+            <section className="p-6 sm:p-8 rounded-2xl border border-card-border glass-panel mt-6">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                <div className="space-y-1 text-center lg:text-left">
+                  <h3 className="font-bold text-base sm:text-lg text-foreground tracking-tight">
+                    Interested in diving deeper?
+                  </h3>
+                  <p className="text-xs sm:text-sm text-foreground/70 leading-relaxed">
+                    Let&apos;s discuss how this strategy applies to your domain.
+                  </p>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center lg:justify-end gap-3 sm:gap-3.5 flex-shrink-0 w-full lg:w-auto">
+                  {liveUrl && (
+                    <a
+                      href={liveUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl bg-accent-teal text-background font-bold text-xs sm:text-sm hover:bg-accent-cyan active:scale-[0.98] transition-all shadow-sm min-h-[44px] text-center"
+                    >
+                      <span>{liveUrlLabel}</span>
+                      <ArrowUpRight size={15} className="flex-shrink-0" />
+                    </a>
+                  )}
+                  <Link
+                    href="/contact"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl border border-card-border glass-panel hover:bg-card-border/20 text-foreground font-semibold text-xs sm:text-sm active:scale-[0.98] transition-all min-h-[44px] text-center"
                   >
-                    {liveUrlLabel} <ArrowUpRight size={14} />
-                  </a>
-                )}
-                <Link
-                  href="/contact"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-card-border glass-panel hover:bg-card-border/20 text-foreground font-semibold text-xs sm:text-sm transition-all min-h-[44px]"
-                >
-                  Discuss This Case Study <ArrowUpRight size={14} />
-                </Link>
+                    <span>Discuss This Case Study</span>
+                    <ArrowUpRight size={15} className="flex-shrink-0" />
+                  </Link>
+                </div>
               </div>
-            </div>
+            </section>
 
           </article>
         </div>

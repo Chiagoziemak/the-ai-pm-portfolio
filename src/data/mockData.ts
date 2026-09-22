@@ -98,8 +98,10 @@ export interface CaseStudy {
   body: string[];
   results: string[];
   lessons: string[];
+  lessonsLearned?: string[];
   productDecisions?: ProductDecisionCard[];
   beforeAfter?: BeforeAfterBlock[];
+  relatedCaseStudies?: any[];
 }
 
 export interface Product {

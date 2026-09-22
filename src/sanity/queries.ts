@@ -888,6 +888,7 @@ export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null
       lessons,
       productDecisions: Array.isArray(caseStudy.productDecisions) ? caseStudy.productDecisions : [],
       beforeAfter: Array.isArray(caseStudy.beforeAfter) ? caseStudy.beforeAfter : [],
+      relatedCaseStudies: Array.isArray(caseStudy.relatedCaseStudies) ? caseStudy.relatedCaseStudies : [],
       category: caseStudy.category || "AI Product Case Study",
       date: caseStudy.date || "2024",
       readTime: caseStudy.readTime || "",
