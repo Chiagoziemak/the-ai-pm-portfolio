@@ -119,53 +119,21 @@ export default function TestimonialsCarousel({
 
   if (total === 0) return null;
 
-  const prevIndex = (currentIndex - 1 + total) % total;
-  const nextIndex = (currentIndex + 1) % total;
-
   const currentItem = testimonials[currentIndex] || testimonials[0];
-  const prevItem = testimonials[prevIndex];
-  const nextItem = testimonials[nextIndex];
 
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 overflow-hidden">
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
       {/* Section Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-10 gap-4 text-center sm:text-left">
-        <div>
-          <span className="text-xs uppercase tracking-widest text-accent-teal font-extrabold">Endorsements</span>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mt-1.5 sm:mt-2 tracking-tight text-foreground">
-            Testimonials
-          </h2>
-        </div>
-
-        {/* Header Arrow Controls (Always visible when > 1 item) */}
-        {total > 1 && (
-          <div className="flex items-center justify-center sm:justify-end gap-3">
-            <button
-              onClick={() => {
-                resetTimer();
-                handlePrev();
-              }}
-              aria-label="Previous testimonial"
-              className="w-11 h-11 sm:w-10 sm:h-10 rounded-full glass-panel border border-card-border/80 text-foreground hover:bg-card-border/40 hover:border-accent-teal/50 hover:text-accent-teal active:scale-95 transition-all flex items-center justify-center shadow-sm min-w-[44px] min-h-[44px]"
-            >
-              <ChevronLeft size={20} />
-            </button>
-
-            <button
-              onClick={() => {
-                resetTimer();
-                handleNext();
-              }}
-              aria-label="Next testimonial"
-              className="w-11 h-11 sm:w-10 sm:h-10 rounded-full glass-panel border border-card-border/80 text-foreground hover:bg-card-border/40 hover:border-accent-teal/50 hover:text-accent-teal active:scale-95 transition-all flex items-center justify-center shadow-sm min-w-[44px] min-h-[44px]"
-            >
-              <ChevronRight size={20} />
-            </button>
-          </div>
-        )}
+      <div className="mb-8 sm:mb-10 text-center sm:text-left">
+        <span className="text-xs uppercase tracking-widest text-accent-teal font-extrabold">
+          Endorsements
+        </span>
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mt-1.5 sm:mt-2 tracking-tight text-foreground">
+          Testimonials
+        </h2>
       </div>
 
-      {/* Carousel Area */}
+      {/* Carousel Container */}
       <div
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
@@ -178,14 +146,21 @@ export default function TestimonialsCarousel({
         tabIndex={0}
         aria-roledescription="carousel"
         aria-label="Testimonials Carousel"
-        className="relative flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-accent-teal/40 rounded-3xl py-2 select-none"
+        aria-live="polite"
+        className="relative w-full overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-teal/40 rounded-3xl"
       >
-        {/* Single Testimonial */}
-        {total === 1 ? (
-          <div className="w-full max-w-3xl p-6 sm:p-10 md:p-12 rounded-3xl glass-panel border-card-border/80 bg-card/40 flex flex-col justify-between relative shadow-lg">
+        {/* Active Testimonial Card (Single card rendered with clean containment) */}
+        <div className="w-full flex justify-center px-1 sm:px-4">
+          <div
+            key={currentIndex}
+            className={`w-full max-w-3xl p-6 sm:p-9 md:p-11 rounded-3xl glass-panel border-card-border/80 bg-card/50 flex flex-col justify-between shadow-xl transition-all duration-300 transform ${
+              isFading ? "opacity-0 scale-[0.99] translate-y-1" : "opacity-100 scale-100 translate-y-0"
+            }`}
+          >
+            {/* Context Badge & Quote */}
             <div className="mb-6 sm:mb-8">
               {currentItem.context && (
-                <span className="inline-block text-[11px] sm:text-xs font-mono text-accent-teal bg-accent-teal/10 border border-accent-teal/20 px-3 py-0.5 sm:px-3.5 sm:py-1 rounded-full mb-3 sm:mb-4 font-semibold">
+                <span className="inline-block text-[11px] sm:text-xs font-mono text-accent-teal bg-accent-teal/10 border border-accent-teal/20 px-3 py-1 rounded-full mb-3 sm:mb-4 font-semibold">
                   ✦ {currentItem.context}
                 </span>
               )}
@@ -196,29 +171,30 @@ export default function TestimonialsCarousel({
               )}
             </div>
 
-            <div className="flex flex-wrap items-center justify-between pt-5 sm:pt-6 border-t border-card-border/40 gap-4">
-              <div className="flex items-center gap-3 sm:gap-4">
+            {/* Author Information Area */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pt-5 sm:pt-6 border-t border-card-border/40 gap-4">
+              <div className="flex items-center gap-3 sm:gap-4 min-w-0">
                 {currentItem.authorPhotoUrl ? (
                   <img
                     src={currentItem.authorPhotoUrl}
                     alt={currentItem.authorName || "Author"}
-                    className="w-11 h-11 sm:w-12 sm:h-12 rounded-full object-cover border border-card-border/80 shadow-sm"
+                    className="w-11 h-11 sm:w-12 sm:h-12 rounded-full object-cover border border-card-border/80 shadow-sm flex-shrink-0"
                   />
                 ) : (
                   currentItem.authorName && (
-                    <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-accent-teal/20 border border-accent-teal/40 flex items-center justify-center font-bold text-accent-teal text-base shadow-sm">
+                    <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-accent-teal/20 border border-accent-teal/40 flex items-center justify-center font-bold text-accent-teal text-base shadow-sm flex-shrink-0">
                       {currentItem.authorName.charAt(0)}
                     </div>
                   )
                 )}
-                <div>
+                <div className="min-w-0">
                   {currentItem.authorName && (
-                    <h3 className="text-base sm:text-lg font-bold text-foreground">
+                    <h3 className="text-base sm:text-lg font-bold text-foreground truncate">
                       {currentItem.authorName}
                     </h3>
                   )}
                   {(currentItem.authorRole || currentItem.authorCompany) && (
-                    <p className="text-xs sm:text-sm text-foreground/60">
+                    <p className="text-xs sm:text-sm text-foreground/60 truncate">
                       {currentItem.authorRole}
                       {currentItem.authorRole && currentItem.authorCompany ? " • " : ""}
                       {currentItem.authorCompany}
@@ -232,153 +208,66 @@ export default function TestimonialsCarousel({
                   href={currentItem.linkedinUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs font-bold text-accent-teal hover:underline flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent-teal/10 border border-accent-teal/20 hover:bg-accent-teal/20 transition-all min-h-[36px]"
+                  className="w-full sm:w-auto text-xs sm:text-sm font-bold text-accent-teal hover:text-accent-cyan flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-accent-teal/10 hover:bg-accent-teal/20 border border-accent-teal/20 transition-all min-h-[44px] flex-shrink-0 shadow-sm"
                 >
-                  LinkedIn Profile <ArrowUpRight size={14} />
+                  <span>LinkedIn Profile</span>
+                  <ArrowUpRight size={14} className="flex-shrink-0" />
                 </a>
               )}
             </div>
           </div>
-        ) : (
-          /* Multi-item Carousel with Side Peeking Cards on Desktop & Fluid Card on Mobile */
-          <div className="w-full relative flex items-center justify-center min-h-[300px] sm:min-h-[340px]">
+        </div>
 
-            {/* Left Circular Edge Arrow (Visible on tablet & desktop, hidden on small mobile) */}
+        {/* Carousel Navigation Controls (Placed cleanly underneath the card) */}
+        {total > 1 && (
+          <div className="flex items-center justify-center gap-4 sm:gap-6 mt-6 sm:mt-8">
+            {/* Previous Arrow Button */}
             <button
               onClick={() => {
                 resetTimer();
                 handlePrev();
               }}
               aria-label="Previous testimonial"
-              className="hidden sm:flex absolute left-2 lg:left-4 top-1/2 -translate-y-1/2 w-11 h-11 sm:w-12 sm:h-12 rounded-full glass-panel border border-card-border bg-background/90 text-foreground shadow-xl hover:scale-110 hover:border-accent-teal hover:text-accent-teal transition-all items-center justify-center z-30 active:scale-95 min-w-[44px] min-h-[44px]"
+              className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-full glass-panel border border-card-border/80 text-foreground hover:bg-card-border/40 hover:border-accent-teal/50 hover:text-accent-teal active:scale-95 transition-all flex items-center justify-center shadow-sm cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-teal/50"
             >
-              <ChevronLeft size={22} />
+              <ChevronLeft size={20} />
             </button>
 
-            {/* Right Circular Edge Arrow (Visible on tablet & desktop, hidden on small mobile) */}
+            {/* Centered Pagination Dots */}
+            <div className="flex items-center gap-2">
+              {testimonials.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => {
+                    resetTimer();
+                    handleSelect(idx);
+                  }}
+                  aria-label={`Go to testimonial ${idx + 1}`}
+                  aria-current={idx === currentIndex ? "true" : undefined}
+                  className="p-1 min-h-[44px] flex items-center justify-center cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-teal/50 rounded-full"
+                >
+                  <span
+                    className={`h-2.5 rounded-full transition-all duration-300 block ${
+                      idx === currentIndex
+                        ? "w-7 sm:w-8 bg-accent-teal"
+                        : "w-2.5 bg-foreground/20 hover:bg-foreground/40"
+                    }`}
+                  />
+                </button>
+              ))}
+            </div>
+
+            {/* Next Arrow Button */}
             <button
               onClick={() => {
                 resetTimer();
                 handleNext();
               }}
               aria-label="Next testimonial"
-              className="hidden sm:flex absolute right-2 lg:right-4 top-1/2 -translate-y-1/2 w-11 h-11 sm:w-12 sm:h-12 rounded-full glass-panel border border-card-border bg-background/90 text-foreground shadow-xl hover:scale-110 hover:border-accent-teal hover:text-accent-teal transition-all items-center justify-center z-30 active:scale-95 min-w-[44px] min-h-[44px]"
+              className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-full glass-panel border border-card-border/80 text-foreground hover:bg-card-border/40 hover:border-accent-teal/50 hover:text-accent-teal active:scale-95 transition-all flex items-center justify-center shadow-sm cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-teal/50"
             >
-              <ChevronRight size={22} />
+              <ChevronRight size={20} />
             </button>
-
-            {/* Cards Stage Container */}
-            <div className="w-full flex items-center justify-center relative overflow-hidden px-1 sm:px-12 md:px-14">
-              
-              {/* Left Peeking Card (Desktop only) */}
-              <div
-                onClick={() => {
-                  resetTimer();
-                  handlePrev();
-                }}
-                className="hidden lg:block absolute left-[-15%] xl:left-[-10%] w-[45%] p-6 sm:p-8 rounded-3xl glass-panel border-card-border/40 bg-card/20 opacity-35 scale-90 blur-[1px] pointer-events-auto cursor-pointer hover:opacity-50 transition-all duration-500 select-none z-10"
-              >
-                <p className="text-sm italic line-clamp-3 text-foreground/80 font-serif mb-4">"{prevItem.quote}"</p>
-                <h4 className="text-xs font-bold text-foreground">{prevItem.authorName}</h4>
-              </div>
-
-              {/* CENTER ACTIVE CARD */}
-              <div
-                className={`w-full max-w-2xl p-6 sm:p-9 md:p-12 rounded-3xl glass-panel border-card-border/80 bg-card/50 flex flex-col justify-between relative shadow-xl z-20 transition-all duration-500 transform ${
-                  isFading ? "opacity-30 scale-[0.98] blur-[2px]" : "opacity-100 scale-100 blur-0"
-                }`}
-              >
-                <div className="mb-5 sm:mb-6">
-                  {currentItem.context && (
-                    <span className="inline-block text-[11px] sm:text-xs font-mono text-accent-teal bg-accent-teal/10 border border-accent-teal/20 px-3 py-0.5 sm:px-3.5 sm:py-1 rounded-full mb-3 sm:mb-4 font-semibold">
-                      ✦ {currentItem.context}
-                    </span>
-                  )}
-                  {currentItem.quote && (
-                    <blockquote className="text-base sm:text-lg md:text-xl text-foreground/90 italic leading-relaxed font-serif">
-                      "{currentItem.quote}"
-                    </blockquote>
-                  )}
-                </div>
-
-                <div className="flex flex-wrap items-center justify-between pt-5 sm:pt-6 border-t border-card-border/40 gap-4">
-                  <div className="flex items-center gap-3 sm:gap-4">
-                    {currentItem.authorPhotoUrl ? (
-                      <img
-                        src={currentItem.authorPhotoUrl}
-                        alt={currentItem.authorName || "Author"}
-                        className="w-11 h-11 sm:w-12 sm:h-12 rounded-full object-cover border border-card-border/80 shadow-sm"
-                      />
-                    ) : (
-                      currentItem.authorName && (
-                        <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-accent-teal/20 border border-accent-teal/40 flex items-center justify-center font-bold text-accent-teal text-base shadow-sm">
-                          {currentItem.authorName.charAt(0)}
-                        </div>
-                      )
-                    )}
-                    <div>
-                      {currentItem.authorName && (
-                        <h3 className="text-base sm:text-lg font-bold text-foreground">
-                          {currentItem.authorName}
-                        </h3>
-                      )}
-                      {(currentItem.authorRole || currentItem.authorCompany) && (
-                        <p className="text-xs sm:text-sm text-foreground/60">
-                          {currentItem.authorRole}
-                          {currentItem.authorRole && currentItem.authorCompany ? " • " : ""}
-                          {currentItem.authorCompany}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  {currentItem.linkedinUrl && (
-                    <a
-                      href={currentItem.linkedinUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs font-bold text-accent-teal hover:underline flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent-teal/10 border border-accent-teal/20 hover:bg-accent-teal/20 transition-all min-h-[36px]"
-                    >
-                      LinkedIn Profile <ArrowUpRight size={14} />
-                    </a>
-                  )}
-                </div>
-              </div>
-
-              {/* Right Peeking Card (Desktop only) */}
-              <div
-                onClick={() => {
-                  resetTimer();
-                  handleNext();
-                }}
-                className="hidden lg:block absolute right-[-15%] xl:right-[-10%] w-[45%] p-6 sm:p-8 rounded-3xl glass-panel border-card-border/40 bg-card/20 opacity-35 scale-90 blur-[1px] pointer-events-auto cursor-pointer hover:opacity-50 transition-all duration-500 select-none z-10"
-              >
-                <p className="text-sm italic line-clamp-3 text-foreground/80 font-serif mb-4">"{nextItem.quote}"</p>
-                <h4 className="text-xs font-bold text-foreground">{nextItem.authorName}</h4>
-              </div>
-
-            </div>
-          </div>
-        )}
-
-        {/* Carousel Indicators / Dots (If total > 1) */}
-        {total > 1 && (
-          <div className="flex items-center justify-center gap-2 mt-6 sm:mt-8">
-            {testimonials.map((_, idx) => (
-              <button
-                key={idx}
-                onClick={() => {
-                  resetTimer();
-                  handleSelect(idx);
-                }}
-                aria-label={`Go to testimonial ${idx + 1}`}
-                className={`h-2 rounded-full transition-all duration-300 min-h-[16px] py-1 flex items-center ${
-                  idx === currentIndex
-                    ? "w-8 bg-accent-teal"
-                    : "w-2 bg-foreground/20 hover:bg-foreground/40"
-                }`}
-              />
-            ))}
           </div>
         )}
       </div>
