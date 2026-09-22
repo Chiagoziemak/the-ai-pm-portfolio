@@ -4,6 +4,13 @@ export default defineType({
   name: "siteSettings",
   title: "Site Settings",
   type: "document",
+  fieldsets: [
+    {
+      name: "pageVisibility",
+      title: "PAGE VISIBILITY",
+      options: { collapsible: false },
+    },
+  ],
   fields: [
     defineField({
       name: "siteTitle",
@@ -174,8 +181,41 @@ export default defineType({
       name: "caseStudiesPageEnabled",
       title: "Enable Case Studies Page & Sections",
       type: "boolean",
-      description: "Toggle to show or hide the /case-studies page, navbar link, and homepage case study sections.",
+      description: "When disabled, the Case Studies page, navigation link, and homepage Case Studies sections are hidden.",
       initialValue: true,
+      fieldset: "pageVisibility",
+    }),
+    defineField({
+      name: "aboutPageEnabled",
+      title: "Enable About Page",
+      type: "boolean",
+      description: "When disabled, the About page is hidden from navigation and cannot be accessed publicly.",
+      initialValue: true,
+      fieldset: "pageVisibility",
+    }),
+    defineField({
+      name: "productsPageEnabled",
+      title: "Enable Products Page & Sections",
+      type: "boolean",
+      description: "When disabled, the Products page, navigation link, and homepage Products sections are hidden.",
+      initialValue: true,
+      fieldset: "pageVisibility",
+    }),
+    defineField({
+      name: "teardownsPageEnabled",
+      title: "Enable Teardowns Page & Sections",
+      type: "boolean",
+      description: "When disabled, the Teardowns page, navigation link, and homepage Teardown sections are hidden.",
+      initialValue: true,
+      fieldset: "pageVisibility",
+    }),
+    defineField({
+      name: "contactPageEnabled",
+      title: "Enable Contact Page",
+      type: "boolean",
+      description: "When disabled, the Contact page and navigation links to Contact are hidden.",
+      initialValue: true,
+      fieldset: "pageVisibility",
     }),
     defineField({
       name: "footerLinks",

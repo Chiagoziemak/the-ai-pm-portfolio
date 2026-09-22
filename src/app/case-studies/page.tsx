@@ -1,6 +1,7 @@
 import React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import StatGrid from "@/components/StatGrid";
@@ -14,6 +15,10 @@ export const revalidate = 0;
 export async function generateMetadata(): Promise<Metadata> {
   const siteSettings = await getSiteSettings();
 
+  if (siteSettings.caseStudiesPageEnabled === false) {
+    notFound();
+  }
+
   return constructMetadata({
     title: "AI Product Case Studies & Strategy Breakdowns | Chiagoziem Melvin Akobundu",
     description:
@@ -24,16 +29,19 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function CaseStudiesPage() {
-  const data = await getCaseStudies();
   const siteSettings = await getSiteSettings();
+
+  if (siteSettings.caseStudiesPageEnabled === false) {
+    notFound();
+  }
+
+  const data = await getCaseStudies();
   const caseStudies = Array.isArray(data) ? data : [];
 
   const featuredCaseStudy = caseStudies.length > 0 ? caseStudies[0] : null;
   const otherCaseStudies = caseStudies.length > 1 ? caseStudies.slice(1) : [];
 
-  const isEnabled = siteSettings.caseStudiesPageEnabled !== false;
-
-  if (!isEnabled || caseStudies.length === 0) {
+  if (caseStudies.length === 0) {
     return (
       <div className="flex flex-col min-h-screen relative overflow-hidden page-bg-casestudies text-foreground transition-colors duration-300">
         <Navbar
@@ -43,7 +51,11 @@ export default async function CaseStudiesPage() {
           navCtaLabel={siteSettings.navCtaLabel}
           navCtaUrl={siteSettings.navCtaUrl}
           resumeUrl={siteSettings.resumeUrl}
+          aboutPageEnabled={siteSettings.aboutPageEnabled}
           caseStudiesPageEnabled={siteSettings.caseStudiesPageEnabled}
+          productsPageEnabled={siteSettings.productsPageEnabled}
+          teardownsPageEnabled={siteSettings.teardownsPageEnabled}
+          contactPageEnabled={siteSettings.contactPageEnabled}
         />
 
         <main className="flex-grow z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-24 flex items-center justify-center">
@@ -52,7 +64,7 @@ export default async function CaseStudiesPage() {
               <span>✦</span>
             </div>
             <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
-              {!isEnabled ? "Case Studies Coming Soon" : "Case Studies Coming Soon"}
+              Case Studies Coming Soon
             </h1>
             <p className="text-foreground/80 leading-relaxed text-base">
               The Product Case Studies section is currently undergoing updates. Detailed technical breakdowns and ROI evaluations will be published shortly.
@@ -64,12 +76,14 @@ export default async function CaseStudiesPage() {
               >
                 Explore Product Teardowns →
               </Link>
-              <Link
-                href="/contact"
-                className="px-6 py-3 rounded-xl border border-card-border glass-panel hover:bg-card-border/20 text-foreground font-semibold transition-all text-sm"
-              >
-                Contact Chiagoziem
-              </Link>
+              {siteSettings.contactPageEnabled !== false && (
+                <Link
+                  href="/contact"
+                  className="px-6 py-3 rounded-xl border border-card-border glass-panel hover:bg-card-border/20 text-foreground font-semibold transition-all text-sm"
+                >
+                  Contact Chiagoziem
+                </Link>
+              )}
             </div>
           </div>
         </main>
@@ -84,6 +98,11 @@ export default async function CaseStudiesPage() {
           footerStatement={siteSettings.footerStatement}
           socialLinks={siteSettings.socialLinks}
           footerLinks={siteSettings.footerLinks}
+          aboutPageEnabled={siteSettings.aboutPageEnabled}
+          caseStudiesPageEnabled={siteSettings.caseStudiesPageEnabled}
+          productsPageEnabled={siteSettings.productsPageEnabled}
+          teardownsPageEnabled={siteSettings.teardownsPageEnabled}
+          contactPageEnabled={siteSettings.contactPageEnabled}
         />
       </div>
     );
@@ -102,7 +121,11 @@ export default async function CaseStudiesPage() {
         navCtaLabel={siteSettings.navCtaLabel}
         navCtaUrl={siteSettings.navCtaUrl}
         resumeUrl={siteSettings.resumeUrl}
+        aboutPageEnabled={siteSettings.aboutPageEnabled}
         caseStudiesPageEnabled={siteSettings.caseStudiesPageEnabled}
+        productsPageEnabled={siteSettings.productsPageEnabled}
+        teardownsPageEnabled={siteSettings.teardownsPageEnabled}
+        contactPageEnabled={siteSettings.contactPageEnabled}
       />
 
       <main className="flex-grow z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12">
@@ -265,6 +288,11 @@ export default async function CaseStudiesPage() {
         footerStatement={siteSettings.footerStatement}
         socialLinks={siteSettings.socialLinks}
         footerLinks={siteSettings.footerLinks}
+        aboutPageEnabled={siteSettings.aboutPageEnabled}
+        caseStudiesPageEnabled={siteSettings.caseStudiesPageEnabled}
+        productsPageEnabled={siteSettings.productsPageEnabled}
+        teardownsPageEnabled={siteSettings.teardownsPageEnabled}
+        contactPageEnabled={siteSettings.contactPageEnabled}
       />
     </div>
   );

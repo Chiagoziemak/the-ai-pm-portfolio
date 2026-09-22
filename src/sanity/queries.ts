@@ -34,7 +34,11 @@ export interface SiteSettings {
   navLinks?: NavLink[];
   navCtaLabel?: string;
   navCtaUrl?: string;
+  aboutPageEnabled?: boolean;
   caseStudiesPageEnabled?: boolean;
+  productsPageEnabled?: boolean;
+  teardownsPageEnabled?: boolean;
+  contactPageEnabled?: boolean;
   navLabels?: {
     home?: string;
     about?: string;
@@ -174,7 +178,11 @@ export async function getSiteSettings(): Promise<SiteSettings> {
         navLinks[] { label, url },
         navCtaLabel,
         navCtaUrl,
+        aboutPageEnabled,
         caseStudiesPageEnabled,
+        productsPageEnabled,
+        teardownsPageEnabled,
+        contactPageEnabled,
         navLabels,
         socialLinks,
         "resumeUrl": resumeFile.asset->url,

@@ -1,6 +1,7 @@
 import React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { getAboutPageData, getSiteSettings } from "@/sanity/queries";
@@ -15,6 +16,10 @@ export async function generateMetadata(): Promise<Metadata> {
     getAboutPageData(),
     getSiteSettings(),
   ]);
+
+  if (siteSettings.aboutPageEnabled === false) {
+    notFound();
+  }
 
   const title = data?.metaTitle || "About Chiagoziem Melvin Akobundu | AI Product Manager";
   const description =
@@ -34,8 +39,13 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AboutPage() {
-  const data = await getAboutPageData();
   const siteSettings = (await getSiteSettings()) || {};
+
+  if (siteSettings.aboutPageEnabled === false) {
+    notFound();
+  }
+
+  const data = await getAboutPageData();
 
   const headline = data?.headline || "Chiagoziem Melvin Akobundu";
   const bioParagraphs: string[] = data?.introText
@@ -80,7 +90,11 @@ export default async function AboutPage() {
         navCtaLabel={siteSettings.navCtaLabel}
         navCtaUrl={siteSettings.navCtaUrl}
         resumeUrl={siteSettings.resumeUrl}
+        aboutPageEnabled={siteSettings.aboutPageEnabled}
         caseStudiesPageEnabled={siteSettings.caseStudiesPageEnabled}
+        productsPageEnabled={siteSettings.productsPageEnabled}
+        teardownsPageEnabled={siteSettings.teardownsPageEnabled}
+        contactPageEnabled={siteSettings.contactPageEnabled}
       />
 
       <main className="flex-grow pt-24 sm:pt-28 md:pt-32 pb-16 md:pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
@@ -331,13 +345,25 @@ export default async function AboutPage() {
                   </p>
                 )}
                 <div className="pt-2 sm:pt-4">
-                  <Link
-                    href="/contact"
-                    className="inline-flex items-center justify-center gap-2 px-8 py-3.5 sm:py-4 rounded-xl bg-accent-teal text-background font-bold text-sm sm:text-base hover:bg-accent-cyan hover:shadow-[0_0_20px_rgba(0,212,216,0.3)] active:scale-95 transition-all duration-300 min-h-[48px] shadow-sm"
-                  >
-                    <span>Let's Talk</span>
-                    <ArrowRight size={16} />
-                  </Link>
+                  {siteSettings.contactPageEnabled !== false ? (
+                    <Link
+                      href="/contact"
+                      className="inline-flex items-center justify-center gap-2 px-8 py-3.5 sm:py-4 rounded-xl bg-accent-teal text-background font-bold text-sm sm:text-base hover:bg-accent-cyan hover:shadow-[0_0_20px_rgba(0,212,216,0.3)] active:scale-95 transition-all duration-300 min-h-[48px] shadow-sm"
+                    >
+                      <span>Let's Talk</span>
+                      <ArrowRight size={16} />
+                    </Link>
+                  ) : siteSettings.socialLinks?.linkedin ? (
+                    <a
+                      href={siteSettings.socialLinks.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-2 px-8 py-3.5 sm:py-4 rounded-xl bg-accent-teal text-background font-bold text-sm sm:text-base hover:bg-accent-cyan hover:shadow-[0_0_20px_rgba(0,212,216,0.3)] active:scale-95 transition-all duration-300 min-h-[48px] shadow-sm"
+                    >
+                      <span>Connect on LinkedIn</span>
+                      <ArrowRight size={16} />
+                    </a>
+                  ) : null}
                 </div>
               </div>
             </div>
@@ -356,6 +382,11 @@ export default async function AboutPage() {
         footerStatement={siteSettings.footerStatement}
         socialLinks={siteSettings.socialLinks}
         footerLinks={siteSettings.footerLinks}
+        aboutPageEnabled={siteSettings.aboutPageEnabled}
+        caseStudiesPageEnabled={siteSettings.caseStudiesPageEnabled}
+        productsPageEnabled={siteSettings.productsPageEnabled}
+        teardownsPageEnabled={siteSettings.teardownsPageEnabled}
+        contactPageEnabled={siteSettings.contactPageEnabled}
       />
     </div>
   );

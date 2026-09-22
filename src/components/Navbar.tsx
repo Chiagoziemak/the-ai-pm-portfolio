@@ -13,7 +13,11 @@ export interface NavbarProps {
   navCtaLabel?: string;
   navCtaUrl?: string;
   resumeUrl?: string;
+  aboutPageEnabled?: boolean;
   caseStudiesPageEnabled?: boolean;
+  productsPageEnabled?: boolean;
+  teardownsPageEnabled?: boolean;
+  contactPageEnabled?: boolean;
 }
 
 export default function Navbar({
@@ -23,7 +27,11 @@ export default function Navbar({
   navCtaLabel,
   navCtaUrl,
   resumeUrl,
+  aboutPageEnabled,
   caseStudiesPageEnabled,
+  productsPageEnabled,
+  teardownsPageEnabled,
+  contactPageEnabled,
 }: NavbarProps) {
   const { theme, toggleTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
@@ -33,6 +41,12 @@ export default function Navbar({
   useEffect(() => {
     setIsOpen(false);
   }, [pathname]);
+
+  const isAboutEnabled = aboutPageEnabled !== false;
+  const isCaseStudiesEnabled = caseStudiesPageEnabled !== false;
+  const isProductsEnabled = productsPageEnabled !== false;
+  const isTeardownsEnabled = teardownsPageEnabled !== false;
+  const isContactEnabled = contactPageEnabled !== false;
 
   const defaultLinks = [
     { name: "Teardowns", path: "/teardowns" },
@@ -46,12 +60,23 @@ export default function Navbar({
     ? navLinks.filter((l) => Boolean(l && l.label && l.url)).map((l) => ({ name: l.label, path: l.url }))
     : defaultLinks;
 
-  const activeLinks = (caseStudiesPageEnabled === false
-    ? rawLinks.filter((l) => !l.path.startsWith("/case-studies"))
-    : rawLinks).filter((l) => Boolean(l && l.name && l.path));
+  const activeLinks = rawLinks
+    .filter((l) => {
+      if (!l || !l.name || !l.path) return false;
+      const path = l.path.trim().toLowerCase();
+      if (!isAboutEnabled && (path === "/about" || path.startsWith("/about/"))) return false;
+      if (!isCaseStudiesEnabled && (path === "/case-studies" || path.startsWith("/case-studies/"))) return false;
+      if (!isProductsEnabled && (path === "/products" || path.startsWith("/products/"))) return false;
+      if (!isTeardownsEnabled && (path === "/teardowns" || path.startsWith("/teardowns/"))) return false;
+      if (!isContactEnabled && (path === "/contact" || path.startsWith("/contact/"))) return false;
+      return true;
+    });
 
   const ctaLabel = navCtaLabel || "Resume";
-  const ctaHref = navCtaUrl || resumeUrl || "/resume.pdf";
+  let ctaHref: string | null = navCtaUrl || resumeUrl || "/resume.pdf";
+  if (ctaHref && (ctaHref.toLowerCase() === "/contact" || ctaHref.toLowerCase().startsWith("/contact/")) && !isContactEnabled) {
+    ctaHref = resumeUrl || "/resume.pdf";
+  }
 
   const toggleMenu = () => setIsOpen((prev) => !prev);
 

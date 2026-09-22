@@ -8,10 +8,17 @@ export const revalidate = 0;
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteSettings = await getSiteSettings();
   const baseUrl = getBaseUrl(siteSettings);
-  const isCaseStudiesEnabled = siteSettings.caseStudiesPageEnabled !== false;
 
-  const teardowns = await getTeardowns();
-  const caseStudies = isCaseStudiesEnabled ? await getCaseStudies() : [];
+  const isAboutEnabled = siteSettings.aboutPageEnabled !== false;
+  const isCaseStudiesEnabled = siteSettings.caseStudiesPageEnabled !== false;
+  const isProductsEnabled = siteSettings.productsPageEnabled !== false;
+  const isTeardownsEnabled = siteSettings.teardownsPageEnabled !== false;
+  const isContactEnabled = siteSettings.contactPageEnabled !== false;
+
+  const [teardowns, caseStudies] = await Promise.all([
+    isTeardownsEnabled ? getTeardowns() : Promise.resolve([]),
+    isCaseStudiesEnabled ? getCaseStudies() : Promise.resolve([]),
+  ]);
 
   const staticRoutes: MetadataRoute.Sitemap = [
     {
@@ -20,31 +27,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly",
       priority: 1.0,
     },
-    {
+  ];
+
+  if (isAboutEnabled) {
+    staticRoutes.push({
       url: `${baseUrl}/about`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.85,
-    },
-    {
-      url: `${baseUrl}/products`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.85,
-    },
-    {
-      url: `${baseUrl}/teardowns`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/contact`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-  ];
+    });
+  }
 
   if (isCaseStudiesEnabled) {
     staticRoutes.push({
@@ -55,19 +47,50 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
   }
 
-  const teardownRoutes: MetadataRoute.Sitemap = teardowns.map((t) => ({
-    url: `${baseUrl}/teardowns/${t.slug}`,
-    lastModified: new Date(),
-    changeFrequency: "monthly",
-    priority: 0.8,
-  }));
+  if (isProductsEnabled) {
+    staticRoutes.push({
+      url: `${baseUrl}/products`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.85,
+    });
+  }
 
-  const caseStudyRoutes: MetadataRoute.Sitemap = caseStudies.map((c) => ({
-    url: `${baseUrl}/case-studies/${c.slug}`,
-    lastModified: new Date(),
-    changeFrequency: "monthly",
-    priority: 0.8,
-  }));
+  if (isTeardownsEnabled) {
+    staticRoutes.push({
+      url: `${baseUrl}/teardowns`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.9,
+    });
+  }
+
+  if (isContactEnabled) {
+    staticRoutes.push({
+      url: `${baseUrl}/contact`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    });
+  }
+
+  const teardownRoutes: MetadataRoute.Sitemap = isTeardownsEnabled
+    ? teardowns.map((t) => ({
+        url: `${baseUrl}/teardowns/${t.slug}`,
+        lastModified: new Date(),
+        changeFrequency: "monthly",
+        priority: 0.8,
+      }))
+    : [];
+
+  const caseStudyRoutes: MetadataRoute.Sitemap = isCaseStudiesEnabled
+    ? caseStudies.map((c) => ({
+        url: `${baseUrl}/case-studies/${c.slug}`,
+        lastModified: new Date(),
+        changeFrequency: "monthly",
+        priority: 0.8,
+      }))
+    : [];
 
   return [...staticRoutes, ...teardownRoutes, ...caseStudyRoutes];
 }

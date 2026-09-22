@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import Link from "next/link";
 
 export interface FooterProps {
@@ -15,6 +15,11 @@ export interface FooterProps {
     twitter?: string;
   };
   footerLinks?: { label: string; url: string }[];
+  aboutPageEnabled?: boolean;
+  caseStudiesPageEnabled?: boolean;
+  productsPageEnabled?: boolean;
+  teardownsPageEnabled?: boolean;
+  contactPageEnabled?: boolean;
 }
 
 export default function Footer({
@@ -27,6 +32,11 @@ export default function Footer({
   footerStatement,
   socialLinks,
   footerLinks,
+  aboutPageEnabled,
+  caseStudiesPageEnabled,
+  productsPageEnabled,
+  teardownsPageEnabled,
+  contactPageEnabled,
 }: FooterProps) {
   const currentYear = new Date().getFullYear();
 
@@ -83,8 +93,23 @@ export default function Footer({
       ? socialLinks.twitter.trim()
       : null;
 
+  const isAboutEnabled = aboutPageEnabled !== false;
+  const isCaseStudiesEnabled = caseStudiesPageEnabled !== false;
+  const isProductsEnabled = productsPageEnabled !== false;
+  const isTeardownsEnabled = teardownsPageEnabled !== false;
+  const isContactEnabled = contactPageEnabled !== false;
+
   const validFooterLinks = Array.isArray(footerLinks)
-    ? footerLinks.filter((link) => Boolean(link && link.label && link.url))
+    ? footerLinks.filter((link) => {
+        if (!link || !link.label || !link.url) return false;
+        const path = link.url.trim().toLowerCase();
+        if (!isAboutEnabled && (path === "/about" || path.startsWith("/about/"))) return false;
+        if (!isCaseStudiesEnabled && (path === "/case-studies" || path.startsWith("/case-studies/"))) return false;
+        if (!isProductsEnabled && (path === "/products" || path.startsWith("/products/"))) return false;
+        if (!isTeardownsEnabled && (path === "/teardowns" || path.startsWith("/teardowns/"))) return false;
+        if (!isContactEnabled && (path === "/contact" || path.startsWith("/contact/"))) return false;
+        return true;
+      })
     : [];
 
   return (

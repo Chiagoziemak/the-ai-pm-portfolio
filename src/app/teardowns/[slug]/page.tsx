@@ -51,6 +51,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     getSiteSettings(),
   ]);
 
+  if (siteSettings.teardownsPageEnabled === false) {
+    notFound();
+  }
+
   const teardown = data;
   if (!teardown) {
     return constructMetadata({
@@ -83,6 +87,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function TeardownDetailPage({ params }: PageProps) {
   const { slug } = await params;
   const siteSettings = (await getSiteSettings()) || {};
+
+  if (siteSettings.teardownsPageEnabled === false) {
+    notFound();
+  }
+
   const data = await getTeardownBySlug(slug);
   const teardown = data;
 
@@ -130,7 +139,11 @@ export default async function TeardownDetailPage({ params }: PageProps) {
         navCtaLabel={siteSettings.navCtaLabel}
         navCtaUrl={siteSettings.navCtaUrl}
         resumeUrl={siteSettings.resumeUrl}
+        aboutPageEnabled={siteSettings.aboutPageEnabled}
         caseStudiesPageEnabled={siteSettings.caseStudiesPageEnabled}
+        productsPageEnabled={siteSettings.productsPageEnabled}
+        teardownsPageEnabled={siteSettings.teardownsPageEnabled}
+        contactPageEnabled={siteSettings.contactPageEnabled}
       />
 
       {/* Reading Progress Bar */}
@@ -439,6 +452,11 @@ export default async function TeardownDetailPage({ params }: PageProps) {
         footerStatement={siteSettings.footerStatement}
         socialLinks={siteSettings.socialLinks}
         footerLinks={siteSettings.footerLinks}
+        aboutPageEnabled={siteSettings.aboutPageEnabled}
+        caseStudiesPageEnabled={siteSettings.caseStudiesPageEnabled}
+        productsPageEnabled={siteSettings.productsPageEnabled}
+        teardownsPageEnabled={siteSettings.teardownsPageEnabled}
+        contactPageEnabled={siteSettings.contactPageEnabled}
       />
     </div>
   );

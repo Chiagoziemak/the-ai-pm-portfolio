@@ -24,6 +24,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     getSiteSettings(),
   ]);
 
+  if (siteSettings.caseStudiesPageEnabled === false) {
+    notFound();
+  }
+
   const study = data;
   if (!study) {
     return constructMetadata({
@@ -32,16 +36,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       urlPath: `/case-studies/${slug}`,
       siteSettings,
       noIndex: true,
-    });
-  }
-
-  const isEnabled = siteSettings.caseStudiesPageEnabled !== false;
-  if (!isEnabled) {
-    return constructMetadata({
-      title: "Case Study Coming Soon | Chiagoziem Melvin Akobundu",
-      description: "Product Case Studies are currently undergoing updates and will be available shortly.",
-      urlPath: `/case-studies/${slug}`,
-      siteSettings,
     });
   }
 
@@ -66,65 +60,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function CaseStudyDetailPage({ params }: PageProps) {
   const { slug } = await params;
   const siteSettings = (await getSiteSettings()) || {};
+
+  if (siteSettings.caseStudiesPageEnabled === false) {
+    notFound();
+  }
+
   const data = await getCaseStudyBySlug(slug);
   const study = data;
 
   if (!study) {
     notFound();
-  }
-
-  const isEnabled = siteSettings.caseStudiesPageEnabled !== false;
-
-  if (!isEnabled) {
-    return (
-      <div className="min-h-screen flex flex-col page-bg-casestudies text-foreground transition-colors duration-300">
-        <Navbar
-          navTitleText={siteSettings.navTitleText}
-          navLogoUrl={siteSettings.navLogoUrl}
-          navLinks={siteSettings.navLinks}
-          navCtaLabel={siteSettings.navCtaLabel}
-          navCtaUrl={siteSettings.navCtaUrl}
-          resumeUrl={siteSettings.resumeUrl}
-          caseStudiesPageEnabled={siteSettings.caseStudiesPageEnabled}
-        />
-        <main className="flex-grow z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-20 sm:py-24 flex items-center justify-center">
-          <div className="text-center max-w-2xl mx-auto space-y-6 glass-panel p-8 sm:p-12 rounded-3xl border-card-border shadow-lg">
-            <div className="w-16 h-16 rounded-2xl bg-accent-teal/10 border border-accent-teal/20 text-accent-teal flex items-center justify-center mx-auto text-2xl font-bold">
-              <span>✦</span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight">Case Study Coming Soon</h1>
-            <p className="text-foreground/80 leading-relaxed text-sm sm:text-base">
-              The Product Case Studies section is currently undergoing updates. Detailed technical breakdowns and ROI evaluations will be published shortly.
-            </p>
-            <div className="pt-4 flex flex-wrap justify-center gap-4">
-              <Link
-                href="/teardowns"
-                className="px-6 py-3 rounded-xl bg-accent-teal text-background font-bold hover:bg-accent-cyan transition-all text-sm min-h-[44px] flex items-center"
-              >
-                Explore Product Teardowns →
-              </Link>
-              <Link
-                href="/contact"
-                className="px-6 py-3 rounded-xl border border-card-border glass-panel hover:bg-card-border/20 text-foreground font-semibold transition-all text-sm min-h-[44px] flex items-center"
-              >
-                Contact Chiagoziem
-              </Link>
-            </div>
-          </div>
-        </main>
-        <Footer
-          footerName={siteSettings.footerName}
-          siteTitle={siteSettings.siteTitle}
-          footerTagline={siteSettings.footerTagline}
-          footerAvailabilityText={siteSettings.footerAvailabilityText}
-          footerShowAvailability={siteSettings.footerShowAvailability}
-          copyrightName={siteSettings.copyrightName}
-          footerStatement={siteSettings.footerStatement}
-          socialLinks={siteSettings.socialLinks}
-          footerLinks={siteSettings.footerLinks}
-        />
-      </div>
-    );
   }
 
   const bodyParagraphs = Array.isArray(study.body) && study.body.length > 0
@@ -197,7 +142,11 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
         navCtaLabel={siteSettings.navCtaLabel}
         navCtaUrl={siteSettings.navCtaUrl}
         resumeUrl={siteSettings.resumeUrl}
+        aboutPageEnabled={siteSettings.aboutPageEnabled}
         caseStudiesPageEnabled={siteSettings.caseStudiesPageEnabled}
+        productsPageEnabled={siteSettings.productsPageEnabled}
+        teardownsPageEnabled={siteSettings.teardownsPageEnabled}
+        contactPageEnabled={siteSettings.contactPageEnabled}
       />
 
       <main className="flex-grow pt-8 sm:pt-12 pb-16 sm:pb-24">
@@ -556,39 +505,53 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
             )}
 
             {/* Next Steps / Contact CTA */}
-            <section className="p-6 sm:p-8 rounded-2xl border border-card-border glass-panel mt-6">
-              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-                <div className="space-y-1 text-center lg:text-left">
-                  <h3 className="font-bold text-base sm:text-lg text-foreground tracking-tight">
-                    Interested in diving deeper?
-                  </h3>
-                  <p className="text-xs sm:text-sm text-foreground/70 leading-relaxed">
-                    Let&apos;s discuss how this strategy applies to your domain.
-                  </p>
-                </div>
+            {(liveUrl || siteSettings.contactPageEnabled !== false || siteSettings.socialLinks?.linkedin) && (
+              <section className="p-6 sm:p-8 rounded-2xl border border-card-border glass-panel mt-6">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                  <div className="space-y-1 text-center lg:text-left">
+                    <h3 className="font-bold text-base sm:text-lg text-foreground tracking-tight">
+                      Interested in diving deeper?
+                    </h3>
+                    <p className="text-xs sm:text-sm text-foreground/70 leading-relaxed">
+                      Let&apos;s discuss how this strategy applies to your domain.
+                    </p>
+                  </div>
 
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center lg:justify-end gap-3 sm:gap-3.5 flex-shrink-0 w-full lg:w-auto">
-                  {liveUrl && (
-                    <a
-                      href={liveUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl bg-accent-teal text-background font-bold text-xs sm:text-sm hover:bg-accent-cyan active:scale-[0.98] transition-all shadow-sm min-h-[44px] text-center"
-                    >
-                      <span>{liveUrlLabel}</span>
-                      <ArrowUpRight size={15} className="flex-shrink-0" />
-                    </a>
-                  )}
-                  <Link
-                    href="/contact"
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl border border-card-border glass-panel hover:bg-card-border/20 text-foreground font-semibold text-xs sm:text-sm active:scale-[0.98] transition-all min-h-[44px] text-center"
-                  >
-                    <span>Discuss This Case Study</span>
-                    <ArrowUpRight size={15} className="flex-shrink-0" />
-                  </Link>
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center lg:justify-end gap-3 sm:gap-3.5 flex-shrink-0 w-full lg:w-auto">
+                    {liveUrl && (
+                      <a
+                        href={liveUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl bg-accent-teal text-background font-bold text-xs sm:text-sm hover:bg-accent-cyan active:scale-[0.98] transition-all shadow-sm min-h-[44px] text-center"
+                      >
+                        <span>{liveUrlLabel}</span>
+                        <ArrowUpRight size={15} className="flex-shrink-0" />
+                      </a>
+                    )}
+                    {siteSettings.contactPageEnabled !== false ? (
+                      <Link
+                        href="/contact"
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl border border-card-border glass-panel hover:bg-card-border/20 text-foreground font-semibold text-xs sm:text-sm active:scale-[0.98] transition-all min-h-[44px] text-center"
+                      >
+                        <span>Discuss This Case Study</span>
+                        <ArrowUpRight size={15} className="flex-shrink-0" />
+                      </Link>
+                    ) : siteSettings.socialLinks?.linkedin ? (
+                      <a
+                        href={siteSettings.socialLinks.linkedin}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl border border-card-border glass-panel hover:bg-card-border/20 text-foreground font-semibold text-xs sm:text-sm active:scale-[0.98] transition-all min-h-[44px] text-center"
+                      >
+                        <span>Connect on LinkedIn</span>
+                        <ArrowUpRight size={15} className="flex-shrink-0" />
+                      </a>
+                    ) : null}
+                  </div>
                 </div>
-              </div>
-            </section>
+              </section>
+            )}
 
           </article>
         </div>
@@ -605,6 +568,11 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
         footerStatement={siteSettings.footerStatement}
         socialLinks={siteSettings.socialLinks}
         footerLinks={siteSettings.footerLinks}
+        aboutPageEnabled={siteSettings.aboutPageEnabled}
+        caseStudiesPageEnabled={siteSettings.caseStudiesPageEnabled}
+        productsPageEnabled={siteSettings.productsPageEnabled}
+        teardownsPageEnabled={siteSettings.teardownsPageEnabled}
+        contactPageEnabled={siteSettings.contactPageEnabled}
       />
     </div>
   );

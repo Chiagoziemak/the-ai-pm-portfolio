@@ -1,5 +1,6 @@
 import React from "react";
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import TeardownsList from "./TeardownsList";
@@ -12,6 +13,10 @@ export const revalidate = 0;
 export async function generateMetadata(): Promise<Metadata> {
   const siteSettings = await getSiteSettings();
 
+  if (siteSettings.teardownsPageEnabled === false) {
+    notFound();
+  }
+
   return constructMetadata({
     title: "Product Teardowns & Strategy Analyses | Chiagoziem Melvin Akobundu",
     description:
@@ -22,8 +27,13 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function TeardownsPage() {
-  const data = await getTeardowns();
   const siteSettings = (await getSiteSettings()) || {};
+
+  if (siteSettings.teardownsPageEnabled === false) {
+    notFound();
+  }
+
+  const data = await getTeardowns();
   const teardowns = Array.isArray(data) ? data : [];
 
   return (
@@ -39,7 +49,11 @@ export default async function TeardownsPage() {
         navCtaLabel={siteSettings.navCtaLabel}
         navCtaUrl={siteSettings.navCtaUrl}
         resumeUrl={siteSettings.resumeUrl}
+        aboutPageEnabled={siteSettings.aboutPageEnabled}
         caseStudiesPageEnabled={siteSettings.caseStudiesPageEnabled}
+        productsPageEnabled={siteSettings.productsPageEnabled}
+        teardownsPageEnabled={siteSettings.teardownsPageEnabled}
+        contactPageEnabled={siteSettings.contactPageEnabled}
       />
 
       <TeardownsList initialTeardowns={teardowns} />
@@ -54,6 +68,11 @@ export default async function TeardownsPage() {
         footerStatement={siteSettings.footerStatement}
         socialLinks={siteSettings.socialLinks}
         footerLinks={siteSettings.footerLinks}
+        aboutPageEnabled={siteSettings.aboutPageEnabled}
+        caseStudiesPageEnabled={siteSettings.caseStudiesPageEnabled}
+        productsPageEnabled={siteSettings.productsPageEnabled}
+        teardownsPageEnabled={siteSettings.teardownsPageEnabled}
+        contactPageEnabled={siteSettings.contactPageEnabled}
       />
     </div>
   );

@@ -1,6 +1,7 @@
 import React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { getProducts, getSiteSettings } from "@/sanity/queries";
@@ -13,6 +14,10 @@ export const revalidate = 0;
 export async function generateMetadata(): Promise<Metadata> {
   const siteSettings = await getSiteSettings();
 
+  if (siteSettings.productsPageEnabled === false) {
+    notFound();
+  }
+
   return constructMetadata({
     title: "AI Products & Autonomous Systems | Chiagoziem Melvin Akobundu",
     description:
@@ -23,11 +28,17 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ProductsPage() {
-  const data = await getProducts();
   const siteSettings = (await getSiteSettings()) || {};
+
+  if (siteSettings.productsPageEnabled === false) {
+    notFound();
+  }
+
+  const data = await getProducts();
   const products = Array.isArray(data) ? data : [];
 
   const isCaseStudiesEnabled = siteSettings.caseStudiesPageEnabled !== false;
+  const isContactEnabled = siteSettings.contactPageEnabled !== false;
 
   // Split into Featured Product vs other products
   const featuredProduct = products.find((p: any) => p.isFeatured || p.featured) || (products.length > 0 ? products[0] : null);
@@ -42,7 +53,11 @@ export default async function ProductsPage() {
         navCtaLabel={siteSettings.navCtaLabel}
         navCtaUrl={siteSettings.navCtaUrl}
         resumeUrl={siteSettings.resumeUrl}
+        aboutPageEnabled={siteSettings.aboutPageEnabled}
         caseStudiesPageEnabled={siteSettings.caseStudiesPageEnabled}
+        productsPageEnabled={siteSettings.productsPageEnabled}
+        teardownsPageEnabled={siteSettings.teardownsPageEnabled}
+        contactPageEnabled={siteSettings.contactPageEnabled}
       />
       
       <main className="flex-grow pt-24 sm:pt-28 md:pt-32 pb-16 md:pb-24 px-4 sm:px-6 md:px-12 lg:px-16 max-w-[1280px] mx-auto w-full">
@@ -105,14 +120,14 @@ export default async function ProductsPage() {
                       >
                         {featuredProduct.linkLabel || "View Case Study →"}
                       </Link>
-                    ) : (
+                    ) : isContactEnabled ? (
                       <Link
                         href="/contact"
                         className="w-full sm:w-auto bg-accent-teal text-background px-6 sm:px-8 py-3 rounded-xl font-bold transition-all hover:bg-accent-cyan active:scale-95 flex items-center justify-center gap-2 shadow-sm text-sm sm:text-base min-h-[44px]"
                       >
                         Get In Touch →
                       </Link>
-                    )
+                    ) : null
                   ) : featuredProduct.externalUrl ? (
                     <a
                       href={featuredProduct.externalUrl}
@@ -122,29 +137,38 @@ export default async function ProductsPage() {
                     >
                       {featuredProduct.linkLabel || "View Product →"}
                     </a>
-                  ) : (
-                    isCaseStudiesEnabled ? (
-                      <Link
-                        href="/case-studies"
-                        className="w-full sm:w-auto bg-accent-teal text-background px-6 sm:px-8 py-3 rounded-xl font-bold transition-all hover:bg-accent-cyan active:scale-95 flex items-center justify-center gap-2 shadow-sm text-sm sm:text-base min-h-[44px]"
-                      >
-                        {featuredProduct.linkLabel || "View Case Studies →"}
-                      </Link>
-                    ) : (
-                      <Link
-                        href="/contact"
-                        className="w-full sm:w-auto bg-accent-teal text-background px-6 sm:px-8 py-3 rounded-xl font-bold transition-all hover:bg-accent-cyan active:scale-95 flex items-center justify-center gap-2 shadow-sm text-sm sm:text-base min-h-[44px]"
-                      >
-                        Get In Touch →
-                      </Link>
-                    )
-                  )}
-                  <Link
-                    href="/contact"
-                    className="w-full sm:w-auto border border-card-border bg-card text-foreground px-6 sm:px-8 py-3 rounded-xl font-semibold hover:bg-card-border/20 transition-all text-center flex items-center justify-center text-sm sm:text-base min-h-[44px]"
-                  >
-                    Technical Spec
-                  </Link>
+                  ) : isCaseStudiesEnabled ? (
+                    <Link
+                      href="/case-studies"
+                      className="w-full sm:w-auto bg-accent-teal text-background px-6 sm:px-8 py-3 rounded-xl font-bold transition-all hover:bg-accent-cyan active:scale-95 flex items-center justify-center gap-2 shadow-sm text-sm sm:text-base min-h-[44px]"
+                    >
+                      {featuredProduct.linkLabel || "View Case Studies →"}
+                    </Link>
+                  ) : isContactEnabled ? (
+                    <Link
+                      href="/contact"
+                      className="w-full sm:w-auto bg-accent-teal text-background px-6 sm:px-8 py-3 rounded-xl font-bold transition-all hover:bg-accent-cyan active:scale-95 flex items-center justify-center gap-2 shadow-sm text-sm sm:text-base min-h-[44px]"
+                    >
+                      Get In Touch →
+                    </Link>
+                  ) : null}
+                  {isContactEnabled ? (
+                    <Link
+                      href="/contact"
+                      className="w-full sm:w-auto border border-card-border bg-card text-foreground px-6 sm:px-8 py-3 rounded-xl font-semibold hover:bg-card-border/20 transition-all text-center flex items-center justify-center text-sm sm:text-base min-h-[44px]"
+                    >
+                      Technical Spec
+                    </Link>
+                  ) : siteSettings.socialLinks?.linkedin ? (
+                    <a
+                      href={siteSettings.socialLinks.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full sm:w-auto border border-card-border bg-card text-foreground px-6 sm:px-8 py-3 rounded-xl font-semibold hover:bg-card-border/20 transition-all text-center flex items-center justify-center text-sm sm:text-base min-h-[44px]"
+                    >
+                      Connect on LinkedIn
+                    </a>
+                  ) : null}
                 </div>
               </div>
             </div>
@@ -158,12 +182,23 @@ export default async function ProductsPage() {
             <p className="text-foreground/75 text-sm sm:text-base mb-6">
               New AI products and case studies are currently being finalized.
             </p>
-            <Link
-              href="/contact"
-              className="inline-flex items-center px-6 py-3 rounded-xl bg-accent-teal text-background font-bold hover:bg-accent-cyan transition-all text-sm min-h-[44px]"
-            >
-              Get In Touch
-            </Link>
+            {isContactEnabled ? (
+              <Link
+                href="/contact"
+                className="inline-flex items-center px-6 py-3 rounded-xl bg-accent-teal text-background font-bold hover:bg-accent-cyan transition-all text-sm min-h-[44px]"
+              >
+                Get In Touch
+              </Link>
+            ) : siteSettings.socialLinks?.linkedin ? (
+              <a
+                href={siteSettings.socialLinks.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center px-6 py-3 rounded-xl bg-accent-teal text-background font-bold hover:bg-accent-cyan transition-all text-sm min-h-[44px]"
+              >
+                Connect on LinkedIn
+              </a>
+            ) : null}
           </div>
         )}
 
@@ -206,14 +241,23 @@ export default async function ProductsPage() {
                     >
                       {product.linkLabel || "Explore"} <ArrowUpRight size={14} />
                     </a>
-                  ) : (
+                  ) : isContactEnabled ? (
                     <Link
                       href="/contact"
                       className="text-xs font-bold text-accent-teal hover:underline flex items-center gap-1 min-h-[36px]"
                     >
                       Inquire <ArrowUpRight size={14} />
                     </Link>
-                  )}
+                  ) : siteSettings.socialLinks?.linkedin ? (
+                    <a
+                      href={siteSettings.socialLinks.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs font-bold text-accent-teal hover:underline flex items-center gap-1 min-h-[36px]"
+                    >
+                      Connect <ArrowUpRight size={14} />
+                    </a>
+                  ) : null}
                 </div>
               </div>
             );
@@ -230,12 +274,23 @@ export default async function ProductsPage() {
           <p className="text-foreground/80 text-sm sm:text-base mb-6 max-w-xl mx-auto leading-relaxed">
             I collaborate with teams and founders to design, prototype, and build production-grade AI applications.
           </p>
-          <Link
-            href="/contact"
-            className="inline-flex items-center justify-center px-8 py-3.5 rounded-xl bg-accent-teal text-background font-bold text-sm sm:text-base hover:bg-accent-cyan active:scale-95 transition-all shadow-md min-h-[44px]"
-          >
-            Start a Conversation →
-          </Link>
+          {isContactEnabled ? (
+            <Link
+              href="/contact"
+              className="inline-flex items-center justify-center px-8 py-3.5 rounded-xl bg-accent-teal text-background font-bold text-sm sm:text-base hover:bg-accent-cyan active:scale-95 transition-all shadow-md min-h-[44px]"
+            >
+              Start a Conversation →
+            </Link>
+          ) : siteSettings.socialLinks?.linkedin ? (
+            <a
+              href={siteSettings.socialLinks.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center px-8 py-3.5 rounded-xl bg-accent-teal text-background font-bold text-sm sm:text-base hover:bg-accent-cyan active:scale-95 transition-all shadow-md min-h-[44px]"
+            >
+              Connect on LinkedIn →
+            </a>
+          ) : null}
         </div>
 
       </main>
@@ -250,6 +305,11 @@ export default async function ProductsPage() {
         footerStatement={siteSettings.footerStatement}
         socialLinks={siteSettings.socialLinks}
         footerLinks={siteSettings.footerLinks}
+        aboutPageEnabled={siteSettings.aboutPageEnabled}
+        caseStudiesPageEnabled={siteSettings.caseStudiesPageEnabled}
+        productsPageEnabled={siteSettings.productsPageEnabled}
+        teardownsPageEnabled={siteSettings.teardownsPageEnabled}
+        contactPageEnabled={siteSettings.contactPageEnabled}
       />
     </div>
   );

@@ -52,7 +52,22 @@ export default async function HomePage() {
 
   const caseStudies = rawCaseStudies.filter(Boolean);
 
+  const isAboutEnabled = siteSettings.aboutPageEnabled !== false;
   const isCaseStudiesEnabled = siteSettings.caseStudiesPageEnabled !== false;
+  const isProductsEnabled = siteSettings.productsPageEnabled !== false;
+  const isTeardownsEnabled = siteSettings.teardownsPageEnabled !== false;
+  const isContactEnabled = siteSettings.contactPageEnabled !== false;
+
+  const isUrlAllowed = (url?: string) => {
+    if (!url) return true;
+    const path = url.trim().toLowerCase();
+    if (!isAboutEnabled && (path === "/about" || path.startsWith("/about/"))) return false;
+    if (!isCaseStudiesEnabled && (path === "/case-studies" || path.startsWith("/case-studies/"))) return false;
+    if (!isProductsEnabled && (path === "/products" || path.startsWith("/products/"))) return false;
+    if (!isTeardownsEnabled && (path === "/teardowns" || path.startsWith("/teardowns/"))) return false;
+    if (!isContactEnabled && (path === "/contact" || path.startsWith("/contact/"))) return false;
+    return true;
+  };
 
   const featuredCaseStudy = caseStudies.length > 0 ? caseStudies[0] : null;
   const otherCaseStudy = caseStudies.length > 1 ? caseStudies[1] : null;
@@ -122,8 +137,10 @@ export default async function HomePage() {
                   </div>
                 );
 
-                return item.url ? (
-                  <Link key={index} href={item.url} className="hover:opacity-80 transition-opacity">
+                const canLink = Boolean(item.url && isUrlAllowed(item.url));
+
+                return canLink ? (
+                  <Link key={index} href={item.url!} className="hover:opacity-80 transition-opacity">
                     {cardContent}
                   </Link>
                 ) : (
@@ -258,6 +275,7 @@ export default async function HomePage() {
         ) : null;
 
       case "teardowns":
+        if (!isTeardownsEnabled) return null;
         return featuredTeardowns.length > 0 ? (
           <section key="teardowns" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-12 gap-3">
@@ -436,7 +454,11 @@ export default async function HomePage() {
         navCtaLabel={siteSettings.navCtaLabel}
         navCtaUrl={siteSettings.navCtaUrl}
         resumeUrl={siteSettings.resumeUrl}
+        aboutPageEnabled={siteSettings.aboutPageEnabled}
         caseStudiesPageEnabled={siteSettings.caseStudiesPageEnabled}
+        productsPageEnabled={siteSettings.productsPageEnabled}
+        teardownsPageEnabled={siteSettings.teardownsPageEnabled}
+        contactPageEnabled={siteSettings.contactPageEnabled}
       />
 
       <main className="flex-grow z-10">
@@ -502,22 +524,41 @@ export default async function HomePage() {
 
               {/* CTAs (Dynamic from homeData.ctaButtons if populated) */}
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
-                {Array.isArray(homeData.ctaButtons) && homeData.ctaButtons.length > 0 ? (
-                  homeData.ctaButtons.map((btn, idx) => (
-                    <Link
-                      key={idx}
-                      href={btn.url || "#"}
-                      className={
-                        idx === 0
-                          ? "w-full sm:w-auto px-6 sm:px-7 py-3.5 rounded-xl bg-gradient-to-r from-accent-teal to-accent-cyan text-background font-extrabold text-sm flex items-center justify-center gap-2 shadow-lg shadow-accent-teal/20 hover:shadow-accent-teal/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 min-h-[44px]"
-                          : "w-full sm:w-auto px-6 sm:px-7 py-3.5 rounded-xl glass-panel text-foreground font-bold text-sm flex items-center justify-center gap-2 border-card-border hover:border-accent-teal/50 hover:bg-foreground/5 transition-all duration-300 min-h-[44px]"
-                      }
-                    >
-                      {idx === 0 && <Brain size={18} />}
-                      {idx === 1 && <Compass size={18} className="text-accent-teal" />}
-                      {btn.label}
-                    </Link>
-                  ))
+                {Array.isArray(homeData.ctaButtons) && homeData.ctaButtons.filter((b) => b && b.label && isUrlAllowed(b.url)).length > 0 ? (
+                  homeData.ctaButtons.filter((b) => b && b.label && isUrlAllowed(b.url)).map((btn, idx) => {
+                    const isExternal = Boolean(btn.url && (btn.url.startsWith("http://") || btn.url.startsWith("https://") || btn.url.startsWith("mailto:")));
+                    return isExternal ? (
+                      <a
+                        key={idx}
+                        href={btn.url || "#"}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={
+                          idx === 0
+                            ? "w-full sm:w-auto px-6 sm:px-7 py-3.5 rounded-xl bg-gradient-to-r from-accent-teal to-accent-cyan text-background font-extrabold text-sm flex items-center justify-center gap-2 shadow-lg shadow-accent-teal/20 hover:shadow-accent-teal/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 min-h-[44px]"
+                            : "w-full sm:w-auto px-6 sm:px-7 py-3.5 rounded-xl glass-panel text-foreground font-bold text-sm flex items-center justify-center gap-2 border-card-border hover:border-accent-teal/50 hover:bg-foreground/5 transition-all duration-300 min-h-[44px]"
+                        }
+                      >
+                        {idx === 0 && <Brain size={18} />}
+                        {idx === 1 && <Compass size={18} className="text-accent-teal" />}
+                        {btn.label}
+                      </a>
+                    ) : (
+                      <Link
+                        key={idx}
+                        href={btn.url || "#"}
+                        className={
+                          idx === 0
+                            ? "w-full sm:w-auto px-6 sm:px-7 py-3.5 rounded-xl bg-gradient-to-r from-accent-teal to-accent-cyan text-background font-extrabold text-sm flex items-center justify-center gap-2 shadow-lg shadow-accent-teal/20 hover:shadow-accent-teal/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 min-h-[44px]"
+                            : "w-full sm:w-auto px-6 sm:px-7 py-3.5 rounded-xl glass-panel text-foreground font-bold text-sm flex items-center justify-center gap-2 border-card-border hover:border-accent-teal/50 hover:bg-foreground/5 transition-all duration-300 min-h-[44px]"
+                        }
+                      >
+                        {idx === 0 && <Brain size={18} />}
+                        {idx === 1 && <Compass size={18} className="text-accent-teal" />}
+                        {btn.label}
+                      </Link>
+                    );
+                  })
                 ) : (
                   <>
                     {isCaseStudiesEnabled ? (
@@ -528,7 +569,7 @@ export default async function HomePage() {
                         <Brain size={18} />
                         Explore ResumeGenie AI
                       </Link>
-                    ) : (
+                    ) : isContactEnabled ? (
                       <Link
                         href="/contact"
                         className="w-full sm:w-auto px-6 sm:px-7 py-3.5 rounded-xl bg-gradient-to-r from-accent-teal to-accent-cyan text-background font-extrabold text-sm flex items-center justify-center gap-2 shadow-lg shadow-accent-teal/20 hover:shadow-accent-teal/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 min-h-[44px]"
@@ -536,14 +577,43 @@ export default async function HomePage() {
                         <Brain size={18} />
                         Get In Touch
                       </Link>
-                    )}
-                    <Link
-                      href="/teardowns"
-                      className="w-full sm:w-auto px-6 sm:px-7 py-3.5 rounded-xl glass-panel text-foreground font-bold text-sm flex items-center justify-center gap-2 border-card-border hover:border-accent-teal/50 hover:bg-foreground/5 transition-all duration-300 min-h-[44px]"
-                    >
-                      <Compass size={18} className="text-accent-teal" />
-                      View All Teardowns
-                    </Link>
+                    ) : siteSettings.socialLinks?.linkedin ? (
+                      <a
+                        href={siteSettings.socialLinks.linkedin}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full sm:w-auto px-6 sm:px-7 py-3.5 rounded-xl bg-gradient-to-r from-accent-teal to-accent-cyan text-background font-extrabold text-sm flex items-center justify-center gap-2 shadow-lg shadow-accent-teal/20 hover:shadow-accent-teal/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 min-h-[44px]"
+                      >
+                        <Brain size={18} />
+                        Connect on LinkedIn
+                      </a>
+                    ) : null}
+
+                    {isTeardownsEnabled ? (
+                      <Link
+                        href="/teardowns"
+                        className="w-full sm:w-auto px-6 sm:px-7 py-3.5 rounded-xl glass-panel text-foreground font-bold text-sm flex items-center justify-center gap-2 border-card-border hover:border-accent-teal/50 hover:bg-foreground/5 transition-all duration-300 min-h-[44px]"
+                      >
+                        <Compass size={18} className="text-accent-teal" />
+                        View All Teardowns
+                      </Link>
+                    ) : isProductsEnabled ? (
+                      <Link
+                        href="/products"
+                        className="w-full sm:w-auto px-6 sm:px-7 py-3.5 rounded-xl glass-panel text-foreground font-bold text-sm flex items-center justify-center gap-2 border-card-border hover:border-accent-teal/50 hover:bg-foreground/5 transition-all duration-300 min-h-[44px]"
+                      >
+                        <Compass size={18} className="text-accent-teal" />
+                        Explore Products
+                      </Link>
+                    ) : isAboutEnabled ? (
+                      <Link
+                        href="/about"
+                        className="w-full sm:w-auto px-6 sm:px-7 py-3.5 rounded-xl glass-panel text-foreground font-bold text-sm flex items-center justify-center gap-2 border-card-border hover:border-accent-teal/50 hover:bg-foreground/5 transition-all duration-300 min-h-[44px]"
+                      >
+                        <Compass size={18} className="text-accent-teal" />
+                        About Chiagoziem
+                      </Link>
+                    ) : null}
                   </>
                 )}
               </div>
@@ -580,12 +650,30 @@ export default async function HomePage() {
             <p className="text-foreground/80 max-w-xl mx-auto text-sm sm:text-base mb-6 sm:mb-8 leading-relaxed">
               Open to AI Product Manager and Product Management roles at high-impact labs and product companies. Let's discuss strategy, agentic architectures, and roadmap execution.
             </p>
-            <Link
-              href="/contact"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-accent-teal text-background font-extrabold text-sm sm:text-base shadow-lg shadow-accent-teal/20 hover:bg-accent-cyan hover:scale-[1.02] active:scale-[0.98] transition-all min-h-[48px]"
-            >
-              Get in Touch with Chiagoziem
-            </Link>
+            {isContactEnabled ? (
+              <Link
+                href="/contact"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-accent-teal text-background font-extrabold text-sm sm:text-base shadow-lg shadow-accent-teal/20 hover:bg-accent-cyan hover:scale-[1.02] active:scale-[0.98] transition-all min-h-[48px]"
+              >
+                Get in Touch with Chiagoziem
+              </Link>
+            ) : siteSettings.socialLinks?.linkedin ? (
+              <a
+                href={siteSettings.socialLinks.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-accent-teal text-background font-extrabold text-sm sm:text-base shadow-lg shadow-accent-teal/20 hover:bg-accent-cyan hover:scale-[1.02] active:scale-[0.98] transition-all min-h-[48px]"
+              >
+                Connect on LinkedIn →
+              </a>
+            ) : siteSettings.contactEmail ? (
+              <a
+                href={`mailto:${siteSettings.contactEmail}`}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-accent-teal text-background font-extrabold text-sm sm:text-base shadow-lg shadow-accent-teal/20 hover:bg-accent-cyan hover:scale-[1.02] active:scale-[0.98] transition-all min-h-[48px]"
+              >
+                Email Chiagoziem
+              </a>
+            ) : null}
           </div>
         </section>
       </main>
@@ -600,6 +688,11 @@ export default async function HomePage() {
         footerStatement={siteSettings.footerStatement}
         socialLinks={siteSettings.socialLinks}
         footerLinks={siteSettings.footerLinks}
+        aboutPageEnabled={siteSettings.aboutPageEnabled}
+        caseStudiesPageEnabled={siteSettings.caseStudiesPageEnabled}
+        productsPageEnabled={siteSettings.productsPageEnabled}
+        teardownsPageEnabled={siteSettings.teardownsPageEnabled}
+        contactPageEnabled={siteSettings.contactPageEnabled}
       />
     </div>
   );

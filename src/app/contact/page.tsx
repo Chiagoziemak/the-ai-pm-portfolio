@@ -1,5 +1,6 @@
 import React from "react";
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ContactForm from "@/components/ContactForm";
@@ -14,6 +15,10 @@ export async function generateMetadata(): Promise<Metadata> {
     getContactPageData(),
     getSiteSettings(),
   ]);
+
+  if (siteSettings.contactPageEnabled === false) {
+    notFound();
+  }
 
   const title =
     contactData?.metaTitle ||
@@ -37,6 +42,10 @@ export default async function ContactPage() {
     getSiteSettings(),
   ]);
 
+  if (siteSettings.contactPageEnabled === false) {
+    notFound();
+  }
+
   const headline = contactData?.headline || "Architecting the future, one interaction at a time.";
   const introText =
     contactData?.introText ||
@@ -58,7 +67,11 @@ export default async function ContactPage() {
         navCtaLabel={siteSettings.navCtaLabel}
         navCtaUrl={siteSettings.navCtaUrl}
         resumeUrl={siteSettings.resumeUrl}
+        aboutPageEnabled={siteSettings.aboutPageEnabled}
         caseStudiesPageEnabled={siteSettings.caseStudiesPageEnabled}
+        productsPageEnabled={siteSettings.productsPageEnabled}
+        teardownsPageEnabled={siteSettings.teardownsPageEnabled}
+        contactPageEnabled={siteSettings.contactPageEnabled}
       />
 
       <main className="flex-grow pt-24 sm:pt-28 md:pt-32 pb-16 md:pb-24 px-4 sm:px-6 md:px-12 lg:px-16 max-w-[1280px] mx-auto w-full">
@@ -154,6 +167,11 @@ export default async function ContactPage() {
         footerStatement={siteSettings.footerStatement}
         socialLinks={siteSettings.socialLinks}
         footerLinks={siteSettings.footerLinks}
+        aboutPageEnabled={siteSettings.aboutPageEnabled}
+        caseStudiesPageEnabled={siteSettings.caseStudiesPageEnabled}
+        productsPageEnabled={siteSettings.productsPageEnabled}
+        teardownsPageEnabled={siteSettings.teardownsPageEnabled}
+        contactPageEnabled={siteSettings.contactPageEnabled}
       />
     </div>
   );
