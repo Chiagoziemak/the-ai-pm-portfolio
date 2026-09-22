@@ -167,6 +167,19 @@ export default defineType({
       description: "Before vs After comparison cards (labels, descriptions, hotspot images, impact)",
     }),
     defineField({
+      name: "surfacesIcon",
+      title: "Product Surfaces Section Icon",
+      type: "string",
+      description: "React-icons identifier (e.g. FiGrid, FaBoxesStacked, HiSquare3Stack3D). Defaults to FiGrid",
+    }),
+    defineField({
+      name: "productSurfaces",
+      title: "Product Surfaces / Product Links",
+      type: "array",
+      of: [{ type: "productSurface" }],
+      description: "Public and internal product surfaces, platforms, and external links for this case study.",
+    }),
+    defineField({
       name: "resultsIcon",
       title: "Results & Impact Section Icon",
       type: "string",

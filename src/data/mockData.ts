@@ -77,6 +77,16 @@ export interface Teardown {
   projectLinks: ProjectLink[];
 }
 
+export interface ProductSurface {
+  label: string;
+  description?: string;
+  accessType?: "public" | "internal" | string;
+  platformType?: "web" | "mobile" | "operations" | "admin" | "other" | string;
+  url?: string;
+  linkLabel?: string;
+  enabled?: boolean;
+}
+
 export interface CaseStudy {
   title: string;
   metaTitle?: string;
@@ -101,6 +111,8 @@ export interface CaseStudy {
   lessonsLearned?: string[];
   productDecisions?: ProductDecisionCard[];
   beforeAfter?: BeforeAfterBlock[];
+  surfacesIcon?: string;
+  productSurfaces?: ProductSurface[];
   relatedCaseStudies?: any[];
 }
 

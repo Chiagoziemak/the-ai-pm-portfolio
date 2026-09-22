@@ -527,6 +527,94 @@ export const checklistItem = defineType({
   ],
 });
 
+export const productSurface = defineType({
+  name: "productSurface",
+  title: "Product Surface / Product Link",
+  type: "object",
+  fields: [
+    defineField({
+      name: "label",
+      title: "Label",
+      type: "string",
+      description: "e.g. Internet Booking Engine, Mobile App, Ticketing System, Logistics",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "description",
+      title: "Description / Type",
+      type: "string",
+      description: "e.g. Customer Web Booking, Terminal & Staff Ticketing, Shipment & Waybill Operations",
+    }),
+    defineField({
+      name: "accessType",
+      title: "Access Type",
+      type: "string",
+      description: "Public (customer-facing) or Internal (staff-facing/operations)",
+      options: {
+        list: [
+          { title: "Public", value: "public" },
+          { title: "Internal", value: "internal" },
+        ],
+        layout: "radio",
+      },
+      initialValue: "public",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "platformType",
+      title: "Platform Type",
+      type: "string",
+      description: "Optional platform or device target (e.g. Web, Mobile, Operations, Admin, Other)",
+      options: {
+        list: [
+          { title: "Web", value: "web" },
+          { title: "Mobile", value: "mobile" },
+          { title: "Operations", value: "operations" },
+          { title: "Admin", value: "admin" },
+          { title: "Other", value: "other" },
+        ],
+      },
+    }),
+    defineField({
+      name: "url",
+      title: "URL (Optional)",
+      type: "url",
+      description: "Optional link for public surfaces. Leave blank for internal/confidential systems.",
+    }),
+    defineField({
+      name: "linkLabel",
+      title: "Link Button Label",
+      type: "string",
+      description: "Custom label for the link button (e.g. 'Visit Platform', 'View Mobile App', 'Visit Booking Platform'). Defaults to 'Visit Platform' if unset.",
+    }),
+    defineField({
+      name: "enabled",
+      title: "Enabled",
+      type: "boolean",
+      description: "Toggle to show or hide this surface item without deleting it.",
+      initialValue: true,
+    }),
+  ],
+  preview: {
+    select: {
+      title: "label",
+      subtitle: "description",
+      accessType: "accessType",
+      platformType: "platformType",
+      url: "url",
+    },
+    prepare({ title, subtitle, accessType, platformType, url }) {
+      const access = accessType === "internal" ? "🔒 Internal" : "🌐 Public";
+      const plat = platformType ? ` [${platformType.toUpperCase()}]` : "";
+      const hasLink = url ? " ↗" : "";
+      return {
+        title: title || "Untitled Product Surface",
+        subtitle: `${access}${plat}${subtitle ? ` — ${subtitle}` : ""}${hasLink}`,
+      };
+    },
+  },
+});
+
 export const reusableObjects = [
   statBlock,
   riceRow,
@@ -544,4 +632,5 @@ export const reusableObjects = [
   productDecisionCard,
   beforeAfterBlock,
   checklistItem,
+  productSurface,
 ];

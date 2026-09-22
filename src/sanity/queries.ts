@@ -9,7 +9,10 @@ import type {
   PainPointCard,
   ProductDecisionCard,
   BeforeAfterBlock,
+  ProductSurface,
 } from "@/data/mockData";
+
+export type { ProductSurface };
 
 export interface NavLink {
   label: string;
@@ -415,6 +418,16 @@ export async function getHomePageData(): Promise<HomePageData> {
             afterDescription,
             "afterImageUrl": afterImage.asset->url,
             impact
+          },
+          surfacesIcon,
+          productSurfaces[] {
+            label,
+            description,
+            accessType,
+            platformType,
+            url,
+            linkLabel,
+            enabled
           }
         },
         "featuredTeardowns": featuredTeardowns[]-> {
@@ -789,6 +802,16 @@ export async function getCaseStudies(): Promise<CaseStudy[]> {
           afterDescription,
           "afterImageUrl": afterImage.asset->url,
           impact
+        },
+        surfacesIcon,
+        productSurfaces[] {
+          label,
+          description,
+          accessType,
+          platformType,
+          url,
+          linkLabel,
+          enabled
         }
       }`,
       {},
@@ -852,6 +875,16 @@ export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null
           "afterImageUrl": afterImage.asset->url,
           impact
         },
+        surfacesIcon,
+        productSurfaces[] {
+          label,
+          description,
+          accessType,
+          platformType,
+          url,
+          linkLabel,
+          enabled
+        },
         "relatedCaseStudies": relatedCaseStudies[]-> {
           title,
           "slug": slug.current,
@@ -896,6 +929,7 @@ export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null
       lessons,
       productDecisions: Array.isArray(caseStudy.productDecisions) ? caseStudy.productDecisions : [],
       beforeAfter: Array.isArray(caseStudy.beforeAfter) ? caseStudy.beforeAfter : [],
+      productSurfaces: Array.isArray(caseStudy.productSurfaces) ? caseStudy.productSurfaces : [],
       relatedCaseStudies: Array.isArray(caseStudy.relatedCaseStudies) ? caseStudy.relatedCaseStudies : [],
       category: caseStudy.category || "AI Product Case Study",
       date: caseStudy.date || "2024",
