@@ -5,12 +5,40 @@ import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import DynamicIcon from "@/components/DynamicIcon";
+import RecommendationsCarousel from "@/components/RecommendationsCarousel";
 import { getTeardowns, getTeardownBySlug, getSiteSettings } from "@/sanity/queries";
 import { constructMetadata, generateArticleJsonLd, getBaseUrl } from "@/lib/seo";
 import { ArrowLeft, Clock, Calendar, Tag, ArrowUpRight, Layers } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+
+function formatConfidence(confidence: string | number | undefined | null): string {
+  if (confidence === undefined || confidence === null || confidence === "") {
+    return "-";
+  }
+  if (typeof confidence === "string") {
+    const trimmed = confidence.trim();
+    if (trimmed.endsWith("%")) {
+      return trimmed;
+    }
+    const num = parseFloat(trimmed);
+    if (!isNaN(num)) {
+      if (num > 0 && num <= 1) {
+        return `${Math.round(num * 100)}%`;
+      }
+      return `${Math.round(num)}%`;
+    }
+    return trimmed;
+  }
+  if (typeof confidence === "number") {
+    if (confidence > 0 && confidence <= 1) {
+      return `${Math.round(confidence * 100)}%`;
+    }
+    return `${Math.round(confidence)}%`;
+  }
+  return String(confidence);
+}
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -317,7 +345,7 @@ export default async function TeardownDetailPage({ params }: PageProps) {
                         <td className="py-3 pr-4 font-sans font-semibold text-foreground">{row.feature}</td>
                         <td className="py-3 px-2 text-center text-foreground/75">{row.reach ?? "-"}</td>
                         <td className="py-3 px-2 text-center text-foreground/75">{row.impact ?? "-"}</td>
-                        <td className="py-3 px-2 text-center text-foreground/75">{typeof row.confidence === "number" ? `${row.confidence * 100}%` : (row.confidence ?? "-")}</td>
+                        <td className="py-3 px-2 text-center text-foreground/75">{formatConfidence(row.confidence)}</td>
                         <td className="py-3 px-2 text-center text-foreground/75">{row.effort ?? "-"}</td>
                         <td className="py-3 pl-4 text-right font-black text-accent-teal text-sm">{row.rice}</td>
                       </tr>
@@ -330,34 +358,10 @@ export default async function TeardownDetailPage({ params }: PageProps) {
 
           {/* Strategic Recommendations */}
           {recommendations.length > 0 && (
-            <section className="my-10 sm:my-12 p-6 sm:p-8 rounded-2xl glass-panel border border-accent-teal/30 bg-accent-teal/5">
-              <div className="flex items-center gap-3 mb-6">
-                <DynamicIcon name={(teardown as any).recommendationsIcon || "FiCheckSquare"} size={22} className="text-accent-teal flex-shrink-0" />
-                <h2 className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">
-                  Strategic Recommendations
-                </h2>
-              </div>
-              <div className="space-y-4">
-                {recommendations.map((rec, idx) => (
-                  <div key={idx} className="p-4 sm:p-5 rounded-xl border border-card-border bg-card/60">
-                    <div className="flex items-center justify-between gap-2 mb-2">
-                      <h4 className="font-bold text-base text-foreground">{rec.title}</h4>
-                      {rec.priority && (
-                        <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-accent-teal/10 text-accent-teal border border-accent-teal/20 font-bold">
-                          {rec.priority} Priority
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-xs sm:text-sm text-foreground/80 leading-relaxed">{rec.description}</p>
-                    {rec.riceScore && (
-                      <div className="mt-2.5 pt-2 border-t border-card-border/30 text-xs font-mono text-accent-cyan font-semibold">
-                        RICE Score: {rec.riceScore}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </section>
+            <RecommendationsCarousel
+              recommendations={recommendations}
+              icon={(teardown as any).recommendationsIcon || "FiCheckSquare"}
+            />
           )}
 
           {/* Project Links & Artifacts */}
