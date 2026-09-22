@@ -50,9 +50,14 @@ export interface SiteSettings {
   };
   resumeUrl?: string;
   faviconUrl?: string;
-  footerText?: string;
+  footerName?: string;
   footerTagline?: string;
+  footerAvailabilityText?: string;
+  footerShowAvailability?: boolean;
   footerAvailabilityIcon?: string;
+  copyrightName?: string;
+  footerStatement?: string;
+  footerText?: string;
   footerLinks?: FooterLink[];
   contactEmail?: string;
 }
@@ -176,9 +181,14 @@ export async function getSiteSettings(): Promise<SiteSettings> {
         socialLinks,
         "resumeUrl": resumeFile.asset->url,
         "faviconUrl": favicon.asset->url,
-        footerText,
+        footerName,
         footerTagline,
+        footerAvailabilityText,
+        footerShowAvailability,
         footerAvailabilityIcon,
+        copyrightName,
+        footerStatement,
+        footerText,
         footerLinks[] { label, url },
         contactEmail
       }`,

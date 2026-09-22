@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import DynamicIcon from "@/components/DynamicIcon";
+import StatGrid from "@/components/StatGrid";
 import { getCaseStudyBySlug, getSiteSettings } from "@/sanity/queries";
 import { constructMetadata, generateArticleJsonLd, getBaseUrl } from "@/lib/seo";
 import { ArrowLeft, ArrowUpRight, ExternalLink } from "lucide-react";
@@ -308,14 +309,7 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
                 <h3 className="text-xs font-mono text-accent-teal mb-4 tracking-widest uppercase font-bold">
                   Target Metrics
                 </h3>
-                <div className="grid grid-cols-2 gap-3">
-                  {cardStats.map((stat, i) => (
-                    <div key={i} className="p-3.5 rounded-xl bg-card border border-card-border text-center">
-                      <span className="block text-xl sm:text-2xl font-black text-accent-teal">{stat.value}</span>
-                      <span className="text-[10px] font-mono text-foreground/60 uppercase">{stat.label}</span>
-                    </div>
-                  ))}
-                </div>
+                <StatGrid stats={cardStats} variant="card" className="mb-0" />
               </div>
             )}
 
@@ -467,9 +461,14 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
       </main>
 
       <Footer
+        footerName={siteSettings.footerName}
         location={siteSettings.location}
         footerTagline={siteSettings.footerTagline}
+        footerAvailabilityText={siteSettings.footerAvailabilityText}
+        footerShowAvailability={siteSettings.footerShowAvailability}
         footerAvailabilityIcon={siteSettings.footerAvailabilityIcon}
+        copyrightName={siteSettings.copyrightName}
+        footerStatement={siteSettings.footerStatement}
         socialLinks={siteSettings.socialLinks}
         footerText={siteSettings.footerText}
         footerLinks={siteSettings.footerLinks}

@@ -4,6 +4,7 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import DynamicIcon from "@/components/DynamicIcon";
+import StatGrid from "@/components/StatGrid";
 import TestimonialsCarousel from "@/components/TestimonialsCarousel";
 import { getTeardowns, getCaseStudies, getHomePageData, getSiteSettings, MarqueeItem } from "@/sanity/queries";
 import { urlForImage } from "@/sanity/image";
@@ -186,14 +187,7 @@ export default async function HomePage() {
                   <div>
                     {/* Card Stat-Pair Blocks if present */}
                     {Array.isArray(featuredCaseStudy.cardStats) && featuredCaseStudy.cardStats.length > 0 ? (
-                      <div className="mb-6 grid grid-cols-2 gap-3">
-                        {featuredCaseStudy.cardStats.map((stat, i) => (
-                          <div key={i} className="p-3.5 rounded-xl bg-accent-teal/10 border border-accent-teal/20 text-center">
-                            <span className="block text-lg sm:text-xl font-extrabold text-accent-teal">{stat.value}</span>
-                            <span className="text-[10px] font-mono text-foreground/70 uppercase">{stat.label}</span>
-                          </div>
-                        ))}
-                      </div>
+                      <StatGrid stats={featuredCaseStudy.cardStats} />
                     ) : (
                       /* Fallback to results preview */
                       Array.isArray(featuredCaseStudy.results) && featuredCaseStudy.results.length > 0 && (
@@ -248,14 +242,7 @@ export default async function HomePage() {
 
                   {/* Card Stat-Pair Blocks if present */}
                   {Array.isArray(otherCaseStudy.cardStats) && otherCaseStudy.cardStats.length > 0 && (
-                    <div className="mb-6 grid grid-cols-2 gap-3">
-                      {otherCaseStudy.cardStats.map((stat, i) => (
-                        <div key={i} className="p-3.5 rounded-xl bg-accent-teal/10 border border-accent-teal/20 text-center">
-                          <span className="block text-lg sm:text-xl font-extrabold text-accent-teal">{stat.value}</span>
-                          <span className="text-[10px] font-mono text-foreground/70 uppercase">{stat.label}</span>
-                        </div>
-                      ))}
-                    </div>
+                    <StatGrid stats={otherCaseStudy.cardStats} />
                   )}
 
                   <Link
@@ -325,9 +312,12 @@ export default async function HomePage() {
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mt-1.5 sm:mt-2 tracking-tight">How I Work</h2>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="flex flex-wrap justify-center gap-6">
               {processSteps.map((step, idx) => (
-                <div key={idx} className="p-6 rounded-3xl glass-panel border-card-border/60 hover:border-accent-teal/40 transition-all duration-300 flex flex-col justify-between">
+                <div
+                  key={idx}
+                  className="p-6 rounded-3xl glass-panel border-card-border/60 hover:border-accent-teal/40 transition-all duration-300 flex flex-col justify-between w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] max-w-[380px]"
+                >
                   <div>
                     <div className="flex items-center justify-between mb-4">
                       <span className="text-2xl font-mono font-black text-accent-teal/50">{step.number}</span>
@@ -601,9 +591,14 @@ export default async function HomePage() {
       </main>
 
       <Footer
+        footerName={siteSettings.footerName}
         location={siteSettings.location}
         footerTagline={siteSettings.footerTagline}
+        footerAvailabilityText={siteSettings.footerAvailabilityText}
+        footerShowAvailability={siteSettings.footerShowAvailability}
         footerAvailabilityIcon={siteSettings.footerAvailabilityIcon}
+        copyrightName={siteSettings.copyrightName}
+        footerStatement={siteSettings.footerStatement}
         socialLinks={siteSettings.socialLinks}
         footerText={siteSettings.footerText}
         footerLinks={siteSettings.footerLinks}

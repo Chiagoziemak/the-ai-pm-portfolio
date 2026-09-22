@@ -145,9 +145,14 @@ export default async function ContactPage() {
       </main>
 
       <Footer
+        footerName={siteSettings.footerName}
         location={siteSettings.location}
         footerTagline={siteSettings.footerTagline}
+        footerAvailabilityText={siteSettings.footerAvailabilityText}
+        footerShowAvailability={siteSettings.footerShowAvailability}
         footerAvailabilityIcon={siteSettings.footerAvailabilityIcon}
+        copyrightName={siteSettings.copyrightName}
+        footerStatement={siteSettings.footerStatement}
         socialLinks={siteSettings.socialLinks}
         footerText={siteSettings.footerText}
         footerLinks={siteSettings.footerLinks}

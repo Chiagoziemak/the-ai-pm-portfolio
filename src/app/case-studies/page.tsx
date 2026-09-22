@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import StatGrid from "@/components/StatGrid";
 import { getCaseStudies, getSiteSettings } from "@/sanity/queries";
 import { constructMetadata } from "@/lib/seo";
 import { ArrowUpRight, Sparkles } from "lucide-react";
@@ -167,14 +168,7 @@ export default async function CaseStudiesPage() {
                   <div>
                     {/* Card Stat-Pair Blocks if present */}
                     {Array.isArray(featuredCaseStudy.cardStats) && featuredCaseStudy.cardStats.length > 0 ? (
-                      <div className="mb-6 grid grid-cols-2 gap-3">
-                        {featuredCaseStudy.cardStats.map((stat, i) => (
-                          <div key={i} className="p-3.5 rounded-xl bg-accent-teal/10 border border-accent-teal/20 text-center">
-                            <span className="block text-xl font-extrabold text-accent-teal">{stat.value}</span>
-                            <span className="text-[10px] font-mono text-foreground/70 uppercase">{stat.label}</span>
-                          </div>
-                        ))}
-                      </div>
+                      <StatGrid stats={featuredCaseStudy.cardStats} />
                     ) : (
                       /* Results badges */
                       Array.isArray(featuredCaseStudy.results) && featuredCaseStudy.results.length > 0 && (
@@ -244,14 +238,7 @@ export default async function CaseStudiesPage() {
 
                   {/* Card Stat-Pair Blocks if present */}
                   {Array.isArray(study.cardStats) && study.cardStats.length > 0 && (
-                    <div className="mb-6 grid grid-cols-2 gap-3">
-                      {study.cardStats.map((stat, i) => (
-                        <div key={i} className="p-3 rounded-xl bg-accent-teal/10 border border-accent-teal/20 text-center">
-                          <span className="block text-lg font-extrabold text-accent-teal">{stat.value}</span>
-                          <span className="text-[10px] font-mono text-foreground/70 uppercase">{stat.label}</span>
-                        </div>
-                      ))}
-                    </div>
+                    <StatGrid stats={study.cardStats} />
                   )}
                 </div>
 
@@ -266,9 +253,14 @@ export default async function CaseStudiesPage() {
       </main>
 
       <Footer
+        footerName={siteSettings.footerName}
         location={siteSettings.location}
         footerTagline={siteSettings.footerTagline}
+        footerAvailabilityText={siteSettings.footerAvailabilityText}
+        footerShowAvailability={siteSettings.footerShowAvailability}
         footerAvailabilityIcon={siteSettings.footerAvailabilityIcon}
+        copyrightName={siteSettings.copyrightName}
+        footerStatement={siteSettings.footerStatement}
         socialLinks={siteSettings.socialLinks}
         footerText={siteSettings.footerText}
         footerLinks={siteSettings.footerLinks}

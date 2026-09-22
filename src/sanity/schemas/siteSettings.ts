@@ -80,15 +80,29 @@ export default defineType({
       type: "image",
     }),
     defineField({
-      name: "footerText",
-      title: "Footer Text",
+      name: "footerName",
+      title: "Footer Name / Brand Text",
       type: "string",
+      description: "Name or branding text shown in the footer (defaults to 'Chiagoziem Melvin Akobundu' if unset).",
     }),
     defineField({
       name: "footerTagline",
       title: "Footer Tagline / Role Text",
       type: "string",
       description: "Role or title text shown before the availability/location in the footer (e.g. 'AI Product Manager & Engineer'). If left blank, it is hidden.",
+    }),
+    defineField({
+      name: "footerAvailabilityText",
+      title: "Footer Availability / Location Text",
+      type: "string",
+      description: "Custom availability or location text shown in the footer (falls back to Location if unset).",
+    }),
+    defineField({
+      name: "footerShowAvailability",
+      title: "Show Availability Badge in Footer",
+      type: "boolean",
+      description: "Toggle whether to display the location/availability badge in the footer.",
+      initialValue: true,
     }),
     defineField({
       name: "location",
@@ -101,6 +115,24 @@ export default defineType({
       title: "Footer Availability Icon",
       type: "string",
       description: "React-icons identifier for the icon next to the location/availability text (e.g. FiMapPin, FiGlobe, FiCompass). Defaults to FiMapPin if left blank.",
+    }),
+    defineField({
+      name: "copyrightName",
+      title: "Copyright Holder Name",
+      type: "string",
+      description: "Name to appear in copyright notice (e.g. 'Chiagoziem Melvin Akobundu'). Defaults to Footer Name or Site Title.",
+    }),
+    defineField({
+      name: "footerStatement",
+      title: "Footer Legal / Copyright Statement",
+      type: "string",
+      description: "Statement shown after the year and name (e.g. 'All rights reserved.').",
+    }),
+    defineField({
+      name: "footerText",
+      title: "Footer Text Override (Optional)",
+      type: "string",
+      description: "Full custom footer text override. If left blank, dynamic current year copyright is generated automatically.",
     }),
     defineField({
       name: "contactEmail",
