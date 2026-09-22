@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useState, useRef } from "react";
 import DynamicIcon from "@/components/DynamicIcon";
@@ -121,18 +121,18 @@ export default function RecommendationsCarousel({
           <span className="text-xs font-mono font-medium text-foreground/60 px-2.5 py-1 rounded-lg bg-card-border/30 border border-card-border/50 select-none">
             {currentIndex + 1} of {total}
           </span>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5">
             <button
               onClick={handlePrev}
               aria-label="Previous recommendation"
-              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full glass-panel border border-card-border hover:border-accent-teal text-foreground/80 hover:text-accent-teal flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-95 flex-shrink-0"
+              className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-full glass-panel border border-card-border hover:border-accent-teal text-foreground/80 hover:text-accent-teal flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-95 flex-shrink-0"
             >
               <ChevronLeft size={18} />
             </button>
             <button
               onClick={handleNext}
               aria-label="Next recommendation"
-              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full glass-panel border border-card-border hover:border-accent-teal text-foreground/80 hover:text-accent-teal flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-95 flex-shrink-0"
+              className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-full glass-panel border border-card-border hover:border-accent-teal text-foreground/80 hover:text-accent-teal flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-95 flex-shrink-0"
             >
               <ChevronRight size={18} />
             </button>

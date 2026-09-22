@@ -217,7 +217,7 @@ export const mockCaseStudies: CaseStudy[] = [
     title: "ResumeGenie — Autonomous AI Job Application Agent",
     slug: "resumegenie-ai-agent",
     date: "2024",
-    category: "AI Engineering & Product Strategy",
+    category: "AI Product Strategy & Execution",
     summary:
       "Designed and engineered an end-to-end agentic AI platform that parses job descriptions, tailors resume bullet points, generates custom cover letters, and automates ATS compliance scoring in real-time.",
     readTime: "12 min",
@@ -284,10 +284,10 @@ export const mockProducts: Product[] = [
 ];
 
 export const mockAboutData: AboutData = {
-  bio: "I am a SaaS Product Manager, Certified Product Owner (CSPO®), and Certified ScrumMaster (CSM®) pivoting into AI Product Management and AI Engineering. With over 4 years of experience delivering scalable web applications, marketplace features, and user-centric workflows, I specialize in combining data-driven PM frameworks with hands-on AI model integration.",
+  bio: "I am a SaaS Product Manager, Certified Product Owner (CSPO®), and Certified ScrumMaster (CSM®) pivoting into AI Product Management. With over 4 years of experience delivering scalable web applications, marketplace features, and user-centric workflows, I specialize in combining data-driven PM frameworks with hands-on AI application delivery.",
   skills: [
     {
-      category: "AI & Engineering Stack",
+      category: "AI & Technical Stack",
       items: [
         { name: "Python / PyTorch / FastAI", level: 85 },
         { name: "LangChain / LlamaIndex / Agentic Workflows", level: 90 },
@@ -310,7 +310,7 @@ export const mockAboutData: AboutData = {
   journey: [
     {
       year: "2024 - Present",
-      role: "AI PM & AI Engineer (Building ResumeGenie)",
+      role: "AI Product Manager (Building ResumeGenie)",
       company: "Independent AI Lab",
       description:
         "Building autonomous AI agent applications using Next.js, Python, and OpenAI APIs. Engineering prompt chains and structured output pipelines for resume tailoring and job search automation.",

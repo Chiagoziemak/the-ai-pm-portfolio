@@ -20,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
     getSiteSettings(),
   ]);
 
-  const title = homeData.metaTitle || siteSettings.siteTitle || "Chiagoziem Melvin Akobundu | AI Product Manager & Engineer";
+  const title = homeData.metaTitle || siteSettings.siteTitle || "Chiagoziem Melvin Akobundu | Product Manager & AI PM";
   const description = homeData.metaDescription || homeData.introText || siteSettings.metaDescription;
   const image = homeData.heroImageUrl || siteSettings.ogImageUrl;
 
@@ -60,7 +60,7 @@ export default async function HomePage() {
 
   // Home Page custom fields with clean fallbacks
   const heroHeading = homeData.heroHeading || "Chiagoziem Melvin Akobundu";
-  const heroSubheading = homeData.heroSubheading || "AI Product Manager & Engineer";
+  const heroSubheading = homeData.heroSubheading || "Product Manager & AI PM";
   const introText = homeData.introText || "Architecting and evaluating agentic AI workflows, LLM applications, and high-growth consumer products. CSPO certified.";
   const availabilityBadge = homeData.availabilityBadge || "Available for AI PM Roles";
   const currentStack = (Array.isArray(homeData.currentStack) && homeData.currentStack.length > 0)
@@ -578,7 +578,7 @@ export default async function HomePage() {
               Building or Hiring for the Next Wave of AI?
             </h2>
             <p className="text-foreground/80 max-w-xl mx-auto text-sm sm:text-base mb-6 sm:mb-8 leading-relaxed">
-              Open to AI Product Manager and AI Engineer roles at high-impact labs and product companies. Let's discuss strategy, agentic architectures, and roadmap execution.
+              Open to AI Product Manager and Product Management roles at high-impact labs and product companies. Let's discuss strategy, agentic architectures, and roadmap execution.
             </p>
             <Link
               href="/contact"
@@ -592,15 +592,13 @@ export default async function HomePage() {
 
       <Footer
         footerName={siteSettings.footerName}
-        location={siteSettings.location}
+        siteTitle={siteSettings.siteTitle}
         footerTagline={siteSettings.footerTagline}
         footerAvailabilityText={siteSettings.footerAvailabilityText}
         footerShowAvailability={siteSettings.footerShowAvailability}
-        footerAvailabilityIcon={siteSettings.footerAvailabilityIcon}
         copyrightName={siteSettings.copyrightName}
         footerStatement={siteSettings.footerStatement}
         socialLinks={siteSettings.socialLinks}
-        footerText={siteSettings.footerText}
         footerLinks={siteSettings.footerLinks}
       />
     </div>

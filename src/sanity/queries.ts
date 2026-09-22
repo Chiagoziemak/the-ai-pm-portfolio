@@ -54,10 +54,8 @@ export interface SiteSettings {
   footerTagline?: string;
   footerAvailabilityText?: string;
   footerShowAvailability?: boolean;
-  footerAvailabilityIcon?: string;
   copyrightName?: string;
   footerStatement?: string;
-  footerText?: string;
   footerLinks?: FooterLink[];
   contactEmail?: string;
 }
@@ -150,7 +148,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     console.warn("[Sanity Fallback] NEXT_PUBLIC_SANITY_PROJECT_ID not set. Using default site settings.");
     return {
       siteTitle: "Chiagoziem Melvin Akobundu | AI Product Manager Portfolio",
-      metaDescription: "Experienced SaaS Product Manager & Certified Scrum Master transitioning to AI Product Management and AI Engineering. Builder of ResumeGenie.",
+      metaDescription: "Experienced SaaS Product Manager & Certified Scrum Master transitioning to AI Product Management. Builder of ResumeGenie.",
       siteUrl: "https://chiagoziemak.dev",
       location: "Lagos, Nigeria",
       contactEmail: "melvynmatthews19@gmail.com",
@@ -185,10 +183,8 @@ export async function getSiteSettings(): Promise<SiteSettings> {
         footerTagline,
         footerAvailabilityText,
         footerShowAvailability,
-        footerAvailabilityIcon,
         copyrightName,
         footerStatement,
-        footerText,
         footerLinks[] { label, url },
         contactEmail
       }`,
@@ -199,7 +195,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
       console.warn("[Sanity Fallback] Site settings document 'siteSettings' not found in Sanity. Using fallback values.");
       return {
         siteTitle: "Chiagoziem Melvin Akobundu | AI Product Manager Portfolio",
-        metaDescription: "Experienced SaaS Product Manager & Certified Scrum Master transitioning to AI Product Management and AI Engineering.",
+        metaDescription: "Experienced SaaS Product Manager & Certified Scrum Master transitioning to AI Product Management.",
         contactEmail: "melvynmatthews19@gmail.com",
         location: "Lagos, Nigeria",
       };
@@ -209,7 +205,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     console.error("Error fetching site settings from Sanity:", error);
     return {
       siteTitle: "Chiagoziem Melvin Akobundu | AI Product Manager Portfolio",
-      metaDescription: "Experienced SaaS Product Manager & Certified Scrum Master transitioning to AI Product Management and AI Engineering.",
+      metaDescription: "Experienced SaaS Product Manager & Certified Scrum Master transitioning to AI Product Management.",
       contactEmail: "melvynmatthews19@gmail.com",
       location: "Lagos, Nigeria",
     };
@@ -221,7 +217,7 @@ export async function getHomePageData(): Promise<HomePageData> {
     console.warn("[Sanity Fallback] Using mock home page data.");
     return {
       heroHeading: "Chiagoziem Melvin Akobundu",
-      heroSubheading: "AI Product Manager & Engineer",
+      heroSubheading: "Product Manager & AI PM",
       introText:
         "Architecting and evaluating agentic AI workflows, LLM applications, and high-growth consumer products. CSPO certified with expertise in technical product management and full-stack software development.",
       heroImageUrl: "/profile-hero.jpg",

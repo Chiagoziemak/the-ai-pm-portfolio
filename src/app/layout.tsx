@@ -9,13 +9,14 @@ export const metadata: Metadata = {
   metadataBase: new URL(DEFAULT_SITE_URL),
   title: {
     template: "%s | Chiagoziem Melvin Akobundu",
-    default: "Chiagoziem Melvin Akobundu | AI Product Manager & Engineer",
+    default: "Chiagoziem Melvin Akobundu | Product Manager & AI PM",
   },
   description:
-    "Portfolio of Chiagoziem Melvin Akobundu - Experienced SaaS Product Manager & Certified Scrum Product Owner (CSPO) transitioning into AI Product Management & AI Engineering. Builder of ResumeGenie.",
+    "Portfolio of Chiagoziem Melvin Akobundu - Experienced SaaS Product Manager & Certified Scrum Product Owner (CSPO) transitioning into AI Product Management. Builder of ResumeGenie.",
   keywords: [
     "AI Product Manager",
-    "AI Engineer",
+    "Product Manager",
+    "Technical Product Manager",
     "Product Management Portfolio",
     "Product Strategy Teardowns",
     "Agentic Workflows",
@@ -31,7 +32,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: DEFAULT_SITE_URL,
-    title: "Chiagoziem Melvin Akobundu | AI Product Manager & Engineer",
+    title: "Chiagoziem Melvin Akobundu | Product Manager & AI PM",
     description:
       "Architecting and evaluating agentic AI workflows, LLM applications, and high-growth consumer products. CSPO certified with expertise in technical product management.",
     siteName: "Chiagoziem Melvin Akobundu Portfolio",
@@ -46,7 +47,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Chiagoziem Melvin Akobundu | AI Product Manager & Engineer",
+    title: "Chiagoziem Melvin Akobundu | Product Manager & AI PM",
     description:
       "Architecting and evaluating agentic AI workflows, LLM applications, and high-growth consumer products.",
     images: ["/profile-hero.jpg"],

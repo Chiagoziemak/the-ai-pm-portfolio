@@ -75,11 +75,14 @@ export default async function CaseStudiesPage() {
         </main>
 
         <Footer
-          location={siteSettings.location}
+          footerName={siteSettings.footerName}
+          siteTitle={siteSettings.siteTitle}
           footerTagline={siteSettings.footerTagline}
-          footerAvailabilityIcon={siteSettings.footerAvailabilityIcon}
+          footerAvailabilityText={siteSettings.footerAvailabilityText}
+          footerShowAvailability={siteSettings.footerShowAvailability}
+          copyrightName={siteSettings.copyrightName}
+          footerStatement={siteSettings.footerStatement}
           socialLinks={siteSettings.socialLinks}
-          footerText={siteSettings.footerText}
           footerLinks={siteSettings.footerLinks}
         />
       </div>
@@ -254,15 +257,13 @@ export default async function CaseStudiesPage() {
 
       <Footer
         footerName={siteSettings.footerName}
-        location={siteSettings.location}
+        siteTitle={siteSettings.siteTitle}
         footerTagline={siteSettings.footerTagline}
         footerAvailabilityText={siteSettings.footerAvailabilityText}
         footerShowAvailability={siteSettings.footerShowAvailability}
-        footerAvailabilityIcon={siteSettings.footerAvailabilityIcon}
         copyrightName={siteSettings.copyrightName}
         footerStatement={siteSettings.footerStatement}
         socialLinks={siteSettings.socialLinks}
-        footerText={siteSettings.footerText}
         footerLinks={siteSettings.footerLinks}
       />
     </div>

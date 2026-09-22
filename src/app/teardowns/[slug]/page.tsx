@@ -431,15 +431,13 @@ export default async function TeardownDetailPage({ params }: PageProps) {
 
       <Footer
         footerName={siteSettings.footerName}
-        location={siteSettings.location}
+        siteTitle={siteSettings.siteTitle}
         footerTagline={siteSettings.footerTagline}
         footerAvailabilityText={siteSettings.footerAvailabilityText}
         footerShowAvailability={siteSettings.footerShowAvailability}
-        footerAvailabilityIcon={siteSettings.footerAvailabilityIcon}
         copyrightName={siteSettings.copyrightName}
         footerStatement={siteSettings.footerStatement}
         socialLinks={siteSettings.socialLinks}
-        footerText={siteSettings.footerText}
         footerLinks={siteSettings.footerLinks}
       />
     </div>

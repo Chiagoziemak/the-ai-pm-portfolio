@@ -44,7 +44,7 @@ export function constructMetadata({
 
   const defaultDescription =
     siteSettings?.metaDescription ||
-    "Experienced SaaS Product Manager & Certified Scrum Product Owner (CSPO) transitioning into AI Product Management & AI Engineering. Builder of ResumeGenie.";
+    "Experienced SaaS Product Manager & Certified Scrum Product Owner (CSPO) transitioning into AI Product Management. Builder of ResumeGenie.";
   const finalDescription = description || defaultDescription;
 
   // Fallback OG image: passed image -> siteSettings.ogImageUrl -> default headshot
@@ -63,7 +63,8 @@ export function constructMetadata({
     description: finalDescription,
     keywords: siteSettings?.metaKeywords || [
       "AI Product Manager",
-      "AI Engineer",
+      "Product Manager",
+      "Technical Product Manager",
       "Product Management Portfolio",
       "SaaS PM",
       "ResumeGenie",
@@ -133,10 +134,10 @@ export function generatePersonJsonLd(siteSettings?: SiteSettings, headshotUrl?: 
     "@context": "https://schema.org",
     "@type": "Person",
     name: "Chiagoziem Melvin Akobundu",
-    jobTitle: "AI Product Manager & Engineer",
+    jobTitle: "Product Manager & AI PM",
     description:
       siteSettings?.metaDescription ||
-      "Experienced SaaS Product Manager & Certified Scrum Product Owner transitioning into AI Product Management and AI Engineering.",
+      "Experienced SaaS Product Manager & Certified Scrum Product Owner transitioning into AI Product Management.",
     url: baseUrl,
     image: headshotUrl || siteSettings?.ogImageUrl || `${baseUrl}/profile-hero.jpg`,
     sameAs: sameAs.length > 0 ? sameAs : undefined,
@@ -188,7 +189,7 @@ export function generateArticleJsonLd({
     author: {
       "@type": "Person",
       name: "Chiagoziem Melvin Akobundu",
-      jobTitle: "AI Product Manager & Engineer",
+      jobTitle: "Product Manager & AI PM",
       url: baseUrl,
     },
     publisher: {

@@ -242,15 +242,13 @@ export default async function ProductsPage() {
 
       <Footer
         footerName={siteSettings.footerName}
-        location={siteSettings.location}
+        siteTitle={siteSettings.siteTitle}
         footerTagline={siteSettings.footerTagline}
         footerAvailabilityText={siteSettings.footerAvailabilityText}
         footerShowAvailability={siteSettings.footerShowAvailability}
-        footerAvailabilityIcon={siteSettings.footerAvailabilityIcon}
         copyrightName={siteSettings.copyrightName}
         footerStatement={siteSettings.footerStatement}
         socialLinks={siteSettings.socialLinks}
-        footerText={siteSettings.footerText}
         footerLinks={siteSettings.footerLinks}
       />
     </div>
