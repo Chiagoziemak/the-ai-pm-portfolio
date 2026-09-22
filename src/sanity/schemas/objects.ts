@@ -615,6 +615,70 @@ export const productSurface = defineType({
   },
 });
 
+export const heroMediaItem = defineType({
+  name: "heroMediaItem",
+  title: "Hero Media Item",
+  type: "object",
+  fields: [
+    defineField({
+      name: "image",
+      title: "Image",
+      type: "image",
+      options: {
+        hotspot: true,
+      },
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "alt",
+      title: "Alternative Text",
+      type: "string",
+      description: "Alternative text for accessibility and search engines.",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "label",
+      title: "Label / Subtitle",
+      type: "string",
+      description: "Optional visual label (e.g. 'Internet Booking Engine', 'Mobile App', 'Wireframe Flow')",
+    }),
+    defineField({
+      name: "caption",
+      title: "Caption / Description",
+      type: "text",
+      rows: 2,
+      description: "Optional short caption or description displayed beneath the image",
+    }),
+    defineField({
+      name: "linkUrl",
+      title: "Link URL (Optional)",
+      type: "url",
+      description: "Optional public URL if this image should link out or display an action CTA",
+    }),
+    defineField({
+      name: "linkLabel",
+      title: "Link Button Label",
+      type: "string",
+      description: "Optional button label (e.g. 'Visit Platform', 'View Mobile App', 'Explore Prototype'). Defaults to 'Visit Platform' if unset.",
+    }),
+  ],
+  preview: {
+    select: {
+      title: "label",
+      subtitle: "caption",
+      media: "image",
+      linkUrl: "linkUrl",
+    },
+    prepare({ title, subtitle, media, linkUrl }) {
+      return {
+        title: title || "Hero Image",
+        subtitle: `${linkUrl ? `↗ ${linkUrl} | ` : ""}${subtitle || "No caption"}`,
+        media,
+      };
+    },
+  },
+});
+
 export const reusableObjects = [
   statBlock,
   riceRow,
@@ -633,4 +697,5 @@ export const reusableObjects = [
   beforeAfterBlock,
   checklistItem,
   productSurface,
+  heroMediaItem,
 ];

@@ -46,6 +46,18 @@ export interface BeforeAfterBlock {
   impact?: string;
 }
 
+export type HeroDisplayMode = "single" | "sideBySide" | "slider" | string;
+
+export interface HeroMediaItem {
+  imageUrl?: string;
+  image?: any;
+  alt?: string;
+  label?: string;
+  caption?: string;
+  linkUrl?: string;
+  linkLabel?: string;
+}
+
 export interface Teardown {
   title: string;
   metaTitle?: string;
@@ -57,6 +69,12 @@ export interface Teardown {
   readTime: string;
   coverImage: string;
   coverImageAlt?: string;
+  heroDisplayMode?: HeroDisplayMode;
+  heroImages?: HeroMediaItem[];
+  heroSliderAutoplay?: boolean;
+  heroSliderInterval?: number;
+  heroSliderShowPagination?: boolean;
+  heroSliderShowArrows?: boolean;
   myRole: string;
   researchDetails?: {
     overview: string;
@@ -78,12 +96,14 @@ export interface Teardown {
 }
 
 export interface ProductSurface {
-  label: string;
+  label?: string;
+  name?: string;
   description?: string;
   accessType?: "public" | "internal" | string;
   platformType?: "web" | "mobile" | "operations" | "admin" | "other" | string;
   url?: string;
   linkLabel?: string;
+  buttonLabel?: string;
   enabled?: boolean;
 }
 
@@ -103,6 +123,12 @@ export interface CaseStudy {
   tools: string[];
   coverImage: string;
   coverImageAlt?: string;
+  heroDisplayMode?: HeroDisplayMode;
+  heroImages?: HeroMediaItem[];
+  heroSliderAutoplay?: boolean;
+  heroSliderInterval?: number;
+  heroSliderShowPagination?: boolean;
+  heroSliderShowArrows?: boolean;
   featured?: boolean;
   isPlaceholder?: boolean;
   body: string[];

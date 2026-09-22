@@ -10,9 +10,11 @@ import type {
   ProductDecisionCard,
   BeforeAfterBlock,
   ProductSurface,
+  HeroMediaItem,
+  HeroDisplayMode,
 } from "@/data/mockData";
 
-export type { ProductSurface };
+export type { ProductSurface, HeroMediaItem, HeroDisplayMode };
 
 export interface NavLink {
   label: string;
@@ -645,6 +647,19 @@ export async function getTeardownBySlug(slug: string): Promise<Teardown | null> 
         readTime,
         "coverImage": select(defined(coverImage.asset) => coverImage.asset->url, coverImage),
         "coverImageAlt": coverImage.alt,
+        heroDisplayMode,
+        heroImages[] {
+          "imageUrl": image.asset->url,
+          alt,
+          label,
+          caption,
+          linkUrl,
+          linkLabel
+        },
+        heroSliderAutoplay,
+        heroSliderInterval,
+        heroSliderShowPagination,
+        heroSliderShowArrows,
         "myRole": role,
         researchEvidence,
         researchStats,
@@ -850,6 +865,19 @@ export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null
         "tools": stackMethods,
         "coverImage": coverImage.asset->url,
         "coverImageAlt": coverImage.alt,
+        heroDisplayMode,
+        heroImages[] {
+          "imageUrl": image.asset->url,
+          alt,
+          label,
+          caption,
+          linkUrl,
+          linkLabel
+        },
+        heroSliderAutoplay,
+        heroSliderInterval,
+        heroSliderShowPagination,
+        heroSliderShowArrows,
         challengeIcon,
         challenge,
         resultsIcon,
@@ -878,11 +906,13 @@ export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null
         surfacesIcon,
         productSurfaces[] {
           label,
+          name,
           description,
           accessType,
           platformType,
           url,
           linkLabel,
+          buttonLabel,
           enabled
         },
         "relatedCaseStudies": relatedCaseStudies[]-> {

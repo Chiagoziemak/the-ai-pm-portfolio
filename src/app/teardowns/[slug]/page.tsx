@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import DynamicIcon from "@/components/DynamicIcon";
 import RecommendationsCarousel from "@/components/RecommendationsCarousel";
+import HeroMedia from "@/components/HeroMedia";
 import { getTeardowns, getTeardownBySlug, getSiteSettings } from "@/sanity/queries";
 import { constructMetadata, generateArticleJsonLd, getBaseUrl } from "@/lib/seo";
 import { ArrowLeft, Clock, Calendar, Tag, ArrowUpRight, Layers } from "lucide-react";
@@ -174,19 +175,19 @@ export default async function TeardownDetailPage({ params }: PageProps) {
           </div>
         </header>
 
-        {/* Cover Image */}
-        {teardown.coverImage && (
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 mb-12 sm:mb-16">
-            <div className="relative h-[220px] sm:h-[360px] md:h-[480px] w-full rounded-2xl sm:rounded-3xl overflow-hidden border border-card-border shadow-2xl bg-slate-900">
-              <img
-                src={teardown.coverImage}
-                alt={teardown.coverImageAlt || `${teardown.title} — Product Teardown Cover`}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-            </div>
-          </div>
-        )}
+        {/* Hero Visual Media (Single Image, Side by Side, or Slider with fallback to Cover Image) */}
+        <HeroMedia
+          heroImages={teardown.heroImages}
+          coverImage={teardown.coverImage}
+          coverImageAlt={teardown.coverImageAlt || `${teardown.title} — Product Teardown Cover`}
+          heroDisplayMode={teardown.heroDisplayMode || "single"}
+          heroSliderAutoplay={teardown.heroSliderAutoplay}
+          heroSliderInterval={teardown.heroSliderInterval}
+          heroSliderShowPagination={teardown.heroSliderShowPagination}
+          heroSliderShowArrows={teardown.heroSliderShowArrows}
+          title={teardown.title}
+          variant="teardown"
+        />
 
         {/* Back Link */}
         <div className="max-w-3xl mx-auto px-4 sm:px-6 mb-8">
