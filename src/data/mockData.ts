@@ -56,6 +56,7 @@ export interface HeroMediaItem {
   caption?: string;
   linkUrl?: string;
   linkLabel?: string;
+  buttonLabel?: string;
 }
 
 export interface Teardown {

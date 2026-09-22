@@ -533,10 +533,10 @@ export const productSurface = defineType({
   type: "object",
   fields: [
     defineField({
-      name: "label",
-      title: "Label",
+      name: "name",
+      title: "Name / Label",
       type: "string",
-      description: "e.g. Internet Booking Engine, Mobile App, Ticketing System, Logistics",
+      description: "e.g. Internet Booking Engine, Mobile App, Ticketing, Logistics / OLS",
       validation: (Rule) => Rule.required(),
     }),
     defineField({
@@ -582,10 +582,10 @@ export const productSurface = defineType({
       description: "Optional link for public surfaces. Leave blank for internal/confidential systems.",
     }),
     defineField({
-      name: "linkLabel",
-      title: "Link Button Label",
+      name: "buttonLabel",
+      title: "Button Label",
       type: "string",
-      description: "Custom label for the link button (e.g. 'Visit Platform', 'View Mobile App', 'Visit Booking Platform'). Defaults to 'Visit Platform' if unset.",
+      description: "Custom label for the button (e.g. 'Visit Platform', 'View Mobile App', 'Visit Booking Platform'). Defaults to 'Visit Platform' if unset.",
     }),
     defineField({
       name: "enabled",
@@ -597,19 +597,21 @@ export const productSurface = defineType({
   ],
   preview: {
     select: {
-      title: "label",
-      subtitle: "description",
+      name: "name",
+      label: "label",
+      description: "description",
       accessType: "accessType",
       platformType: "platformType",
       url: "url",
     },
-    prepare({ title, subtitle, accessType, platformType, url }) {
+    prepare({ name, label, description, accessType, platformType, url }) {
+      const title = name || label || "Untitled Product Surface";
       const access = accessType === "internal" ? "🔒 Internal" : "🌐 Public";
       const plat = platformType ? ` [${platformType.toUpperCase()}]` : "";
       const hasLink = url ? " ↗" : "";
       return {
-        title: title || "Untitled Product Surface",
-        subtitle: `${access}${plat}${subtitle ? ` — ${subtitle}` : ""}${hasLink}`,
+        title,
+        subtitle: `${access}${plat}${description ? ` — ${description}` : ""}${hasLink}`,
       };
     },
   },
@@ -657,9 +659,9 @@ export const heroMediaItem = defineType({
     }),
     defineField({
       name: "linkLabel",
-      title: "Link Button Label",
+      title: "Link Label",
       type: "string",
-      description: "Optional button label (e.g. 'Visit Platform', 'View Mobile App', 'Explore Prototype'). Defaults to 'Visit Platform' if unset.",
+      description: "Optional label for the link button (e.g. 'Visit Platform', 'View Mobile App'). Defaults to 'Visit Platform' if unset.",
     }),
   ],
   preview: {

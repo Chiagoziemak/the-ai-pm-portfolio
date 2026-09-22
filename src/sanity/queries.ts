@@ -423,12 +423,14 @@ export async function getHomePageData(): Promise<HomePageData> {
           },
           surfacesIcon,
           productSurfaces[] {
-            label,
+            "name": select(defined(name) => name, label),
+            "label": select(defined(label) => label, name),
             description,
             accessType,
             platformType,
             url,
-            linkLabel,
+            "buttonLabel": select(defined(buttonLabel) => buttonLabel, linkLabel),
+            "linkLabel": select(defined(linkLabel) => linkLabel, buttonLabel),
             enabled
           }
         },
@@ -649,12 +651,17 @@ export async function getTeardownBySlug(slug: string): Promise<Teardown | null> 
         "coverImageAlt": coverImage.alt,
         heroDisplayMode,
         heroImages[] {
+          image {
+            ...,
+            asset->
+          },
           "imageUrl": image.asset->url,
           alt,
           label,
           caption,
           linkUrl,
-          linkLabel
+          "buttonLabel": select(defined(buttonLabel) => buttonLabel, linkLabel),
+          "linkLabel": select(defined(linkLabel) => linkLabel, buttonLabel)
         },
         heroSliderAutoplay,
         heroSliderInterval,
@@ -820,12 +827,14 @@ export async function getCaseStudies(): Promise<CaseStudy[]> {
         },
         surfacesIcon,
         productSurfaces[] {
-          label,
+          "name": select(defined(name) => name, label),
+          "label": select(defined(label) => label, name),
           description,
           accessType,
           platformType,
           url,
-          linkLabel,
+          "buttonLabel": select(defined(buttonLabel) => buttonLabel, linkLabel),
+          "linkLabel": select(defined(linkLabel) => linkLabel, buttonLabel),
           enabled
         }
       }`,
@@ -867,12 +876,17 @@ export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null
         "coverImageAlt": coverImage.alt,
         heroDisplayMode,
         heroImages[] {
+          image {
+            ...,
+            asset->
+          },
           "imageUrl": image.asset->url,
           alt,
           label,
           caption,
           linkUrl,
-          linkLabel
+          "buttonLabel": select(defined(buttonLabel) => buttonLabel, linkLabel),
+          "linkLabel": select(defined(linkLabel) => linkLabel, buttonLabel)
         },
         heroSliderAutoplay,
         heroSliderInterval,
@@ -905,14 +919,14 @@ export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null
         },
         surfacesIcon,
         productSurfaces[] {
-          label,
-          name,
+          "name": select(defined(name) => name, label),
+          "label": select(defined(label) => label, name),
           description,
           accessType,
           platformType,
           url,
-          linkLabel,
-          buttonLabel,
+          "buttonLabel": select(defined(buttonLabel) => buttonLabel, linkLabel),
+          "linkLabel": select(defined(linkLabel) => linkLabel, buttonLabel),
           enabled
         },
         "relatedCaseStudies": relatedCaseStudies[]-> {

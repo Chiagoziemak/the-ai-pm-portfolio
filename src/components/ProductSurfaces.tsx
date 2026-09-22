@@ -37,12 +37,12 @@ export default function ProductSurfaces({
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
         {validSurfaces.map((surface, idx) => {
           const isInternal = surface.accessType === "internal";
-          const surfaceName = (surface.label || surface.name || "Product Surface").trim();
+          const surfaceName = (surface.name || surface.label || "Product Surface").trim();
           const description = surface.description?.trim();
           const hasValidUrl = typeof surface.url === "string" && surface.url.trim() !== "";
           // Strict safety: Only public surfaces with a valid URL render a clickable action button
           const isClickable = !isInternal && hasValidUrl;
-          const linkLabel = surface.linkLabel || surface.buttonLabel || "Visit Platform";
+          const buttonLabel = surface.buttonLabel || surface.linkLabel || "Visit Platform";
           const platform = surface.platformType ? surface.platformType.trim() : null;
 
           return (
@@ -55,13 +55,13 @@ export default function ProductSurfaces({
                 <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
                   <div className="flex items-center gap-1.5">
                     {isInternal ? (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-card-border/50 text-foreground/75 border border-card-border/60">
-                        <span className="w-1.5 h-1.5 rounded-full bg-amber-400/80"></span>
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-card-border/40 text-foreground/70 border border-card-border/60">
+                        <span className="w-1.5 h-1.5 rounded-full bg-foreground/40"></span>
                         Internal
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-accent-teal/10 text-accent-teal border border-accent-teal/20">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-accent-teal/10 text-accent-teal border border-accent-teal/30">
+                        <span className="w-1.5 h-1.5 rounded-full bg-accent-teal"></span>
                         Public
                       </span>
                     )}
@@ -74,7 +74,7 @@ export default function ProductSurfaces({
                   </div>
                 </div>
 
-                {/* Label / Surface Name */}
+                {/* Name / Surface Title */}
                 <h3 className="font-bold text-base sm:text-lg text-foreground mb-1.5 leading-snug">
                   {surfaceName}
                 </h3>
@@ -96,7 +96,7 @@ export default function ProductSurfaces({
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-accent-teal text-background hover:bg-accent-cyan font-bold text-xs sm:text-sm transition-all shadow-sm min-h-[40px] w-full sm:w-auto justify-center active:scale-[0.98]"
                   >
-                    <span>{linkLabel}</span>
+                    <span>{buttonLabel}</span>
                     <ArrowUpRight size={14} className="flex-shrink-0" />
                   </a>
                 </div>

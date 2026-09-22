@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { urlForImage } from "@/sanity/image";
 import type { HeroMediaItem, HeroDisplayMode } from "@/data/mockData";
 
 interface HeroMediaProps {
@@ -26,6 +27,18 @@ interface SanitizedHeroItem {
   linkLabel?: string;
 }
 
+function resolveHeroImageUrl(item: { imageUrl?: string; image?: any }): string {
+  if (item.image) {
+    try {
+      const built = urlForImage(item.image)?.auto("format").fit("max").url();
+      if (built) return built;
+    } catch {
+      // fallback to asset url or raw imageUrl
+    }
+  }
+  return item.imageUrl || (item.image?.asset?.url ? item.image.asset.url : "");
+}
+
 export default function HeroMedia({
   heroImages,
   coverImage,
@@ -41,15 +54,18 @@ export default function HeroMedia({
   // 1. Sanitize & Normalize Hero Images
   const validItems: SanitizedHeroItem[] = Array.isArray(heroImages)
     ? heroImages
-        .filter((item) => Boolean(item && (item.imageUrl || (item.image && item.image.asset))))
-        .map((item, idx) => ({
-          imageUrl: item.imageUrl || (item.image?.asset?.url ? item.image.asset.url : ""),
-          alt: item.alt || `${title} — Visual ${idx + 1}`,
-          label: item.label?.trim() || undefined,
-          caption: item.caption?.trim() || undefined,
-          linkUrl: item.linkUrl?.trim() || undefined,
-          linkLabel: item.linkLabel?.trim() || "Visit Platform",
-        }))
+        .filter((item) => Boolean(item && (item.imageUrl || (item.image && (item.image.asset || item.image._type)))))
+        .map((item, idx) => {
+          const resolvedUrl = resolveHeroImageUrl(item);
+          return {
+            imageUrl: resolvedUrl,
+            alt: item.alt || `${title} — Visual ${idx + 1}`,
+            label: item.label?.trim() || undefined,
+            caption: item.caption?.trim() || undefined,
+            linkUrl: item.linkUrl?.trim() || undefined,
+            linkLabel: item.buttonLabel?.trim() || item.linkLabel?.trim() || "Visit Platform",
+          };
+        })
         .filter((item) => Boolean(item.imageUrl && item.imageUrl.trim() !== ""))
     : [];
 

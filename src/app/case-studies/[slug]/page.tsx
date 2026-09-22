@@ -114,15 +114,32 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
 
   const rawSurfaces = (study as any).productSurfaces;
   const productSurfaces = Array.isArray(rawSurfaces)
-    ? rawSurfaces.filter((s: any) => Boolean(s && s.label && s.enabled !== false))
+    ? rawSurfaces.filter((s: any) => Boolean(s && (s.name || s.label) && s.enabled !== false))
     : [];
 
   const relatedCaseStudies = Array.isArray(study.relatedCaseStudies)
     ? study.relatedCaseStudies.filter((rc: any) => Boolean(rc && rc.title && rc.slug))
     : [];
 
+  const normalizeUrl = (u?: string) =>
+    u ? u.trim().toLowerCase().replace(/\/+$/, "") : "";
+
   const liveUrl = study.liveUrl;
   const liveUrlLabel = study.liveUrlLabel || "View Project";
+
+  // Check if liveUrl points to the exact same destination as any public product surface
+  const hasMatchingPublicSurfaceUrl = Boolean(
+    liveUrl &&
+      productSurfaces.some(
+        (s: any) =>
+          s.accessType !== "internal" &&
+          s.url &&
+          normalizeUrl(s.url) === normalizeUrl(liveUrl)
+      )
+  );
+
+  // In bottom CTA: suppress duplicate button if productSurfaces already renders that destination
+  const showBottomLiveCta = Boolean(liveUrl && !hasMatchingPublicSurfaceUrl);
 
   const baseUrl = getBaseUrl(siteSettings);
   const articleJsonLd = generateArticleJsonLd({
@@ -521,7 +538,7 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
             )}
 
             {/* Next Steps / Contact CTA */}
-            {(liveUrl || siteSettings.contactPageEnabled !== false || siteSettings.socialLinks?.linkedin) && (
+            {(showBottomLiveCta || siteSettings.contactPageEnabled !== false || siteSettings.socialLinks?.linkedin) && (
               <section className="p-6 sm:p-8 rounded-2xl border border-card-border glass-panel mt-6">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                   <div className="space-y-1 text-center lg:text-left">
@@ -534,7 +551,7 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
                   </div>
 
                   <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center lg:justify-end gap-3 sm:gap-3.5 flex-shrink-0 w-full lg:w-auto">
-                    {liveUrl && (
+                    {showBottomLiveCta && (
                       <a
                         href={liveUrl}
                         target="_blank"
