@@ -945,8 +945,6 @@ export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null
       body = caseStudy.body;
     } else if (typeof caseStudy.challenge === "string" && caseStudy.challenge.trim() !== "") {
       body = caseStudy.challenge.split("\n").filter((p: string) => p.trim() !== "");
-    } else if (typeof caseStudy.summary === "string" && caseStudy.summary.trim() !== "") {
-      body = [caseStudy.summary];
     }
 
     let results: string[] = Array.isArray(caseStudy.results) ? caseStudy.results : [];

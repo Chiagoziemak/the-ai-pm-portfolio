@@ -1,6 +1,7 @@
 import React from "react";
 import { ArrowUpRight } from "lucide-react";
 import DynamicIcon from "@/components/DynamicIcon";
+import { normalizeExternalUrl } from "@/lib/url";
 import type { ProductSurface } from "@/data/mockData";
 
 interface ProductSurfacesProps {
@@ -39,9 +40,9 @@ export default function ProductSurfaces({
           const isInternal = surface.accessType === "internal";
           const surfaceName = (surface.name || surface.label || "Product Surface").trim();
           const description = surface.description?.trim();
-          const hasValidUrl = typeof surface.url === "string" && surface.url.trim() !== "";
+          const normalizedUrl = normalizeExternalUrl(surface.url);
           // Strict safety: Only public surfaces with a valid URL render a clickable action button
-          const isClickable = !isInternal && hasValidUrl;
+          const isClickable = !isInternal && Boolean(normalizedUrl);
           const buttonLabel = surface.buttonLabel?.trim() || "Visit Platform";
           const platform = surface.platformType ? surface.platformType.trim() : null;
 
@@ -88,10 +89,10 @@ export default function ProductSurfaces({
               </div>
 
               {/* Action Link for Public surfaces with URL */}
-              {isClickable ? (
+              {isClickable && normalizedUrl ? (
                 <div className="pt-3.5 border-t border-card-border/40 flex items-center justify-between">
                   <a
-                    href={surface.url}
+                    href={normalizedUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-accent-teal text-background hover:bg-accent-cyan font-bold text-xs sm:text-sm transition-all shadow-sm min-h-[40px] w-full sm:w-auto justify-center active:scale-[0.98]"

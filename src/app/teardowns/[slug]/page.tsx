@@ -9,6 +9,7 @@ import RecommendationsCarousel from "@/components/RecommendationsCarousel";
 import HeroMedia from "@/components/HeroMedia";
 import { getTeardowns, getTeardownBySlug, getSiteSettings } from "@/sanity/queries";
 import { constructMetadata, generateArticleJsonLd, getBaseUrl } from "@/lib/seo";
+import { normalizeExternalUrl } from "@/lib/url";
 import { ArrowLeft, Clock, Calendar, Tag, ArrowUpRight, Layers } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -388,18 +389,22 @@ export default async function TeardownDetailPage({ params }: PageProps) {
                 </h2>
               </div>
               <div className="flex flex-wrap gap-3">
-                {projectLinks.map((link, idx) => (
-                  <a
-                    key={idx}
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-card border border-card-border hover:border-accent-teal text-xs sm:text-sm font-semibold text-foreground hover:text-accent-teal transition-all min-h-[44px]"
-                  >
-                    <span>{link.label}</span>
-                    <ArrowUpRight size={14} />
-                  </a>
-                ))}
+                {projectLinks.map((link, idx) => {
+                  const normalizedUrl = normalizeExternalUrl(link.url);
+                  if (!normalizedUrl) return null;
+                  return (
+                    <a
+                      key={idx}
+                      href={normalizedUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-card border border-card-border hover:border-accent-teal text-xs sm:text-sm font-semibold text-foreground hover:text-accent-teal transition-all min-h-[44px]"
+                    >
+                      <span>{link.label}</span>
+                      <ArrowUpRight size={14} />
+                    </a>
+                  );
+                })}
               </div>
             </section>
           )}

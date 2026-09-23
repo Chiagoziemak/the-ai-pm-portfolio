@@ -103,8 +103,25 @@ export const externalLinkBlock = defineType({
     defineField({
       name: "url",
       title: "Resource URL",
-      type: "url",
-      validation: (Rule) => Rule.required(),
+      type: "string",
+      description: "Resource URL or bare domain (e.g. figma.com or https://figma.com)",
+      validation: (Rule) =>
+        Rule.required().custom((val) => {
+          if (!val) return "URL is required";
+          const str = String(val).trim();
+          const lower = str.toLowerCase();
+          if (
+            lower.startsWith("javascript:") ||
+            lower.startsWith("data:") ||
+            lower.startsWith("vbscript:")
+          ) {
+            return "Unsafe link protocol not allowed";
+          }
+          if (!/^(https?:\/\/)?[\w.-]+\.[a-z]{2,}(\/.*)?$/i.test(str)) {
+            return "Please enter a valid URL or domain (e.g. example.com or https://example.com)";
+          }
+          return true;
+        }),
     }),
   ],
 });
@@ -578,8 +595,25 @@ export const productSurface = defineType({
     defineField({
       name: "url",
       title: "URL (Optional)",
-      type: "url",
-      description: "Optional link for public surfaces. Leave blank for internal/confidential systems.",
+      type: "string",
+      description: "Optional link for public surfaces. Supports bare domains (e.g. okeysontransports.com) or full URLs. Leave blank for internal/confidential systems.",
+      validation: (Rule) =>
+        Rule.custom((val) => {
+          if (!val) return true;
+          const str = String(val).trim();
+          const lower = str.toLowerCase();
+          if (
+            lower.startsWith("javascript:") ||
+            lower.startsWith("data:") ||
+            lower.startsWith("vbscript:")
+          ) {
+            return "Unsafe link protocol not allowed";
+          }
+          if (!/^(https?:\/\/)?[\w.-]+\.[a-z]{2,}(\/.*)?$/i.test(str)) {
+            return "Please enter a valid URL or domain (e.g. example.com or https://example.com)";
+          }
+          return true;
+        }),
     }),
     defineField({
       name: "buttonLabel",
@@ -654,8 +688,25 @@ export const heroMediaItem = defineType({
     defineField({
       name: "linkUrl",
       title: "Link URL (Optional)",
-      type: "url",
-      description: "Optional public URL if this image should link out or display an action CTA",
+      type: "string",
+      description: "Optional public URL if this image should link out or display an action CTA. Supports bare domains (e.g. okeysontransports.com) or full URLs.",
+      validation: (Rule) =>
+        Rule.custom((val) => {
+          if (!val) return true;
+          const str = String(val).trim();
+          const lower = str.toLowerCase();
+          if (
+            lower.startsWith("javascript:") ||
+            lower.startsWith("data:") ||
+            lower.startsWith("vbscript:")
+          ) {
+            return "Unsafe link protocol not allowed";
+          }
+          if (!/^(https?:\/\/)?[\w.-]+\.[a-z]{2,}(\/.*)?$/i.test(str)) {
+            return "Please enter a valid URL or domain (e.g. example.com or https://example.com)";
+          }
+          return true;
+        }),
     }),
     defineField({
       name: "linkLabel",

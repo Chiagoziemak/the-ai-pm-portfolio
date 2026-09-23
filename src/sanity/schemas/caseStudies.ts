@@ -131,8 +131,25 @@ export default defineType({
     defineField({
       name: "liveUrl",
       title: "Live Product / Prototype URL",
-      type: "url",
-      description: "Optional external link to the live deployment, interactive prototype, or demo.",
+      type: "string",
+      description: "Optional external link to the live deployment, interactive prototype, or demo. Supports bare domains (e.g. okeysontransports.com) or full URLs.",
+      validation: (Rule) =>
+        Rule.custom((val) => {
+          if (!val) return true;
+          const str = String(val).trim();
+          const lower = str.toLowerCase();
+          if (
+            lower.startsWith("javascript:") ||
+            lower.startsWith("data:") ||
+            lower.startsWith("vbscript:")
+          ) {
+            return "Unsafe link protocol not allowed";
+          }
+          if (!/^(https?:\/\/)?[\w.-]+\.[a-z]{2,}(\/.*)?$/i.test(str)) {
+            return "Please enter a valid URL or domain (e.g. example.com or https://example.com)";
+          }
+          return true;
+        }),
     }),
     defineField({
       name: "liveUrlLabel",

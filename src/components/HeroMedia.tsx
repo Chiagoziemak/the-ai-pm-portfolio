@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { urlForImage } from "@/sanity/image";
+import { normalizeExternalUrl } from "@/lib/url";
 import type { HeroMediaItem, HeroDisplayMode } from "@/data/mockData";
 
 interface HeroMediaProps {
@@ -57,13 +58,16 @@ export default function HeroMedia({
         .filter((item) => Boolean(item && (item.imageUrl || (item.image && (item.image.asset || item.image._type)))))
         .map((item, idx) => {
           const resolvedUrl = resolveHeroImageUrl(item);
+          const rawLink = item.linkUrl?.trim();
+          const normalized = normalizeExternalUrl(rawLink);
+          const customLabel = item.linkLabel?.trim() || item.buttonLabel?.trim();
           return {
             imageUrl: resolvedUrl,
-            alt: item.alt || `${title} — Visual ${idx + 1}`,
+            alt: item.alt || (title + " — Visual " + (idx + 1)),
             label: item.label?.trim() || undefined,
             caption: item.caption?.trim() || undefined,
-            linkUrl: item.linkUrl?.trim() || undefined,
-            linkLabel: item.linkLabel?.trim() || "Visit Platform",
+            linkUrl: normalized,
+            linkLabel: customLabel || "Visit Platform",
           };
         })
         .filter((item) => Boolean(item.imageUrl && item.imageUrl.trim() !== ""))
@@ -77,7 +81,7 @@ export default function HeroMedia({
     ? [
         {
           imageUrl: coverImage,
-          alt: coverImageAlt || `${title} — Cover Visual`,
+          alt: coverImageAlt || (title + " — Cover Visual"),
         },
       ]
     : [];
@@ -97,6 +101,13 @@ export default function HeroMedia({
   const touchDeltaXRef = useRef<number>(0);
 
   const totalSlides = items.length;
+  const safeIndex = currentIndex >= totalSlides ? 0 : currentIndex;
+
+  useEffect(() => {
+    if (currentIndex >= totalSlides) {
+      setCurrentIndex(0);
+    }
+  }, [totalSlides, currentIndex]);
 
   const nextSlide = useCallback(() => {
     setCurrentIndex((prev) => (prev + 1) % totalSlides);
@@ -110,7 +121,7 @@ export default function HeroMedia({
     setCurrentIndex(idx);
   };
 
-  // Autoplay handler
+  // Autoplay handler with hover / focus / touch pause
   useEffect(() => {
     if (effectiveMode !== "slider" || !heroSliderAutoplay || totalSlides <= 1 || isPaused) {
       return;
@@ -288,10 +299,7 @@ export default function HeroMedia({
   // --------------------------------------------------------------------------
   // 3. SLIDER / CAROUSEL MODE
   // --------------------------------------------------------------------------
-  const activeSlide = items[currentIndex] || items[0];
-  const hasActiveDetails = Boolean(
-    activeSlide.label || activeSlide.caption || activeSlide.linkUrl
-  );
+  const activeSlide = items[safeIndex] || items[0];
 
   return (
     <div className={containerClass}>
@@ -299,34 +307,50 @@ export default function HeroMedia({
         className="rounded-2xl sm:rounded-3xl border border-card-border bg-slate-950/70 glass-panel shadow-2xl overflow-hidden relative"
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
+        onFocus={() => setIsPaused(true)}
+        onBlur={() => setIsPaused(false)}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {/* Strictly ONE Active Slide Container */}
-        <div className="relative w-full overflow-hidden bg-gradient-to-b from-slate-900/40 via-background/60 to-slate-950/80 p-2 sm:p-5 flex items-center justify-center min-h-[260px] sm:min-h-[420px] md:min-h-[520px]">
-          <img
-            key={currentIndex}
-            src={activeSlide.imageUrl}
-            alt={activeSlide.alt}
-            className="w-full h-auto max-h-[460px] sm:max-h-[580px] md:max-h-[660px] object-contain rounded-xl sm:rounded-2xl transition-opacity duration-300 animate-in fade-in"
-            loading="eager"
-          />
+        {/* Strictly ONE Active Slide Track Container */}
+        <div className="relative w-full overflow-hidden bg-gradient-to-b from-slate-900/40 via-background/60 to-slate-950/80">
+          <div
+            className="flex transition-transform duration-500 ease-out"
+            style={{ transform: "translateX(-" + (safeIndex * 100) + "%)" }}
+          >
+            {items.map((slide, idx) => (
+              <div
+                key={idx}
+                className="w-full flex-shrink-0 min-w-full flex items-center justify-center p-2 sm:p-5 min-h-[260px] sm:min-h-[420px] md:min-h-[520px]"
+                style={{ flex: "0 0 100%" }}
+              >
+                <img
+                  src={slide.imageUrl}
+                  alt={slide.alt}
+                  className="w-full h-auto max-h-[460px] sm:max-h-[580px] md:max-h-[660px] object-contain rounded-xl sm:rounded-2xl"
+                  loading={idx === 0 ? "eager" : "lazy"}
+                />
+              </div>
+            ))}
+          </div>
 
           {/* Navigation Arrows (Optional) */}
           {heroSliderShowArrows && totalSlides > 1 && (
             <>
               <button
+                type="button"
                 onClick={prevSlide}
                 aria-label="Previous slide"
-                className="absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-slate-900/80 hover:bg-accent-teal text-foreground hover:text-background border border-card-border/80 flex items-center justify-center transition-all shadow-lg active:scale-95 focus:outline-none focus:ring-2 focus:ring-accent-teal z-20 backdrop-blur-sm"
+                className="absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-slate-900/80 hover:bg-accent-teal text-foreground hover:text-background border border-card-border/80 flex items-center justify-center transition-all shadow-lg active:scale-95 focus:outline-none focus:ring-2 focus:ring-accent-teal z-20 backdrop-blur-sm cursor-pointer"
               >
                 <ChevronLeft size={20} />
               </button>
               <button
+                type="button"
                 onClick={nextSlide}
                 aria-label="Next slide"
-                className="absolute right-3 sm:right-5 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-slate-900/80 hover:bg-accent-teal text-foreground hover:text-background border border-card-border/80 flex items-center justify-center transition-all shadow-lg active:scale-95 focus:outline-none focus:ring-2 focus:ring-accent-teal z-20 backdrop-blur-sm"
+                className="absolute right-3 sm:right-5 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-slate-900/80 hover:bg-accent-teal text-foreground hover:text-background border border-card-border/80 flex items-center justify-center transition-all shadow-lg active:scale-95 focus:outline-none focus:ring-2 focus:ring-accent-teal z-20 backdrop-blur-sm cursor-pointer"
               >
                 <ChevronRight size={20} />
               </button>
@@ -344,7 +368,7 @@ export default function HeroMedia({
                 </span>
               ) : (
                 <span className="text-xs font-mono text-foreground/50">
-                  Slide {currentIndex + 1} of {totalSlides}
+                  Slide {safeIndex + 1} of {totalSlides}
                 </span>
               )}
             </div>
@@ -366,15 +390,16 @@ export default function HeroMedia({
                 {items.map((_, dotIdx) => (
                   <button
                     key={dotIdx}
+                    type="button"
                     role="tab"
-                    aria-selected={dotIdx === currentIndex}
-                    aria-label={`Go to slide ${dotIdx + 1}`}
+                    aria-selected={dotIdx === safeIndex}
+                    aria-label={"Go to slide " + (dotIdx + 1)}
                     onClick={() => goToSlide(dotIdx)}
-                    className={`h-2 rounded-full transition-all focus:outline-none ${
-                      dotIdx === currentIndex
+                    className={"h-2 rounded-full transition-all focus:outline-none cursor-pointer " + (
+                      dotIdx === safeIndex
                         ? "w-6 bg-accent-teal"
                         : "w-2 bg-foreground/20 hover:bg-foreground/40"
-                    }`}
+                    )}
                   />
                 ))}
               </div>

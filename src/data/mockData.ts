@@ -1,3 +1,5 @@
+import type { PortableTextBlock } from "next-sanity";
+
 export interface ProjectLink {
   label: string;
   url: string;
@@ -132,13 +134,21 @@ export interface CaseStudy {
   heroSliderShowArrows?: boolean;
   featured?: boolean;
   isPlaceholder?: boolean;
+  summaryIcon?: string;
+  toolsIcon?: string;
+  challengeIcon?: string;
+  challenge?: PortableTextBlock[] | string[] | string;
+  decisionsIcon?: string;
+  beforeAfterIcon?: string;
+  surfacesIcon?: string;
+  resultsIcon?: string;
+  lessonsIcon?: string;
   body: string[];
   results: string[];
   lessons: string[];
   lessonsLearned?: string[];
   productDecisions?: ProductDecisionCard[];
   beforeAfter?: BeforeAfterBlock[];
-  surfacesIcon?: string;
   productSurfaces?: ProductSurface[];
   relatedCaseStudies?: any[];
 }

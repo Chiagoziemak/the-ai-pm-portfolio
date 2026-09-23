@@ -10,6 +10,9 @@ import HeroMedia from "@/components/HeroMedia";
 import ProductSurfaces from "@/components/ProductSurfaces";
 import { getCaseStudyBySlug, getSiteSettings } from "@/sanity/queries";
 import { constructMetadata, generateArticleJsonLd, getBaseUrl } from "@/lib/seo";
+import { normalizeExternalUrl } from "@/lib/url";
+import { PortableText } from "next-sanity";
+import type { PortableTextBlock } from "next-sanity";
 import { ArrowLeft, ArrowUpRight, ExternalLink } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -74,9 +77,10 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  const bodyParagraphs = Array.isArray(study.body) && study.body.length > 0
-    ? study.body.filter((p: string) => Boolean(p && typeof p === "string" && p.trim() !== ""))
-    : (study.summary ? [study.summary] : []);
+  const challengeContent = (study as any).challenge;
+  const hasChallengeArray = Array.isArray(challengeContent) && challengeContent.length > 0;
+  const hasChallengeString = typeof challengeContent === "string" && challengeContent.trim() !== "";
+  const hasChallenge = hasChallengeArray || hasChallengeString;
 
   const tools = Array.isArray(study.tools) ? study.tools.filter(Boolean) : [];
   const results = Array.isArray(study.results) ? study.results.filter(Boolean) : [];
@@ -121,10 +125,7 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
     ? study.relatedCaseStudies.filter((rc: any) => Boolean(rc && rc.title && rc.slug))
     : [];
 
-  const normalizeUrl = (u?: string) =>
-    u ? u.trim().toLowerCase().replace(/\/+$/, "") : "";
-
-  const liveUrl = study.liveUrl;
+  const liveUrl = normalizeExternalUrl(study.liveUrl);
   const liveUrlLabel = study.liveUrlLabel || "View Project";
 
   // Check if liveUrl points to the exact same destination as any public product surface
@@ -134,7 +135,7 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
         (s: any) =>
           s.accessType !== "internal" &&
           s.url &&
-          normalizeUrl(s.url) === normalizeUrl(liveUrl)
+          normalizeExternalUrl(s.url) === liveUrl
       )
   );
 
@@ -328,17 +329,75 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
           {/* Main Article */}
           <article className="lg:col-span-8 flex flex-col gap-8 sm:gap-12">
 
-            {/* Body */}
-            {bodyParagraphs.length > 0 && (
+            {/* The Challenge */}
+            {hasChallenge && (
               <section className="p-6 sm:p-8 rounded-2xl border border-card-border glass-panel">
                 <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-4 sm:mb-6 tracking-tight flex items-center gap-2.5">
                   <DynamicIcon name={(study as any).challengeIcon || "FiTarget"} size={22} className="text-accent-teal" />
                   The Challenge
                 </h2>
-                <div className="space-y-4 text-foreground/80 leading-relaxed text-sm sm:text-base md:text-lg">
-                  {bodyParagraphs.map((para, idx) => (
-                    <p key={idx} className="leading-relaxed">{para}</p>
-                  ))}
+                <div className="text-foreground/80 leading-relaxed text-sm sm:text-base md:text-lg">
+                  {hasChallengeArray ? (
+                    <PortableText
+                      value={challengeContent as PortableTextBlock[]}
+                      components={{
+                        block: {
+                          normal: ({ children }) => (
+                            <p className="leading-relaxed mb-4 text-foreground/85 text-sm sm:text-base md:text-lg last:mb-0">
+                              {children}
+                            </p>
+                          ),
+                          h3: ({ children }) => (
+                            <h3 className="text-lg sm:text-xl font-bold text-foreground mt-4 mb-2">
+                              {children}
+                            </h3>
+                          ),
+                          h4: ({ children }) => (
+                            <h4 className="text-base sm:text-lg font-semibold text-foreground mt-3 mb-1.5">
+                              {children}
+                            </h4>
+                          ),
+                        },
+                        list: {
+                          bullet: ({ children }) => (
+                            <ul className="list-disc list-inside space-y-2 mb-4 text-foreground/85 text-sm sm:text-base">
+                              {children}
+                            </ul>
+                          ),
+                          number: ({ children }) => (
+                            <ol className="list-decimal list-inside space-y-2 mb-4 text-foreground/85 text-sm sm:text-base">
+                              {children}
+                            </ol>
+                          ),
+                        },
+                        marks: {
+                          link: ({ children, value }) => {
+                            const target = (value?.href || "").startsWith("http") ? "_blank" : undefined;
+                            const rel = target === "_blank" ? "noopener noreferrer" : undefined;
+                            return (
+                              <a
+                                href={value?.href}
+                                target={target}
+                                rel={rel}
+                                className="text-accent-teal hover:underline font-medium"
+                              >
+                                {children}
+                              </a>
+                            );
+                          },
+                        },
+                      }}
+                    />
+                  ) : typeof challengeContent === "string" ? (
+                    challengeContent
+                      .split("\n")
+                      .filter((p: string) => p.trim() !== "")
+                      .map((para: string, idx: number) => (
+                        <p key={idx} className="leading-relaxed mb-4 last:mb-0">
+                          {para}
+                        </p>
+                      ))
+                  ) : null}
                 </div>
               </section>
             )}
@@ -353,9 +412,11 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
                 <div className="space-y-5">
                   {productDecisions.map((pd: any, idx: number) => {
                     const title = pd.decisionTitle || pd.decision || `Decision ${idx + 1}`;
-                    const status = pd.status || pd.outcome;
+                    const rawStatus = pd.status && typeof pd.status === "string" ? pd.status.trim() : "";
+                    const isShortBadge = Boolean(rawStatus && rawStatus.length <= 25);
                     const rationale = pd.rationale || pd.context;
                     const tradeoff = pd.tradeoff || pd.tradeoffs;
+                    const outcome = pd.outcome || (!isShortBadge && rawStatus ? rawStatus : null);
 
                     return (
                       <div
@@ -366,24 +427,39 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
                           <h3 className="text-lg sm:text-xl font-bold text-foreground">
                             {title}
                           </h3>
-                          {status && (
-                            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase bg-accent-teal/10 text-accent-teal border border-accent-teal/20 font-bold">
-                              {status}
+                          {isShortBadge && (
+                            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase bg-accent-teal/10 text-accent-teal border border-accent-teal/20 font-bold flex-shrink-0">
+                              {rawStatus}
                             </span>
                           )}
                         </div>
 
                         {rationale && (
                           <div className="mb-4 text-xs sm:text-sm text-foreground/80 leading-relaxed">
-                            <strong className="text-foreground block mb-1 font-mono uppercase text-xs text-accent-teal">Rationale:</strong>
+                            <strong className="text-foreground block mb-1 font-mono uppercase text-xs text-accent-teal font-bold">
+                              Rationale:
+                            </strong>
                             {rationale}
                           </div>
                         )}
 
                         {tradeoff && (
-                          <div className="p-3.5 rounded-xl bg-card border border-card-border text-xs text-foreground/75 italic">
-                            <strong className="not-italic text-accent-cyan font-mono block mb-0.5">Trade-off Considered:</strong>
+                          <div className="p-3.5 rounded-xl bg-card border border-card-border text-xs sm:text-sm text-foreground/75 italic mb-4">
+                            <strong className="not-italic text-accent-cyan font-mono block mb-0.5 font-bold">
+                              Trade-off Considered:
+                            </strong>
                             {tradeoff}
+                          </div>
+                        )}
+
+                        {outcome && (
+                          <div className="mt-3 pt-3 border-t border-card-border/60">
+                            <strong className="text-accent-teal font-mono uppercase text-xs block mb-1 font-bold">
+                              Outcome &amp; Impact:
+                            </strong>
+                            <p className="text-xs sm:text-sm text-foreground/90 leading-relaxed break-words">
+                              {outcome}
+                            </p>
                           </div>
                         )}
                       </div>
@@ -481,9 +557,9 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   {results.map((res, idx) => (
-                    <div key={idx} className="p-4 rounded-xl bg-card border border-card-border text-xs sm:text-sm font-medium text-foreground flex items-center gap-3">
-                      <span className="w-2 h-2 rounded-full bg-accent-teal flex-shrink-0"></span>
-                      <span>{res}</span>
+                    <div key={idx} className="p-4 rounded-xl bg-card border border-card-border text-xs sm:text-sm font-medium text-foreground flex items-start gap-3">
+                      <span className="w-2 h-2 rounded-full bg-accent-teal flex-shrink-0 mt-1.5"></span>
+                      <span className="leading-relaxed break-words">{res}</span>
                     </div>
                   ))}
                 </div>
@@ -501,7 +577,7 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
                   {lessons.map((lesson: string, idx: number) => (
                     <div key={idx} className="p-4 rounded-xl bg-card border border-card-border text-xs sm:text-sm font-medium text-foreground flex items-start gap-3">
                       <span className="w-2 h-2 rounded-full bg-accent-cyan flex-shrink-0 mt-1.5"></span>
-                      <span className="leading-relaxed">{lesson}</span>
+                      <span className="leading-relaxed break-words">{lesson}</span>
                     </div>
                   ))}
                 </div>
