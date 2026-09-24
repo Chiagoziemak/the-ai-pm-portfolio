@@ -268,7 +268,8 @@ export default defineType({
       name: "lessonsLearned",
       title: "Lessons Learned",
       type: "array",
-      of: [{ type: "string" }],
+      of: [{ type: "lessonLearnedItem" }],
+      description: "Structured lessons learned with Title and optional Description / What I Learned narrative.",
     }),
     defineField({
       name: "relatedCaseStudies",

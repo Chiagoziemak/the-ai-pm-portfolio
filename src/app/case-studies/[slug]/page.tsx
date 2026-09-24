@@ -13,6 +13,7 @@ import { constructMetadata, generateArticleJsonLd, getBaseUrl } from "@/lib/seo"
 import { normalizeExternalUrl } from "@/lib/url";
 import { PortableText } from "next-sanity";
 import type { PortableTextBlock } from "next-sanity";
+import ExpandableText from "@/components/ExpandableText";
 import { ArrowLeft, ArrowUpRight, ExternalLink } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -439,7 +440,7 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
                             <strong className="text-foreground block mb-1 font-mono uppercase text-xs text-accent-teal font-bold">
                               Rationale:
                             </strong>
-                            {rationale}
+                            <ExpandableText text={rationale} collapsedLines={3} />
                           </div>
                         )}
 
@@ -448,7 +449,7 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
                             <strong className="not-italic text-accent-cyan font-mono block mb-0.5 font-bold">
                               Trade-off Considered:
                             </strong>
-                            {tradeoff}
+                            <ExpandableText text={tradeoff} collapsedLines={3} />
                           </div>
                         )}
 
@@ -457,9 +458,9 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
                             <strong className="text-accent-teal font-mono uppercase text-xs block mb-1 font-bold">
                               Outcome &amp; Impact:
                             </strong>
-                            <p className="text-xs sm:text-sm text-foreground/90 leading-relaxed break-words">
-                              {outcome}
-                            </p>
+                            <div className="text-xs sm:text-sm text-foreground/90 leading-relaxed break-words">
+                              <ExpandableText text={outcome} collapsedLines={3} />
+                            </div>
                           </div>
                         )}
                       </div>
@@ -556,12 +557,17 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
                   Measurable Results &amp; Business Outcomes
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                  {results.map((res, idx) => (
-                    <div key={idx} className="p-4 rounded-xl bg-card border border-card-border text-xs sm:text-sm font-medium text-foreground flex items-start gap-3">
-                      <span className="w-2 h-2 rounded-full bg-accent-teal flex-shrink-0 mt-1.5"></span>
-                      <span className="leading-relaxed break-words">{res}</span>
-                    </div>
-                  ))}
+                  {results.map((res: any, idx: number) => {
+                    const text = typeof res === "string" ? res : res?.metric || res?.title || res?.description || String(res);
+                    return (
+                      <div key={idx} className="p-4 rounded-xl bg-card border border-card-border text-xs sm:text-sm font-medium text-foreground flex items-start gap-3">
+                        <span className="w-2 h-2 rounded-full bg-accent-teal flex-shrink-0 mt-1.5"></span>
+                        <div className="leading-relaxed break-words flex-1">
+                          <ExpandableText text={text} collapsedLines={3} />
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </section>
             )}
@@ -573,13 +579,28 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
                   <DynamicIcon name={(study as any).lessonsIcon || "FiBookOpen"} size={22} className="text-accent-cyan" />
                   Key Takeaways &amp; Lessons Learned
                 </h2>
-                <div className="space-y-3">
-                  {lessons.map((lesson: string, idx: number) => (
-                    <div key={idx} className="p-4 rounded-xl bg-card border border-card-border text-xs sm:text-sm font-medium text-foreground flex items-start gap-3">
-                      <span className="w-2 h-2 rounded-full bg-accent-cyan flex-shrink-0 mt-1.5"></span>
-                      <span className="leading-relaxed break-words">{lesson}</span>
-                    </div>
-                  ))}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+                  {lessons.map((lessonItem: any, idx: number) => {
+                    const title = typeof lessonItem === "string" ? lessonItem : lessonItem?.title || `Lesson ${idx + 1}`;
+                    const description = typeof lessonItem === "object" ? lessonItem?.description : undefined;
+                    return (
+                      <div key={idx} className="p-5 sm:p-6 rounded-xl bg-card border border-card-border flex flex-col justify-between">
+                        <div>
+                          <div className="flex items-start gap-3 mb-2">
+                            <span className="w-2 h-2 rounded-full bg-accent-cyan flex-shrink-0 mt-1.5"></span>
+                            <h3 className="text-sm sm:text-base font-bold text-foreground leading-snug break-words">
+                              {title}
+                            </h3>
+                          </div>
+                          {description && (
+                            <div className="pl-5 text-xs sm:text-sm text-foreground/80 leading-relaxed break-words">
+                              <ExpandableText text={description} collapsedLines={3} />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </section>
             )}
@@ -596,17 +617,27 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
                     <Link
                       key={idx}
                       href={`/case-studies/${rel.slug}`}
-                      className="group block p-6 rounded-2xl border border-card-border glass-panel hover:border-accent-teal/50 hover:shadow-lg transition-all"
+                      className="group flex flex-col justify-between p-6 rounded-2xl border border-card-border glass-panel hover:border-accent-teal/50 hover:shadow-lg transition-all"
                     >
-                      {rel.category && (
-                        <span className="text-[10px] uppercase font-mono tracking-widest text-accent-teal font-bold block mb-2">
-                          {rel.category}
-                        </span>
-                      )}
-                      <h3 className="text-base sm:text-lg font-bold text-foreground group-hover:text-accent-teal transition-colors flex items-center justify-between gap-2">
-                        <span>{rel.title}</span>
+                      <div>
+                        {rel.category && (
+                          <span className="text-[10px] uppercase font-mono tracking-widest text-accent-teal font-bold block mb-2">
+                            {rel.category}
+                          </span>
+                        )}
+                        <h3 className="text-base sm:text-lg font-bold text-foreground group-hover:text-accent-teal transition-colors line-clamp-2 min-h-[3.25rem]">
+                          {rel.title}
+                        </h3>
+                        {rel.summary && (
+                          <p className="text-xs sm:text-sm text-foreground/70 line-clamp-2 mt-2 leading-relaxed">
+                            {rel.summary}
+                          </p>
+                        )}
+                      </div>
+                      <div className="mt-4 pt-3 border-t border-card-border/40 flex items-center justify-between text-xs font-semibold text-accent-teal">
+                        <span>Read Case Study</span>
                         <ArrowUpRight size={16} className="text-foreground/50 group-hover:text-accent-teal group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all flex-shrink-0" />
-                      </h3>
+                      </div>
                     </Link>
                   ))}
                 </div>

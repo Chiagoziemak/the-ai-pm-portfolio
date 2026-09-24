@@ -221,16 +221,16 @@ export default async function ProductsPage() {
                     </span>
                   </div>
 
-                  <h3 className="text-xl font-bold mb-2 text-foreground group-hover:text-accent-teal transition-colors">
+                  <h3 className="text-xl font-bold mb-2 text-foreground group-hover:text-accent-teal transition-colors line-clamp-2 min-h-[3.5rem]">
                     {product.tagline}
                   </h3>
 
-                  <p className="text-foreground/75 text-xs sm:text-sm mb-6 leading-relaxed">
+                  <p className="text-foreground/75 text-xs sm:text-sm mb-6 leading-relaxed line-clamp-3 min-h-[3.75rem]">
                     {product.description}
                   </p>
                 </div>
 
-                <div className="pt-4 border-t border-card-border/40 flex items-center justify-between">
+                <div className="mt-auto pt-4 border-t border-card-border/40 flex items-center justify-between">
                   <span className="text-xs font-mono text-foreground/50">Status: {product.status}</span>
                   {product.externalUrl ? (
                     <a

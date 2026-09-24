@@ -110,6 +110,11 @@ export interface ProductSurface {
   enabled?: boolean;
 }
 
+export interface LessonLearned {
+  title: string;
+  description?: string;
+}
+
 export interface CaseStudy {
   title: string;
   metaTitle?: string;
@@ -145,8 +150,8 @@ export interface CaseStudy {
   lessonsIcon?: string;
   body: string[];
   results: string[];
-  lessons: string[];
-  lessonsLearned?: string[];
+  lessons: (LessonLearned | string)[];
+  lessonsLearned?: (LessonLearned | string)[];
   productDecisions?: ProductDecisionCard[];
   beforeAfter?: BeforeAfterBlock[];
   productSurfaces?: ProductSurface[];

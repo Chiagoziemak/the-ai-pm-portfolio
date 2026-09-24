@@ -732,6 +732,39 @@ export const heroMediaItem = defineType({
   },
 });
 
+export const lessonLearnedItem = defineType({
+  name: "lessonLearnedItem",
+  title: "Lesson Learned",
+  type: "object",
+  fields: [
+    defineField({
+      name: "title",
+      title: "Title",
+      type: "string",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "description",
+      title: "Description / What I Learned",
+      type: "text",
+      rows: 4,
+      description: "Explain the real situation or experience that led to this lesson.",
+    }),
+  ],
+  preview: {
+    select: {
+      title: "title",
+      subtitle: "description",
+    },
+    prepare({ title, subtitle }) {
+      return {
+        title: title || "Untitled Lesson",
+        subtitle: subtitle || "No description provided",
+      };
+    },
+  },
+});
+
 export const reusableObjects = [
   statBlock,
   riceRow,
@@ -751,4 +784,5 @@ export const reusableObjects = [
   checklistItem,
   productSurface,
   heroMediaItem,
+  lessonLearnedItem,
 ];

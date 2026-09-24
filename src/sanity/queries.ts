@@ -12,9 +12,10 @@ import type {
   ProductSurface,
   HeroMediaItem,
   HeroDisplayMode,
+  LessonLearned,
 } from "@/data/mockData";
 
-export type { ProductSurface, HeroMediaItem, HeroDisplayMode };
+export type { ProductSurface, HeroMediaItem, HeroDisplayMode, LessonLearned };
 
 export interface NavLink {
   label: string;
@@ -948,11 +949,24 @@ export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null
     }
 
     let results: string[] = Array.isArray(caseStudy.results) ? caseStudy.results : [];
-    let lessons: string[] = [];
-    if (Array.isArray(caseStudy.lessons) && caseStudy.lessons.length > 0) {
-      lessons = caseStudy.lessons;
-    } else if (Array.isArray(caseStudy.lessonsLearned) && caseStudy.lessonsLearned.length > 0) {
-      lessons = caseStudy.lessonsLearned;
+    let rawLessons = caseStudy.lessonsLearned || caseStudy.lessons || [];
+    let normalizedLessons: LessonLearned[] = [];
+    if (Array.isArray(rawLessons)) {
+      normalizedLessons = rawLessons
+        .filter(Boolean)
+        .map((item: any) => {
+          if (typeof item === "string") {
+            return { title: item.trim() };
+          }
+          if (item && typeof item === "object") {
+            return {
+              title: item.title || item.heading || item.name || "Lesson Learned",
+              description: item.description || item.body || item.text || undefined,
+            };
+          }
+          return null;
+        })
+        .filter((item): item is LessonLearned => Boolean(item && item.title));
     }
 
     return {
@@ -960,7 +974,8 @@ export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null
       tools,
       body,
       results,
-      lessons,
+      lessons: normalizedLessons,
+      lessonsLearned: normalizedLessons,
       productDecisions: Array.isArray(caseStudy.productDecisions) ? caseStudy.productDecisions : [],
       beforeAfter: Array.isArray(caseStudy.beforeAfter) ? caseStudy.beforeAfter : [],
       productSurfaces: Array.isArray(caseStudy.productSurfaces) ? caseStudy.productSurfaces : [],

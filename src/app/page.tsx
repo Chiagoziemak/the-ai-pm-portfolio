@@ -246,28 +246,30 @@ export default async function HomePage() {
                       )}
                     </div>
 
-                    <h3 className="text-xl sm:text-2xl font-extrabold text-foreground group-hover:text-accent-teal transition-colors mb-3 leading-snug">
+                    <h3 className="text-xl sm:text-2xl font-extrabold text-foreground group-hover:text-accent-teal transition-colors mb-3 leading-snug line-clamp-2 min-h-[3.75rem]">
                       {otherCaseStudy.title}
                     </h3>
 
                     {otherCaseStudy.summary && (
-                      <p className="text-xs sm:text-sm text-foreground/70 leading-relaxed mb-6">
+                      <p className="text-xs sm:text-sm text-foreground/70 leading-relaxed mb-6 line-clamp-3 min-h-[4rem]">
                         {otherCaseStudy.summary}
                       </p>
                     )}
                   </div>
 
-                  {/* Card Stat-Pair Blocks if present */}
-                  {Array.isArray(otherCaseStudy.cardStats) && otherCaseStudy.cardStats.length > 0 && (
-                    <StatGrid stats={otherCaseStudy.cardStats} />
-                  )}
+                  <div className="mt-auto space-y-4">
+                    {/* Card Stat-Pair Blocks if present */}
+                    {Array.isArray(otherCaseStudy.cardStats) && otherCaseStudy.cardStats.length > 0 && (
+                      <StatGrid stats={otherCaseStudy.cardStats} />
+                    )}
 
-                  <Link
-                    href={`/case-studies/${otherCaseStudy.slug}`}
-                    className="inline-flex items-center gap-2 text-xs font-extrabold text-accent-cyan hover:text-accent-teal transition-colors group-hover:translate-x-1 duration-300 min-h-[36px]"
-                  >
-                    Read Case Study <ArrowUpRight size={14} />
-                  </Link>
+                    <Link
+                      href={`/case-studies/${otherCaseStudy.slug}`}
+                      className="inline-flex items-center gap-2 text-xs font-extrabold text-accent-cyan hover:text-accent-teal transition-colors group-hover:translate-x-1 duration-300 min-h-[36px]"
+                    >
+                      Read Case Study <ArrowUpRight size={14} />
+                    </Link>
+                  </div>
                 </div>
               )}
             </div>
@@ -303,16 +305,16 @@ export default async function HomePage() {
                       {teardown.category && <span className="px-2.5 py-0.5 rounded-md bg-card-border/30 text-foreground/80 font-bold">{teardown.category}</span>}
                       {teardown.readTime && <span>{teardown.readTime}</span>}
                     </div>
-                    <h3 className="text-base sm:text-lg font-bold text-foreground group-hover:text-accent-teal transition-colors mb-2 leading-snug">
+                    <h3 className="text-base sm:text-lg font-bold text-foreground group-hover:text-accent-teal transition-colors mb-2 leading-snug line-clamp-2 min-h-[3.25rem]">
                       {teardown.title}
                     </h3>
                     {teardown.summary && (
-                      <p className="text-xs sm:text-sm text-foreground/70 line-clamp-3 leading-relaxed mb-4">
+                      <p className="text-xs sm:text-sm text-foreground/70 line-clamp-3 leading-relaxed mb-4 min-h-[3.75rem]">
                         {teardown.summary}
                       </p>
                     )}
                   </div>
-                  <div className="flex items-center justify-between pt-4 border-t border-card-border/30 text-xs font-semibold text-accent-teal group-hover:text-accent-cyan">
+                  <div className="mt-auto flex items-center justify-between pt-4 border-t border-card-border/30 text-xs font-semibold text-accent-teal group-hover:text-accent-cyan">
                     <span>Explore Teardown</span>
                     <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                   </div>
@@ -344,17 +346,17 @@ export default async function HomePage() {
                       </div>
                     </div>
 
-                    <h3 className="text-base sm:text-lg font-bold text-foreground mb-2 leading-snug">
+                    <h3 className="text-base sm:text-lg font-bold text-foreground mb-2 leading-snug line-clamp-2 min-h-[3rem]">
                       {step.title}
                     </h3>
 
-                    <p className="text-xs sm:text-sm text-foreground/75 leading-relaxed mb-4">
+                    <p className="text-xs sm:text-sm text-foreground/75 leading-relaxed mb-4 line-clamp-4 min-h-[4.5rem]">
                       {step.description}
                     </p>
                   </div>
 
                   {Array.isArray(step.deliverables) && step.deliverables.length > 0 && (
-                    <div className="pt-4 border-t border-card-border/30 space-y-1.5">
+                    <div className="mt-auto pt-4 border-t border-card-border/30 space-y-1.5">
                       <span className="text-[10px] font-mono text-accent-cyan uppercase tracking-wider block font-bold">Key Deliverables:</span>
                       {step.deliverables.map((deliv, dIdx) => (
                         <div key={dIdx} className="text-xs text-foreground/70 flex items-center gap-1.5">
@@ -404,19 +406,19 @@ export default async function HomePage() {
                       )}
                     </div>
 
-                    <h3 className="text-base sm:text-lg font-bold text-foreground mb-2 leading-snug">
+                    <h3 className="text-base sm:text-lg font-bold text-foreground mb-2 leading-snug line-clamp-2 min-h-[3rem]">
                       {item.title}
                     </h3>
 
                     {item.description && (
-                      <p className="text-xs sm:text-sm text-foreground/75 leading-relaxed mb-4">
+                      <p className="text-xs sm:text-sm text-foreground/75 leading-relaxed mb-4 line-clamp-3 min-h-[3.75rem]">
                         {item.description}
                       </p>
                     )}
                   </div>
 
                   {Array.isArray(item.tags) && item.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 pt-4 border-t border-card-border/30">
+                    <div className="mt-auto flex flex-wrap gap-1.5 pt-4 border-t border-card-border/30">
                       {item.tags.map((tag, tIdx) => (
                         <span key={tIdx} className="text-[10px] font-mono px-2 py-0.5 rounded bg-card-border/30 text-foreground/70">
                           {tag}

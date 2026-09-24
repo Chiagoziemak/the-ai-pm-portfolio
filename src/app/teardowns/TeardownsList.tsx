@@ -92,20 +92,22 @@ export default function TeardownsList({ initialTeardowns }: TeardownsListProps) 
               <div className="p-6 flex-grow flex flex-col justify-between">
                 <div>
                   <span className="text-xs text-foreground/50 font-semibold">{teardown.date}</span>
-                  <h3 className="text-lg font-bold text-foreground mt-2 mb-3 leading-snug group-hover:text-accent-teal transition-colors">
+                  <h3 className="text-lg font-bold text-foreground mt-2 mb-3 leading-snug group-hover:text-accent-teal transition-colors line-clamp-2 min-h-[3.25rem]">
                     {teardown.title}
                   </h3>
-                  <p className="text-sm text-foreground/75 line-clamp-4 leading-relaxed">
+                  <p className="text-sm text-foreground/75 line-clamp-3 leading-relaxed min-h-[3.75rem]">
                     {teardown.summary}
                   </p>
                 </div>
-                <Link
-                  href={`/teardowns/${teardown.slug}`}
-                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent-cyan hover:underline mt-6"
-                >
-                  Read teardown
-                  <ArrowUpRight size={14} />
-                </Link>
+                <div className="mt-auto pt-4 border-t border-card-border/30">
+                  <Link
+                    href={`/teardowns/${teardown.slug}`}
+                    className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent-cyan hover:underline"
+                  >
+                    Read teardown
+                    <ArrowUpRight size={14} />
+                  </Link>
+                </div>
               </div>
             </article>
           ))}

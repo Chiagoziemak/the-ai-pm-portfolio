@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import DynamicIcon from "@/components/DynamicIcon";
 import RecommendationsCarousel from "@/components/RecommendationsCarousel";
 import HeroMedia from "@/components/HeroMedia";
+import ExpandableText from "@/components/ExpandableText";
 import { getTeardowns, getTeardownBySlug, getSiteSettings } from "@/sanity/queries";
 import { constructMetadata, generateArticleJsonLd, getBaseUrl } from "@/lib/seo";
 import { normalizeExternalUrl } from "@/lib/url";
@@ -266,12 +267,12 @@ export default async function TeardownDetailPage({ params }: PageProps) {
                       <h3 className="text-base sm:text-lg font-bold text-foreground mb-2 leading-snug">
                         {card.title}
                       </h3>
-                      <p className="text-xs sm:text-sm text-foreground/80 leading-relaxed mb-4">
-                        {card.description}
-                      </p>
+                      <div className="mb-4">
+                        <ExpandableText text={card.description} collapsedLines={3} />
+                      </div>
                     </div>
                     {(card.evidence || (card as any).metric) && (
-                      <div className="pt-3 border-t border-card-border/40 text-xs font-mono font-bold text-accent-cyan">
+                      <div className="mt-auto pt-3 border-t border-card-border/40 text-xs font-mono font-bold text-accent-cyan">
                         Key Metric: {card.evidence || (card as any).metric}
                       </div>
                     )}
@@ -293,26 +294,30 @@ export default async function TeardownDetailPage({ params }: PageProps) {
               {painPoints.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
                   {painPoints.map((point, idx) => (
-                    <div key={idx} className="p-4 sm:p-5 rounded-xl border border-card-border bg-card/60">
-                      <div className="flex items-center justify-between gap-2 mb-2">
-                        <h4 className="font-bold text-sm sm:text-base text-foreground">{point.title}</h4>
-                        {point.severity && (
-                          <span className={`text-[10px] font-mono uppercase px-2 py-0.5 rounded font-bold ${
-                            point.severity.toLowerCase() === "high" || point.severity.toLowerCase() === "critical"
-                              ? "bg-red-500/20 text-red-600 dark:text-red-300 border border-red-500/30"
-                              : point.severity.toLowerCase() === "medium"
-                              ? "bg-amber-500/20 text-amber-600 dark:text-amber-300 border border-amber-500/30"
-                              : "bg-blue-500/20 text-blue-600 dark:text-blue-300 border border-blue-500/30"
-                          }`}>
-                            {point.severity}
-                          </span>
-                        )}
+                    <div key={idx} className="p-4 sm:p-5 rounded-xl border border-card-border bg-card/60 flex flex-col justify-between">
+                      <div>
+                        <div className="flex items-center justify-between gap-2 mb-2">
+                          <h4 className="font-bold text-sm sm:text-base text-foreground">{point.title}</h4>
+                          {point.severity && (
+                            <span className={`text-[10px] font-mono uppercase px-2 py-0.5 rounded font-bold ${
+                              point.severity.toLowerCase() === "high" || point.severity.toLowerCase() === "critical"
+                                ? "bg-red-500/20 text-red-600 dark:text-red-300 border border-red-500/30"
+                                : point.severity.toLowerCase() === "medium"
+                                ? "bg-amber-500/20 text-amber-600 dark:text-amber-300 border border-amber-500/30"
+                                : "bg-blue-500/20 text-blue-600 dark:text-blue-300 border border-blue-500/30"
+                            }`}>
+                              {point.severity}
+                            </span>
+                          )}
+                        </div>
+                        <div className="mb-2">
+                          <ExpandableText text={point.description} collapsedLines={3} />
+                        </div>
                       </div>
-                      <p className="text-xs sm:text-sm text-foreground/80 leading-relaxed mb-2">{point.description}</p>
                       {point.evidence && (
-                        <p className="text-[11px] font-mono text-foreground/60 italic border-t border-card-border/40 pt-2 mt-2">
+                        <div className="mt-auto border-t border-card-border/40 pt-2 text-[11px] font-mono text-foreground/60 italic">
                           Evidence: {point.evidence}
-                        </p>
+                        </div>
                       )}
                     </div>
                   ))}

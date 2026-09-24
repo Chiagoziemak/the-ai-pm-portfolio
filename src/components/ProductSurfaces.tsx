@@ -1,6 +1,7 @@
 import React from "react";
 import { ArrowUpRight } from "lucide-react";
 import DynamicIcon from "@/components/DynamicIcon";
+import ExpandableText from "@/components/ExpandableText";
 import { normalizeExternalUrl } from "@/lib/url";
 import type { ProductSurface } from "@/data/mockData";
 
@@ -82,15 +83,15 @@ export default function ProductSurfaces({
 
                 {/* Description */}
                 {description && (
-                  <p className="text-xs sm:text-sm text-foreground/75 leading-relaxed mb-4">
-                    {description}
-                  </p>
+                  <div className="mb-4">
+                    <ExpandableText text={description} collapsedLines={3} />
+                  </div>
                 )}
               </div>
 
               {/* Action Link for Public surfaces with URL */}
               {isClickable && normalizedUrl ? (
-                <div className="pt-3.5 border-t border-card-border/40 flex items-center justify-between">
+                <div className="mt-auto pt-3.5 border-t border-card-border/40 flex items-center justify-between">
                   <a
                     href={normalizedUrl}
                     target="_blank"
@@ -102,7 +103,7 @@ export default function ProductSurfaces({
                   </a>
                 </div>
               ) : isInternal ? (
-                <div className="pt-3 border-t border-card-border/30 flex items-center justify-between text-[11px] font-mono text-foreground/50">
+                <div className="mt-auto pt-3 border-t border-card-border/30 flex items-center justify-between text-[11px] font-mono text-foreground/50">
                   <span>Operations &amp; Staff</span>
                   <span className="text-[10px] text-foreground/40">Private System</span>
                 </div>

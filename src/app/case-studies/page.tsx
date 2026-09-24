@@ -210,17 +210,22 @@ export default async function CaseStudiesPage() {
                     )}
 
                     <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-card-border/30">
-                      <div className="flex flex-wrap gap-1.5">
-                        {Array.isArray(featuredCaseStudy.tools) && featuredCaseStudy.tools.map((tool) => (
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        {Array.isArray(featuredCaseStudy.tools) && featuredCaseStudy.tools.slice(0, 6).map((tool) => (
                           <span key={tool} className="text-[10px] font-mono px-2.5 py-1 rounded-md bg-accent-teal/10 text-accent-teal border border-accent-teal/20">
                             {tool}
                           </span>
                         ))}
+                        {Array.isArray(featuredCaseStudy.tools) && featuredCaseStudy.tools.length > 6 && (
+                          <span className="text-[10px] font-mono px-2 py-1 rounded-md bg-card-border/40 text-foreground/60 border border-card-border/50">
+                            +{featuredCaseStudy.tools.length - 6} more
+                          </span>
+                        )}
                       </div>
 
                       <Link
                         href={`/case-studies/${featuredCaseStudy.slug}`}
-                        className="inline-flex items-center gap-2 text-xs font-extrabold text-accent-cyan hover:text-accent-teal transition-colors group-hover:translate-x-1 duration-300"
+                        className="inline-flex items-center gap-2 text-xs font-extrabold text-accent-cyan hover:text-accent-teal transition-colors group-hover:translate-x-1 duration-300 min-h-[36px]"
                       >
                         Read Full Case Study <ArrowUpRight size={14} />
                       </Link>
@@ -235,45 +240,80 @@ export default async function CaseStudiesPage() {
         {/* Other Case Studies Grid (Flexbox centered last-row layout) */}
         {otherCaseStudies.length > 0 && (
           <section className="flex flex-wrap justify-center gap-8">
-            {otherCaseStudies.map((study) => (
-              <Link
-                key={study.slug}
-                href={`/case-studies/${study.slug}`}
-                className="group rounded-3xl p-6 sm:p-8 glass-panel border-card-border/60 hover:border-accent-teal/40 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 flex flex-col justify-between w-full md:w-[calc(50%-1rem)] max-w-[580px]"
-              >
-                <div>
-                  <div className="flex items-center justify-between text-[11px] font-mono text-foreground/50 mb-4">
-                    <div className="flex items-center gap-2">
-                      <span className="px-2.5 py-1 rounded-md bg-card-border/30 text-foreground/80 font-bold">{study.category}</span>
-                      {study.badgeLabel && (
-                        <span className="px-2 py-0.5 rounded-md bg-accent-cyan/20 text-accent-cyan text-[10px]">
-                          {study.badgeLabel}
-                        </span>
-                      )}
+            {otherCaseStudies.map((study) => {
+              const tools = Array.isArray(study.tools) ? study.tools.filter(Boolean) : [];
+              const initialTools = tools.slice(0, 5);
+              const extraToolsCount = tools.length - initialTools.length;
+
+              return (
+                <Link
+                  key={study.slug}
+                  href={`/case-studies/${study.slug}`}
+                  className="group rounded-3xl p-6 sm:p-8 glass-panel border-card-border/60 hover:border-accent-teal/40 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 flex flex-col justify-between h-full w-full md:w-[calc(50%-1rem)] max-w-[580px]"
+                >
+                  <div>
+                    <div className="flex items-center justify-between text-[11px] font-mono text-foreground/50 mb-4">
+                      <div className="flex items-center gap-2">
+                        <span className="px-2.5 py-1 rounded-md bg-card-border/30 text-foreground/80 font-bold">{study.category}</span>
+                        {study.badgeLabel && (
+                          <span className="px-2 py-0.5 rounded-md bg-accent-cyan/20 text-accent-cyan text-[10px]">
+                            {study.badgeLabel}
+                          </span>
+                        )}
+                      </div>
+                      <span>{study.date}</span>
                     </div>
-                    <span>{study.date}</span>
+
+                    <h3 className="text-xl font-extrabold text-foreground group-hover:text-accent-teal transition-colors mb-3 leading-snug line-clamp-2 min-h-[3.5rem]">
+                      {study.title}
+                    </h3>
+
+                    <p className="text-xs sm:text-sm text-foreground/70 line-clamp-3 leading-relaxed mb-6 min-h-[3.75rem]">
+                      {study.summary}
+                    </p>
+
+                    {/* Card Stat-Pair Blocks or Results if present */}
+                    {Array.isArray(study.cardStats) && study.cardStats.length > 0 ? (
+                      <div className="mb-6">
+                        <StatGrid stats={study.cardStats} />
+                      </div>
+                    ) : (
+                      Array.isArray(study.results) && study.results.length > 0 && (
+                        <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          {study.results.slice(0, 2).map((res, i) => (
+                            <div key={i} className="px-3 py-2 rounded-xl bg-card-border/20 border border-card-border/30 text-xs text-foreground/80 font-medium flex items-center gap-2">
+                              <span className="w-1.5 h-1.5 rounded-full bg-accent-teal flex-shrink-0"></span>
+                              <span className="truncate">{res}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )
+                    )}
+
+                    {/* Methods / Tags with Capping */}
+                    {tools.length > 0 && (
+                      <div className="flex flex-wrap items-center gap-1.5 mb-6">
+                        {initialTools.map((tool) => (
+                          <span key={tool} className="text-[10px] font-mono px-2.5 py-1 rounded-md bg-accent-teal/10 text-accent-teal border border-accent-teal/20">
+                            {tool}
+                          </span>
+                        ))}
+                        {extraToolsCount > 0 && (
+                          <span className="text-[10px] font-mono px-2 py-1 rounded-md bg-card-border/40 text-foreground/60 border border-card-border/50">
+                            +{extraToolsCount} more
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
 
-                  <h3 className="text-xl font-extrabold text-foreground group-hover:text-accent-teal transition-colors mb-3 leading-snug">
-                    {study.title}
-                  </h3>
-
-                  <p className="text-xs sm:text-sm text-foreground/70 line-clamp-3 leading-relaxed mb-6">
-                    {study.summary}
-                  </p>
-
-                  {/* Card Stat-Pair Blocks if present */}
-                  {Array.isArray(study.cardStats) && study.cardStats.length > 0 && (
-                    <StatGrid stats={study.cardStats} />
-                  )}
-                </div>
-
-                <div className="flex items-center justify-between pt-4 border-t border-card-border/30 text-xs font-semibold text-accent-teal group-hover:text-accent-cyan">
-                  <span>Read Case Study</span>
-                  <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                </div>
-              </Link>
-            ))}
+                  <div className="mt-auto pt-4 border-t border-card-border/30 flex items-center justify-between text-xs font-semibold text-accent-teal group-hover:text-accent-cyan">
+                    <span>Read Full Case Study</span>
+                    <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                  </div>
+                </Link>
+              );
+            })}
           </section>
         )}
       </main>

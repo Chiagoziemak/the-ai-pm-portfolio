@@ -2,6 +2,7 @@
 
 import React, { useState, useRef } from "react";
 import DynamicIcon from "@/components/DynamicIcon";
+import ExpandableText from "@/components/ExpandableText";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export interface RecommendationItem {
@@ -92,7 +93,7 @@ export default function RecommendationsCarousel({
               </span>
             )}
           </div>
-          <p className="text-xs sm:text-sm text-foreground/80 leading-relaxed">{single.description}</p>
+          <ExpandableText text={single.description} collapsedLines={4} />
           {single.riceScore && (
             <div className="mt-2.5 pt-2 border-t border-card-border/30 text-xs font-mono text-accent-cyan font-semibold">
               RICE Score: {single.riceScore}
@@ -142,7 +143,7 @@ export default function RecommendationsCarousel({
 
       {/* Contained Active Recommendation Card */}
       <div
-        className="relative overflow-hidden w-full rounded-xl"
+        className="relative overflow-hidden w-full rounded-xl min-h-[140px]"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
@@ -166,9 +167,7 @@ export default function RecommendationsCarousel({
               </span>
             )}
           </div>
-          <p className="text-xs sm:text-sm text-foreground/80 leading-relaxed">
-            {activeRec.description}
-          </p>
+          <ExpandableText text={activeRec.description} collapsedLines={4} />
           {activeRec.riceScore && (
             <div className="mt-2.5 pt-2 border-t border-card-border/30 text-xs font-mono text-accent-cyan font-semibold">
               RICE Score: {activeRec.riceScore}
