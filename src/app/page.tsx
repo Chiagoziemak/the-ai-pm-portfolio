@@ -246,12 +246,12 @@ export default async function HomePage() {
                       )}
                     </div>
 
-                    <h3 className="text-xl sm:text-2xl font-extrabold text-foreground group-hover:text-accent-teal transition-colors mb-3 leading-snug line-clamp-2 min-h-[3.75rem]">
+                    <h3 className="text-xl sm:text-2xl font-extrabold text-foreground group-hover:text-accent-teal transition-colors mb-3 leading-snug line-clamp-2 lg:min-h-[3.75rem]">
                       {otherCaseStudy.title}
                     </h3>
 
                     {otherCaseStudy.summary && (
-                      <p className="text-xs sm:text-sm text-foreground/70 leading-relaxed mb-6 line-clamp-3 min-h-[4rem]">
+                      <p className="text-xs sm:text-sm text-foreground/70 leading-relaxed mb-6 line-clamp-3 lg:min-h-[4rem]">
                         {otherCaseStudy.summary}
                       </p>
                     )}

@@ -31,15 +31,18 @@ export default function ExpandableText({
   const rawContent = text || (typeof children === "string" ? children : "");
 
   useEffect(() => {
-    // Check if content overflows the collapsed line height
-    if (textRef.current) {
-      const el = textRef.current;
-      const hasOverflow = el.scrollHeight > el.clientHeight + 4;
-      setIsOverflowing(hasOverflow || (rawContent ? rawContent.length > minChars : false));
-    } else if (rawContent) {
-      setIsOverflowing(rawContent.length > minChars);
-    }
-  }, [rawContent, minChars, collapsedLines]);
+    const checkOverflow = () => {
+      if (textRef.current) {
+        const el = textRef.current;
+        const hasOverflow = el.scrollHeight > el.clientHeight + 2;
+        setIsOverflowing(hasOverflow);
+      }
+    };
+
+    checkOverflow();
+    window.addEventListener("resize", checkOverflow);
+    return () => window.removeEventListener("resize", checkOverflow);
+  }, [rawContent, collapsedLines]);
 
   const content = text || children;
 
@@ -51,7 +54,7 @@ export default function ExpandableText({
         ref={textRef}
         className={className}
         style={
-          !isExpanded && isOverflowing
+          !isExpanded
             ? {
                 display: "-webkit-box",
                 WebkitLineClamp: collapsedLines,

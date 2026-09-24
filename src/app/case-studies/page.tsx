@@ -264,11 +264,11 @@ export default async function CaseStudiesPage() {
                       <span>{study.date}</span>
                     </div>
 
-                    <h3 className="text-xl font-extrabold text-foreground group-hover:text-accent-teal transition-colors mb-3 leading-snug line-clamp-2 min-h-[3.5rem]">
+                    <h3 className="text-xl font-extrabold text-foreground group-hover:text-accent-teal transition-colors mb-3 leading-snug line-clamp-2 md:min-h-[3.5rem]">
                       {study.title}
                     </h3>
 
-                    <p className="text-xs sm:text-sm text-foreground/70 line-clamp-3 leading-relaxed mb-6 min-h-[3.75rem]">
+                    <p className="text-xs sm:text-sm text-foreground/70 line-clamp-3 leading-relaxed mb-6 md:min-h-[3.75rem]">
                       {study.summary}
                     </p>
 
