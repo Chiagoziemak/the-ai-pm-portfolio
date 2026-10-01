@@ -209,14 +209,14 @@ export default async function ProductsPage() {
           </div>
         )}
 
-        {/* Other Products Grid */}
+        {/* Other Products Grid (Equal Width CSS Grid) */}
         {comingSoonProducts.length > 0 && (
-          <section className="flex flex-wrap justify-center gap-6 sm:gap-8">
+          <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {comingSoonProducts.map((product) => {
             return (
               <div 
                 key={product.name} 
-                className="w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1.334rem)] max-w-[400px] border border-card-border glass-panel rounded-3xl p-6 sm:p-8 flex flex-col justify-between hover:border-accent-teal/40 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 group"
+                className="w-full h-full border border-card-border glass-panel rounded-3xl p-6 sm:p-8 flex flex-col justify-between hover:border-accent-teal/40 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 group md:last:odd:col-span-2 lg:last:odd:col-span-1"
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">

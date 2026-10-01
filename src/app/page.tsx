@@ -303,12 +303,12 @@ export default async function HomePage() {
               </Link>
             </div>
 
-            <div className="flex flex-wrap justify-center gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
               {featuredTeardowns.map((teardown, idx) => (
                 <Link
                   key={teardown.slug || idx}
                   href={`/teardowns/${teardown.slug}`}
-                  className="group rounded-3xl p-6 glass-panel border-card-border/60 hover:border-accent-teal/40 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 flex flex-col justify-between w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] max-w-[380px]"
+                  className="group rounded-3xl p-6 sm:p-7 glass-panel border-card-border/60 hover:border-accent-teal/40 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 flex flex-col justify-between w-full h-full md:last:odd:col-span-2 lg:last:odd:col-span-1"
                 >
                   <div>
                     <div className="flex items-center justify-between text-[11px] font-mono text-foreground/50 mb-3">
@@ -346,11 +346,11 @@ export default async function HomePage() {
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mt-1.5 sm:mt-2 tracking-tight">How I Work</h2>
             </div>
 
-            <div className="flex flex-wrap justify-center gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {processSteps.map((step, idx) => (
                 <div
                   key={idx}
-                  className="p-6 rounded-3xl glass-panel border-card-border/60 hover:border-accent-teal/40 transition-all duration-300 flex flex-col justify-between w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] max-w-[380px]"
+                  className="p-6 sm:p-7 rounded-3xl glass-panel border-card-border/60 hover:border-accent-teal/40 transition-all duration-300 flex flex-col justify-between w-full h-full"
                 >
                   <div>
                     <div className="flex items-center justify-between mb-4">
@@ -407,9 +407,9 @@ export default async function HomePage() {
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mt-1.5 sm:mt-2 tracking-tight">Active Learning &amp; Upskilling</h2>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {learningTrack.map((item, idx) => (
-                <div key={idx} className="p-6 rounded-3xl glass-panel border-card-border/60 hover:border-accent-teal/40 transition-all duration-300 flex flex-col justify-between">
+                <div key={idx} className="p-6 sm:p-7 rounded-3xl glass-panel border-card-border/60 hover:border-accent-teal/40 transition-all duration-300 flex flex-col justify-between w-full h-full sm:last:odd:col-span-2 lg:last:odd:col-span-1">
                   <div>
                     <div className="flex items-center justify-between gap-2 mb-3">
                       {item.provider && (

@@ -257,7 +257,7 @@ export default async function TeardownDetailPage({ params }: PageProps) {
                 {insightCards.map((card, idx) => (
                   <div
                     key={idx}
-                    className="p-5 sm:p-6 rounded-2xl border border-card-border/70 glass-panel bg-card/40 flex flex-col justify-between hover:border-accent-teal/40 transition-all duration-300 shadow-sm"
+                    className="p-5 sm:p-6 rounded-2xl border border-card-border/70 glass-panel bg-card/40 flex flex-col justify-between hover:border-accent-teal/40 transition-all duration-300 shadow-sm md:last:odd:col-span-2 w-full h-full"
                   >
                     <div>
                       {(card.number || (card as any).tag) && (
@@ -295,7 +295,7 @@ export default async function TeardownDetailPage({ params }: PageProps) {
               {painPoints.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
                   {painPoints.map((point, idx) => (
-                    <div key={idx} className="p-4 sm:p-5 rounded-xl border border-card-border bg-card/60 flex flex-col justify-between">
+                    <div key={idx} className="p-4 sm:p-5 rounded-xl border border-card-border bg-card/60 flex flex-col justify-between md:last:odd:col-span-2 w-full h-full">
                       <div>
                         <div className="flex items-center justify-between gap-2 mb-2">
                           <h4 className="font-bold text-sm sm:text-base text-foreground">{point.title}</h4>
@@ -423,12 +423,12 @@ export default async function TeardownDetailPage({ params }: PageProps) {
             <h3 className="text-xl sm:text-2xl font-extrabold text-foreground mb-6 sm:mb-8 text-center sm:text-left">
               Explore More Teardowns
             </h3>
-            <div className="flex flex-wrap justify-center gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {relatedTeardowns.map((item) => (
                 <Link
                   key={item.slug}
                   href={`/teardowns/${item.slug}`}
-                  className="group p-5 sm:p-6 rounded-2xl glass-panel border-card-border hover:border-accent-teal/40 transition-all duration-300 flex flex-col justify-between w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] max-w-[360px]"
+                  className="group p-5 sm:p-6 rounded-2xl glass-panel border-card-border hover:border-accent-teal/40 transition-all duration-300 flex flex-col justify-between w-full h-full sm:last:odd:col-span-2 lg:last:odd:col-span-1"
                 >
                   <div>
                     <span className="text-[10px] font-mono text-accent-teal uppercase tracking-wider block mb-2 font-bold">

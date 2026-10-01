@@ -149,14 +149,14 @@ export default async function AboutPage() {
                 Technical &amp; Product Capability
               </h2>
             </div>
-            <div className="flex flex-wrap justify-center gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {skillsGroups.map((group: any, idx: number) => {
                 if (!group) return null;
                 const items = Array.isArray(group.items) ? group.items : [];
                 return (
                   <div
                     key={idx}
-                    className="w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] max-w-[380px] p-6 sm:p-7 rounded-2xl border border-card-border glass-panel shadow-sm flex flex-col justify-between"
+                    className="w-full h-full p-6 sm:p-7 rounded-2xl border border-card-border glass-panel shadow-sm flex flex-col justify-between sm:last:odd:col-span-2 lg:last:odd:col-span-1"
                   >
                     <div>
                       {group.category && (
@@ -191,11 +191,11 @@ export default async function AboutPage() {
                 Learning Vector &amp; Growth Focus
               </h2>
             </div>
-            <div className="flex flex-wrap justify-center gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {learningVector.map((skill, idx) => (
                 <div
                   key={idx}
-                  className="w-full sm:w-[calc(50%-0.75rem)] max-w-[480px] p-5 sm:p-6 rounded-2xl border border-card-border glass-panel shadow-sm"
+                  className="w-full h-full p-5 sm:p-6 rounded-2xl border border-card-border glass-panel shadow-sm sm:last:odd:col-span-2"
                 >
                   <div className="flex justify-between items-center mb-2 font-mono text-xs sm:text-sm">
                     <span className="font-bold text-foreground">{skill.name}</span>
@@ -286,7 +286,7 @@ export default async function AboutPage() {
                 <span>Certifications &amp; Credentials</span>
               </h2>
             </div>
-            <div className="flex flex-wrap justify-center gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {certifications.map((cert: any, idx: number) => {
                 const certName = typeof cert === "string" ? cert : (cert.name || cert.title || "");
                 const issuer = typeof cert === "string" ? "" : (cert.issuer || cert.organization || "");
@@ -296,7 +296,7 @@ export default async function AboutPage() {
                 return (
                   <div
                     key={idx}
-                    className="w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] max-w-[380px] p-5 sm:p-6 rounded-2xl border border-card-border glass-panel hover:border-accent-teal/40 transition-all duration-300 flex items-start gap-4 shadow-sm"
+                    className="w-full h-full p-5 sm:p-6 rounded-2xl border border-card-border glass-panel hover:border-accent-teal/40 transition-all duration-300 flex items-start gap-4 shadow-sm sm:last:odd:col-span-2 lg:last:odd:col-span-1"
                   >
                     <div className="w-10 h-10 rounded-xl bg-accent-teal/10 border border-accent-teal/20 text-accent-teal flex items-center justify-center flex-shrink-0">
                       <Award size={20} />

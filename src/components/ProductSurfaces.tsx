@@ -50,7 +50,7 @@ export default function ProductSurfaces({
           return (
             <div
               key={idx}
-              className="p-5 sm:p-6 rounded-2xl border border-card-border/80 glass-panel bg-card/40 flex flex-col justify-between hover:border-accent-teal/40 transition-all duration-300 relative group"
+              className="p-5 sm:p-6 rounded-2xl border border-card-border/80 glass-panel bg-card/40 flex flex-col justify-between hover:border-accent-teal/40 transition-all duration-300 relative group sm:last:odd:col-span-2"
             >
               <div>
                 {/* Badges Header */}
@@ -77,7 +77,7 @@ export default function ProductSurfaces({
                 </div>
 
                 {/* Name / Surface Title */}
-                <h3 className="font-bold text-base sm:text-lg text-foreground mb-1.5 leading-snug">
+                <h3 className="font-bold text-base sm:text-lg text-foreground mb-1.5 leading-snug break-words">
                   {surfaceName}
                 </h3>
 

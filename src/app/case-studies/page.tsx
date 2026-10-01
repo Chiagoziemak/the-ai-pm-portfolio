@@ -245,9 +245,9 @@ export default async function CaseStudiesPage() {
           </section>
         )}
 
-        {/* Other Case Studies Grid (Flexbox centered last-row layout) */}
+        {/* Other Case Studies Grid (Equal Width CSS Grid with Odd Item Span) */}
         {otherCaseStudies.length > 0 && (
-          <section className="flex flex-wrap justify-center gap-8">
+          <section className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
             {otherCaseStudies.map((study) => {
               const tools = Array.isArray(study.tools) ? study.tools.filter(Boolean) : [];
               const initialTools = tools.slice(0, 5);
@@ -257,7 +257,7 @@ export default async function CaseStudiesPage() {
                 <Link
                   key={study.slug}
                   href={`/case-studies/${study.slug}`}
-                  className="group rounded-3xl p-6 sm:p-8 glass-panel border-card-border/60 hover:border-accent-teal/40 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 flex flex-col justify-between h-full w-full md:w-[calc(50%-1rem)] max-w-[580px]"
+                  className="group rounded-3xl p-6 sm:p-8 glass-panel border-card-border/60 hover:border-accent-teal/40 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 flex flex-col justify-between h-full w-full md:last:odd:col-span-2"
                 >
                   <div>
                     <div className="flex items-center justify-between text-[11px] font-mono text-foreground/50 mb-4">

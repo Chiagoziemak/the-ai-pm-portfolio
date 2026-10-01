@@ -58,13 +58,13 @@ export default function TeardownsList({ initialTeardowns }: TeardownsListProps) 
         </div>
       </div>
 
-      {/* Teardowns Grid (Flexbox centered last-row layout) */}
+      {/* Teardowns Grid (Equal Width CSS Grid) */}
       {filteredTeardowns.length > 0 ? (
-        <div className="flex flex-wrap justify-center gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {filteredTeardowns.map((teardown) => (
             <article
               key={teardown.slug}
-              className="flex flex-col rounded-2xl overflow-hidden glass-panel border-card-border hover:-translate-y-2 hover:border-accent-teal/40 hover:shadow-lg transition-all duration-300 group w-full md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.5rem)] max-w-[400px]"
+              className="flex flex-col rounded-2xl overflow-hidden glass-panel border-card-border hover:-translate-y-2 hover:border-accent-teal/40 hover:shadow-lg transition-all duration-300 group w-full h-full md:last:odd:col-span-2 lg:last:odd:col-span-1"
             >
               {/* Thumbnail */}
               <div className="relative h-48 overflow-hidden bg-slate-900">
