@@ -36,7 +36,7 @@ export default function ProductSurfaces({
         </span>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 sm:gap-5">
         {validSurfaces.map((surface, idx) => {
           const isInternal = surface.accessType === "internal";
           const surfaceName = (surface.name || surface.label || "Product Surface").trim();
@@ -47,12 +47,17 @@ export default function ProductSurfaces({
           const buttonLabel = surface.buttonLabel?.trim() || "Visit Platform";
           const platform = surface.platformType ? surface.platformType.trim() : null;
 
-          const isLastOdd = idx === validSurfaces.length - 1 && validSurfaces.length % 2 !== 0;
+          const isOddLast = validSurfaces.length % 2 !== 0 && idx === validSurfaces.length - 1;
+          const colSpanClass = validSurfaces.length === 1 
+            ? "sm:col-span-4" 
+            : isOddLast 
+            ? "sm:col-span-2 sm:col-start-2" 
+            : "sm:col-span-2";
 
           return (
             <div
               key={idx}
-              className={`p-5 sm:p-6 rounded-2xl border border-card-border/80 glass-panel bg-card/40 flex flex-col justify-between hover:border-accent-teal/40 transition-all duration-300 relative group ${isLastOdd ? "sm:col-span-2" : ""}`}
+              className={`p-5 sm:p-6 rounded-2xl border border-card-border/80 glass-panel bg-card/40 flex flex-col justify-between hover:border-accent-teal/40 transition-all duration-300 relative group ${colSpanClass}`}
             >
               <div>
                 {/* Badges Header */}

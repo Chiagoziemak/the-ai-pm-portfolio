@@ -178,12 +178,12 @@ export default async function HomePage() {
 
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-10 p-6 sm:p-8 lg:p-10 items-center">
                     {/* Media column (approx 45% on desktop) */}
-                    <div className="lg:col-span-5 w-full h-[220px] sm:h-[300px] lg:h-[380px] rounded-2xl overflow-hidden bg-gradient-to-br from-indigo-950/80 via-slate-900 to-slate-950 border border-card-border/40 flex items-center justify-center relative shadow-inner">
+                    <div className="lg:col-span-5 w-full h-[240px] sm:h-[320px] lg:h-[400px] rounded-2xl overflow-hidden bg-gradient-to-br from-slate-900/90 via-slate-950 to-background border border-card-border/40 p-2.5 sm:p-3.5 flex items-center justify-center relative shadow-inner">
                       {featuredCaseStudy.coverImage ? (
                         <img
                           src={featuredCaseStudy.coverImage}
                           alt={featuredCaseStudy.coverImageAlt || `${featuredCaseStudy.title} — Case Study Cover`}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                          className="w-full h-full object-contain rounded-xl drop-shadow-md group-hover:scale-[1.02] transition-transform duration-500"
                         />
                       ) : (
                         <div className="w-full h-full bg-gradient-to-br from-accent-teal/15 via-card to-background flex items-center justify-center">
@@ -419,12 +419,24 @@ export default async function HomePage() {
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mt-1.5 sm:mt-2 tracking-tight">How I Work</h2>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {processSteps.map((step, idx) => (
-                <div
-                  key={idx}
-                  className="p-6 sm:p-7 rounded-3xl glass-panel border-card-border/60 hover:border-accent-teal/40 transition-all duration-300 flex flex-col justify-between w-full h-full"
-                >
+            <div className={`grid grid-cols-1 sm:grid-cols-2 ${processSteps.length === 5 ? "lg:grid-cols-6" : "lg:grid-cols-4"} gap-6`}>
+              {processSteps.map((step, idx) => {
+                let colClass = "w-full h-full";
+                if (processSteps.length === 5) {
+                  if (idx < 3) {
+                    colClass = "lg:col-span-2 w-full h-full";
+                  } else if (idx === 3) {
+                    colClass = "lg:col-span-2 lg:col-start-2 w-full h-full";
+                  } else if (idx === 4) {
+                    colClass = "lg:col-span-2 w-full h-full sm:col-span-2 lg:col-span-2 sm:max-w-[calc(50%-0.75rem)] lg:max-w-none sm:mx-auto lg:mx-0";
+                  }
+                }
+
+                return (
+                  <div
+                    key={idx}
+                    className={`p-6 sm:p-7 rounded-3xl glass-panel border-card-border/60 hover:border-accent-teal/40 transition-all duration-300 flex flex-col justify-between ${colClass}`}
+                  >
                   <div>
                     <div className="flex items-center justify-between mb-4">
                       <span className="text-2xl font-mono font-black text-accent-teal/50">{step.number}</span>
@@ -458,10 +470,11 @@ export default async function HomePage() {
                     </div>
                   )}
                 </div>
-              ))}
-            </div>
-          </section>
-        ) : null;
+              );
+            })}
+          </div>
+        </section>
+      ) : null;
 
       case "testimonials":
         return testimonials.length > 0 ? (

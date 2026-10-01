@@ -149,14 +149,23 @@ export default async function AboutPage() {
                 Technical &amp; Product Capability
               </h2>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {skillsGroups.map((group: any, idx: number) => {
                 if (!group) return null;
-                const items = Array.isArray(group.items) ? group.items : [];
+                const rawItems = Array.isArray(group.items) ? group.items : [];
+                // Deduplicate identical items cleanly
+                const items: string[] = Array.from(
+                  new Set(
+                    rawItems.map((item: any) =>
+                      typeof item === "string" ? item.trim() : (item?.name || item?.label || String(item)).trim()
+                    )
+                  )
+                ).filter((item): item is string => Boolean(item));
+
                 return (
                   <div
                     key={idx}
-                    className="w-full h-full p-6 sm:p-7 rounded-2xl border border-card-border glass-panel shadow-sm flex flex-col justify-between sm:last:odd:col-span-2 lg:last:odd:col-span-1"
+                    className="w-full h-full p-6 sm:p-7 rounded-2xl border border-card-border glass-panel shadow-sm flex flex-col justify-between"
                   >
                     <div>
                       {group.category && (
@@ -165,15 +174,11 @@ export default async function AboutPage() {
                         </h3>
                       )}
                       <div className="flex flex-wrap gap-2">
-                        {items.map((item: any, iIdx: number) => {
-                          if (!item) return null;
-                          const label = typeof item === "string" ? item : (item.name || item.label || String(item));
-                          return (
-                            <span key={iIdx} className="px-3 py-1 bg-card border border-card-border text-foreground text-xs font-mono rounded-lg">
-                              {label}
-                            </span>
-                          );
-                        })}
+                        {items.map((item, iIdx) => (
+                          <span key={iIdx} className="px-3 py-1 bg-card border border-card-border text-foreground text-xs font-mono rounded-lg">
+                            {item}
+                          </span>
+                        ))}
                       </div>
                     </div>
                   </div>
@@ -305,17 +310,28 @@ export default async function AboutPage() {
                 <span>Certifications &amp; Credentials</span>
               </h2>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className={`grid grid-cols-1 sm:grid-cols-2 ${certifications.length === 5 ? "lg:grid-cols-6" : "lg:grid-cols-3"} gap-6`}>
               {certifications.map((cert: any, idx: number) => {
                 const certName = typeof cert === "string" ? cert : (cert.name || cert.title || "");
                 const issuer = typeof cert === "string" ? "" : (cert.issuer || cert.organization || "");
                 const year = typeof cert === "string" ? "" : (cert.year || cert.date || "");
                 const badgeUrl = typeof cert === "string" ? "" : (cert.badgeUrl || cert.url || "");
 
+                let colClass = "w-full h-full";
+                if (certifications.length === 5) {
+                  if (idx < 3) {
+                    colClass = "lg:col-span-2 w-full h-full";
+                  } else if (idx === 3) {
+                    colClass = "lg:col-span-2 lg:col-start-2 w-full h-full";
+                  } else if (idx === 4) {
+                    colClass = "lg:col-span-2 w-full h-full sm:col-span-2 lg:col-span-2 sm:max-w-[calc(50%-0.75rem)] lg:max-w-none sm:mx-auto lg:mx-0";
+                  }
+                }
+
                 return (
                   <div
                     key={idx}
-                    className="w-full h-full p-5 sm:p-6 rounded-2xl border border-card-border glass-panel hover:border-accent-teal/40 transition-all duration-300 flex items-start gap-4 shadow-sm sm:last:odd:col-span-2 lg:last:odd:col-span-1"
+                    className={`p-5 sm:p-6 rounded-2xl border border-card-border glass-panel hover:border-accent-teal/40 transition-all duration-300 flex items-start gap-4 shadow-sm ${colClass}`}
                   >
                     <div className="w-10 h-10 rounded-xl bg-accent-teal/10 border border-accent-teal/20 text-accent-teal flex items-center justify-center flex-shrink-0">
                       <Award size={20} />

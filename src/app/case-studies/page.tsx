@@ -148,12 +148,12 @@ export default async function CaseStudiesPage() {
               
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 p-6 sm:p-10 lg:p-12 items-center">
                 {/* Image side */}
-                <div className="lg:col-span-5 h-[220px] sm:h-[300px] lg:h-[380px] rounded-2xl overflow-hidden bg-gradient-to-br from-indigo-950/80 via-slate-900 to-slate-950 border border-card-border/40 flex items-center justify-center relative shadow-inner">
+                <div className="lg:col-span-5 h-[240px] sm:h-[320px] lg:h-[400px] rounded-2xl overflow-hidden bg-gradient-to-br from-slate-900/90 via-slate-950 to-background border border-card-border/40 p-2.5 sm:p-3.5 flex items-center justify-center relative shadow-inner">
                   {featuredCaseStudy.coverImage ? (
                     <img 
                       src={featuredCaseStudy.coverImage} 
                       alt={featuredCaseStudy.coverImageAlt || `${featuredCaseStudy.title} — Case Study Cover`} 
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-750" 
+                      className="w-full h-full object-contain rounded-xl drop-shadow-md group-hover:scale-[1.02] transition-transform duration-500" 
                     />
                   ) : (
                     <Sparkles size={64} className="text-accent-teal/15 group-hover:scale-110 transition-transform duration-500" />
