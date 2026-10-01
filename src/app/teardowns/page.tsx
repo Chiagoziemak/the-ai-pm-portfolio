@@ -55,6 +55,7 @@ export default async function TeardownsPage() {
         teardownsPageEnabled={siteSettings.teardownsPageEnabled}
         contactPageEnabled={siteSettings.contactPageEnabled}
         resourcesPageEnabled={siteSettings.enableResourcesPage}
+        navLabels={siteSettings.navLabels}
       />
 
       <TeardownsList initialTeardowns={teardowns} />

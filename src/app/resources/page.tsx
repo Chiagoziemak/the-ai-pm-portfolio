@@ -55,6 +55,7 @@ export default async function ResourcesPage() {
         teardownsPageEnabled={siteSettings.teardownsPageEnabled}
         contactPageEnabled={siteSettings.contactPageEnabled}
         resourcesPageEnabled={siteSettings.enableResourcesPage}
+        navLabels={siteSettings.navLabels}
       />
 
       <ResourcesList resources={resources} />

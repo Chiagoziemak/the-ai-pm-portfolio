@@ -175,6 +175,7 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
         teardownsPageEnabled={siteSettings.teardownsPageEnabled}
         contactPageEnabled={siteSettings.contactPageEnabled}
         resourcesPageEnabled={siteSettings.enableResourcesPage}
+        navLabels={siteSettings.navLabels}
       />
 
       <main className="flex-grow pt-8 sm:pt-12 pb-16 sm:pb-24">

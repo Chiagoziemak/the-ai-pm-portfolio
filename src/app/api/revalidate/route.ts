@@ -35,12 +35,23 @@ export async function POST(req: NextRequest) {
       if (slug?.current) {
         revalidatePath(`/case-studies/${slug.current}`);
       }
+    } else if (_type === "resource") {
+      revalidatePath("/resources");
+      if (slug?.current) {
+        revalidatePath(`/resources/${slug.current}`);
+      }
     } else if (_type === "product") {
       revalidatePath("/products");
     } else if (_type === "aboutPage") {
       revalidatePath("/about");
     } else if (_type === "contactPage") {
       revalidatePath("/contact");
+    } else if (_type === "siteSettings") {
+      revalidatePath("/", "layout");
+      revalidatePath("/resources");
+      revalidatePath("/products");
+      revalidatePath("/case-studies");
+      revalidatePath("/teardowns");
     }
 
     return NextResponse.json({

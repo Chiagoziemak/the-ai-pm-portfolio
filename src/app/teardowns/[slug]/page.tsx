@@ -149,6 +149,7 @@ export default async function TeardownDetailPage({ params }: PageProps) {
         teardownsPageEnabled={siteSettings.teardownsPageEnabled}
         contactPageEnabled={siteSettings.contactPageEnabled}
         resourcesPageEnabled={siteSettings.enableResourcesPage}
+        navLabels={siteSettings.navLabels}
       />
 
       {/* Reading Progress Bar */}

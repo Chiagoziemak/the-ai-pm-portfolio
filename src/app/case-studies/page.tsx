@@ -59,6 +59,7 @@ export default async function CaseStudiesPage() {
           teardownsPageEnabled={siteSettings.teardownsPageEnabled}
           contactPageEnabled={siteSettings.contactPageEnabled}
           resourcesPageEnabled={siteSettings.enableResourcesPage}
+          navLabels={siteSettings.navLabels}
         />
 
         <main className="flex-grow z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-24 flex items-center justify-center">
@@ -131,6 +132,7 @@ export default async function CaseStudiesPage() {
         teardownsPageEnabled={siteSettings.teardownsPageEnabled}
         contactPageEnabled={siteSettings.contactPageEnabled}
         resourcesPageEnabled={siteSettings.enableResourcesPage}
+        navLabels={siteSettings.navLabels}
       />
 
       <main className="flex-grow z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12">

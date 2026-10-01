@@ -19,6 +19,15 @@ export interface NavbarProps {
   teardownsPageEnabled?: boolean;
   contactPageEnabled?: boolean;
   resourcesPageEnabled?: boolean;
+  navLabels?: {
+    home?: string;
+    about?: string;
+    teardowns?: string;
+    caseStudies?: string;
+    products?: string;
+    resources?: string;
+    contact?: string;
+  };
 }
 
 export default function Navbar({
@@ -34,6 +43,7 @@ export default function Navbar({
   teardownsPageEnabled,
   contactPageEnabled,
   resourcesPageEnabled,
+  navLabels,
 }: NavbarProps) {
   const { theme, toggleTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
@@ -60,9 +70,44 @@ export default function Navbar({
     { name: "Contact", path: "/contact" },
   ];
 
-  const rawLinks = (Array.isArray(navLinks) && navLinks.length > 0)
+  let rawLinks = (Array.isArray(navLinks) && navLinks.length > 0)
     ? navLinks.filter((l) => Boolean(l && l.label && l.url)).map((l) => ({ name: l.label, path: l.url }))
     : defaultLinks;
+
+  // If Resources is enabled globally, ensure Resources is in rawLinks even if the custom Sanity navLinks array was saved without it
+  if (isResourcesEnabled) {
+    const hasResourcesLink = rawLinks.some((l) => {
+      const p = l.path?.trim().toLowerCase();
+      return p === "/resources" || p.startsWith("/resources/");
+    });
+    if (!hasResourcesLink) {
+      const productsIdx = rawLinks.findIndex((l) => l.path?.trim().toLowerCase() === "/products");
+      const csIdx = rawLinks.findIndex((l) => l.path?.trim().toLowerCase() === "/case-studies");
+      const teardownsIdx = rawLinks.findIndex((l) => l.path?.trim().toLowerCase() === "/teardowns");
+      const aboutIdx = rawLinks.findIndex((l) => l.path?.trim().toLowerCase() === "/about");
+      const contactIdx = rawLinks.findIndex((l) => l.path?.trim().toLowerCase() === "/contact");
+
+      const insertIdx = productsIdx !== -1 
+        ? productsIdx + 1 
+        : (csIdx !== -1 
+          ? csIdx + 1 
+          : (teardownsIdx !== -1
+            ? teardownsIdx + 1
+            : (aboutIdx !== -1 
+              ? aboutIdx 
+              : (contactIdx !== -1 ? contactIdx : rawLinks.length))));
+
+      const label = (navLabels?.resources && !navLabels.resources.startsWith("/")) 
+        ? navLabels.resources 
+        : "Resources";
+
+      rawLinks = [
+        ...rawLinks.slice(0, insertIdx),
+        { name: label, path: "/resources" },
+        ...rawLinks.slice(insertIdx),
+      ];
+    }
+  }
 
   const activeLinks = rawLinks
     .filter((l) => {
