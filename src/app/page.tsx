@@ -6,9 +6,11 @@ import Footer from "@/components/Footer";
 import DynamicIcon from "@/components/DynamicIcon";
 import StatGrid from "@/components/StatGrid";
 import TestimonialsCarousel from "@/components/TestimonialsCarousel";
+import ExpandableText from "@/components/ExpandableText";
 import { getTeardowns, getCaseStudies, getHomePageData, getSiteSettings, MarqueeItem } from "@/sanity/queries";
 import { urlForImage } from "@/sanity/image";
 import { constructMetadata, generatePersonJsonLd } from "@/lib/seo";
+import { formatDisplayDate } from "@/lib/formatDate";
 import { ArrowUpRight, Brain, Compass } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -69,8 +71,8 @@ export default async function HomePage() {
     return true;
   };
 
-  const featuredCaseStudy = caseStudies.length > 0 ? caseStudies[0] : null;
-  const otherCaseStudy = caseStudies.length > 1 ? caseStudies[1] : null;
+  const featuredCaseStudy = caseStudies.find((cs) => cs.featured === true) || (caseStudies.length > 0 ? caseStudies[0] : null);
+  const otherCaseStudy = caseStudies.find((cs) => cs !== featuredCaseStudy && cs.slug !== featuredCaseStudy?.slug) || (caseStudies.length > 1 && caseStudies[0] !== featuredCaseStudy ? caseStudies[0] : (caseStudies.length > 1 ? caseStudies[1] : null));
   const featuredTeardowns = teardowns.slice(0, 3);
 
   // Home Page custom fields with clean fallbacks
@@ -190,14 +192,18 @@ export default async function HomePage() {
                       )}
                     </div>
 
-                    <h3 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-foreground group-hover:text-accent-teal transition-colors mb-3 leading-snug">
+                    <h3 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-foreground group-hover:text-accent-teal transition-colors mb-3 leading-snug break-words">
                       {featuredCaseStudy.title}
                     </h3>
 
                     {featuredCaseStudy.summary && (
-                      <p className="text-xs sm:text-sm md:text-base text-foreground/70 leading-relaxed mb-6">
-                        {featuredCaseStudy.summary}
-                      </p>
+                      <div className="mb-6">
+                        <ExpandableText
+                          text={featuredCaseStudy.summary}
+                          collapsedLines={6}
+                          className="text-xs sm:text-sm md:text-base text-foreground/70 leading-relaxed"
+                        />
+                      </div>
                     )}
                   </div>
 
@@ -210,7 +216,7 @@ export default async function HomePage() {
                       Array.isArray(featuredCaseStudy.results) && featuredCaseStudy.results.length > 0 && (
                         <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-2">
                           {featuredCaseStudy.results.slice(0, 2).map((res, i) => (
-                            <div key={i} className="px-3 py-2 rounded-xl bg-card-border/20 border border-card-border/30 text-xs text-foreground/80 font-medium flex items-center gap-2">
+                            <div key={i} className="px-3 py-2 rounded-xl bg-card-border/20 border border-card-border/30 text-xs text-foreground/80 font-medium flex items-center gap-2 sm:last:odd:col-span-2">
                               <span className="w-1.5 h-1.5 rounded-full bg-accent-teal flex-shrink-0"></span>
                               <span className="truncate">{res}</span>
                             </div>
@@ -246,14 +252,18 @@ export default async function HomePage() {
                       )}
                     </div>
 
-                    <h3 className="text-xl sm:text-2xl font-extrabold text-foreground group-hover:text-accent-teal transition-colors mb-3 leading-snug line-clamp-2 lg:min-h-[3.75rem]">
+                    <h3 className="text-xl sm:text-2xl font-extrabold text-foreground group-hover:text-accent-teal transition-colors mb-3 leading-snug break-words">
                       {otherCaseStudy.title}
                     </h3>
 
                     {otherCaseStudy.summary && (
-                      <p className="text-xs sm:text-sm text-foreground/70 leading-relaxed mb-6 line-clamp-3 lg:min-h-[4rem]">
-                        {otherCaseStudy.summary}
-                      </p>
+                      <div className="mb-6">
+                        <ExpandableText
+                          text={otherCaseStudy.summary}
+                          collapsedLines={4}
+                          className="text-xs sm:text-sm text-foreground/70 leading-relaxed"
+                        />
+                      </div>
                     )}
                   </div>
 
@@ -305,13 +315,17 @@ export default async function HomePage() {
                       {teardown.category && <span className="px-2.5 py-0.5 rounded-md bg-card-border/30 text-foreground/80 font-bold">{teardown.category}</span>}
                       {teardown.readTime && <span>{teardown.readTime}</span>}
                     </div>
-                    <h3 className="text-base sm:text-lg font-bold text-foreground group-hover:text-accent-teal transition-colors mb-2 leading-snug line-clamp-2 min-h-[3.25rem]">
+                    <h3 className="text-base sm:text-lg font-bold text-foreground group-hover:text-accent-teal transition-colors mb-2 leading-snug break-words">
                       {teardown.title}
                     </h3>
                     {teardown.summary && (
-                      <p className="text-xs sm:text-sm text-foreground/70 line-clamp-3 leading-relaxed mb-4 min-h-[3.75rem]">
-                        {teardown.summary}
-                      </p>
+                      <div className="mb-4">
+                        <ExpandableText
+                          text={teardown.summary}
+                          collapsedLines={3}
+                          className="text-xs sm:text-sm text-foreground/70 leading-relaxed"
+                        />
+                      </div>
                     )}
                   </div>
                   <div className="mt-auto flex items-center justify-between pt-4 border-t border-card-border/30 text-xs font-semibold text-accent-teal group-hover:text-accent-cyan">
@@ -346,13 +360,17 @@ export default async function HomePage() {
                       </div>
                     </div>
 
-                    <h3 className="text-base sm:text-lg font-bold text-foreground mb-2 leading-snug line-clamp-2 min-h-[3rem]">
+                    <h3 className="text-base sm:text-lg font-bold text-foreground mb-2 leading-snug break-words">
                       {step.title}
                     </h3>
 
-                    <p className="text-xs sm:text-sm text-foreground/75 leading-relaxed mb-4 line-clamp-4 min-h-[4.5rem]">
-                      {step.description}
-                    </p>
+                    <div className="mb-4">
+                      <ExpandableText
+                        text={step.description}
+                        collapsedLines={4}
+                        className="text-xs sm:text-sm text-foreground/75 leading-relaxed"
+                      />
+                    </div>
                   </div>
 
                   {Array.isArray(step.deliverables) && step.deliverables.length > 0 && (
@@ -406,14 +424,18 @@ export default async function HomePage() {
                       )}
                     </div>
 
-                    <h3 className="text-base sm:text-lg font-bold text-foreground mb-2 leading-snug line-clamp-2 min-h-[3rem]">
+                    <h3 className="text-base sm:text-lg font-bold text-foreground mb-2 leading-snug break-words">
                       {item.title}
                     </h3>
 
                     {item.description && (
-                      <p className="text-xs sm:text-sm text-foreground/75 leading-relaxed mb-4 line-clamp-3 min-h-[3.75rem]">
-                        {item.description}
-                      </p>
+                      <div className="mb-4">
+                        <ExpandableText
+                          text={item.description}
+                          collapsedLines={3}
+                          className="text-xs sm:text-sm text-foreground/75 leading-relaxed"
+                        />
+                      </div>
                     )}
                   </div>
 

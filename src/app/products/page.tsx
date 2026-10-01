@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { getProducts, getSiteSettings } from "@/sanity/queries";
 import { constructMetadata } from "@/lib/seo";
+import ExpandableText from "@/components/ExpandableText";
 import { Sparkles, ArrowUpRight } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -104,12 +105,18 @@ export default async function ProductsPage() {
                   </div>
                 </div>
 
-                <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4 leading-tight tracking-tight text-foreground">
+                <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4 leading-tight tracking-tight text-foreground break-words">
                   {featuredProduct.tagline}
                 </h2>
-                <p className="text-foreground/80 text-sm sm:text-base mb-6 sm:mb-8 leading-relaxed">
-                  {featuredProduct.description}
-                </p>
+                {featuredProduct.description && (
+                  <div className="mb-6 sm:mb-8">
+                    <ExpandableText
+                      text={featuredProduct.description}
+                      collapsedLines={4}
+                      className="text-foreground/80 text-sm sm:text-base leading-relaxed"
+                    />
+                  </div>
+                )}
 
                 <div className="flex flex-wrap gap-3 sm:gap-4">
                   {featuredProduct.linkType === "Case Study" && (featuredProduct as any).caseStudySlug ? (
@@ -221,13 +228,19 @@ export default async function ProductsPage() {
                     </span>
                   </div>
 
-                  <h3 className="text-xl font-bold mb-2 text-foreground group-hover:text-accent-teal transition-colors line-clamp-2 min-h-[3.5rem]">
+                  <h3 className="text-xl font-bold mb-2 text-foreground group-hover:text-accent-teal transition-colors leading-snug break-words">
                     {product.tagline}
                   </h3>
 
-                  <p className="text-foreground/75 text-xs sm:text-sm mb-6 leading-relaxed line-clamp-3 min-h-[3.75rem]">
-                    {product.description}
-                  </p>
+                  {product.description && (
+                    <div className="mb-6">
+                      <ExpandableText
+                        text={product.description}
+                        collapsedLines={3}
+                        className="text-foreground/75 text-xs sm:text-sm leading-relaxed"
+                      />
+                    </div>
+                  )}
                 </div>
 
                 <div className="mt-auto pt-4 border-t border-card-border/40 flex items-center justify-between">

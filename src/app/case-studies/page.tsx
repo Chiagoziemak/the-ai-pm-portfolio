@@ -5,8 +5,10 @@ import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import StatGrid from "@/components/StatGrid";
+import ExpandableText from "@/components/ExpandableText";
 import { getCaseStudies, getSiteSettings } from "@/sanity/queries";
 import { constructMetadata } from "@/lib/seo";
+import { formatDisplayDate } from "@/lib/formatDate";
 import { ArrowUpRight, Sparkles } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -38,8 +40,8 @@ export default async function CaseStudiesPage() {
   const data = await getCaseStudies();
   const caseStudies = Array.isArray(data) ? data : [];
 
-  const featuredCaseStudy = caseStudies.length > 0 ? caseStudies[0] : null;
-  const otherCaseStudies = caseStudies.length > 1 ? caseStudies.slice(1) : [];
+  const featuredCaseStudy = caseStudies.find((cs) => cs.featured === true) || (caseStudies.length > 0 ? caseStudies[0] : null);
+  const otherCaseStudies = caseStudies.filter((cs) => cs !== featuredCaseStudy && cs.slug !== featuredCaseStudy?.slug);
 
   if (caseStudies.length === 0) {
     return (
@@ -179,16 +181,22 @@ export default async function CaseStudiesPage() {
                       <span className="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider glass-panel text-foreground/80 border-card-border">
                         {featuredCaseStudy.category}
                       </span>
-                      <span className="text-xs text-foreground/50 ml-auto">{featuredCaseStudy.date}</span>
+                      <span className="text-xs text-foreground/50 ml-auto">{formatDisplayDate(featuredCaseStudy.date)}</span>
                     </div>
 
-                    <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground group-hover:text-accent-teal transition-colors mb-3 leading-snug">
+                    <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground group-hover:text-accent-teal transition-colors mb-3 leading-snug break-words">
                       {featuredCaseStudy.title}
                     </h2>
 
-                    <p className="text-sm sm:text-base text-foreground/75 leading-relaxed mb-6">
-                      {featuredCaseStudy.summary}
-                    </p>
+                    {featuredCaseStudy.summary && (
+                      <div className="mb-6">
+                        <ExpandableText
+                          text={featuredCaseStudy.summary}
+                          collapsedLines={4}
+                          className="text-sm sm:text-base text-foreground/75 leading-relaxed"
+                        />
+                      </div>
+                    )}
                   </div>
 
                   <div>
@@ -200,7 +208,7 @@ export default async function CaseStudiesPage() {
                       Array.isArray(featuredCaseStudy.results) && featuredCaseStudy.results.length > 0 && (
                         <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-2">
                           {featuredCaseStudy.results.map((res, i) => (
-                            <div key={i} className="px-3.5 py-2.5 rounded-xl bg-card-border/20 border border-card-border/40 text-xs text-foreground/90 font-medium flex items-center gap-2">
+                            <div key={i} className="px-3.5 py-2.5 rounded-xl bg-card-border/20 border border-card-border/40 text-xs text-foreground/90 font-medium flex items-center gap-2 sm:last:odd:col-span-2">
                               <span className="w-1.5 h-1.5 rounded-full bg-accent-teal flex-shrink-0"></span>
                               <span>{res}</span>
                             </div>
@@ -261,16 +269,22 @@ export default async function CaseStudiesPage() {
                           </span>
                         )}
                       </div>
-                      <span>{study.date}</span>
+                      <span>{formatDisplayDate(study.date)}</span>
                     </div>
 
-                    <h3 className="text-xl font-extrabold text-foreground group-hover:text-accent-teal transition-colors mb-3 leading-snug line-clamp-2 md:min-h-[3.5rem]">
+                    <h3 className="text-xl font-extrabold text-foreground group-hover:text-accent-teal transition-colors mb-3 leading-snug break-words">
                       {study.title}
                     </h3>
 
-                    <p className="text-xs sm:text-sm text-foreground/70 line-clamp-3 leading-relaxed mb-6 md:min-h-[3.75rem]">
-                      {study.summary}
-                    </p>
+                    {study.summary && (
+                      <div className="mb-6">
+                        <ExpandableText
+                          text={study.summary}
+                          collapsedLines={3}
+                          className="text-xs sm:text-sm text-foreground/70 leading-relaxed"
+                        />
+                      </div>
+                    )}
 
                     {/* Card Stat-Pair Blocks or Results if present */}
                     {Array.isArray(study.cardStats) && study.cardStats.length > 0 ? (
@@ -281,7 +295,7 @@ export default async function CaseStudiesPage() {
                       Array.isArray(study.results) && study.results.length > 0 && (
                         <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-2">
                           {study.results.slice(0, 2).map((res, i) => (
-                            <div key={i} className="px-3 py-2 rounded-xl bg-card-border/20 border border-card-border/30 text-xs text-foreground/80 font-medium flex items-center gap-2">
+                            <div key={i} className="px-3 py-2 rounded-xl bg-card-border/20 border border-card-border/30 text-xs text-foreground/80 font-medium flex items-center gap-2 sm:last:odd:col-span-2">
                               <span className="w-1.5 h-1.5 rounded-full bg-accent-teal flex-shrink-0"></span>
                               <span className="truncate">{res}</span>
                             </div>

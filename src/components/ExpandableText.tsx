@@ -71,7 +71,11 @@ export default function ExpandableText({
         <button
           type="button"
           aria-expanded={isExpanded}
-          onClick={() => setIsExpanded((prev) => !prev)}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setIsExpanded((prev) => !prev);
+          }}
           className={
             buttonClassName ||
             "inline-flex items-center gap-1 text-[11px] sm:text-xs font-mono font-semibold text-accent-teal hover:text-accent-cyan transition-colors mt-1.5 py-1.5 px-0.5 min-h-[44px] cursor-pointer focus:outline-none focus:ring-1 focus:ring-accent-teal rounded"

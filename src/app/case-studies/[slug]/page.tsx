@@ -11,6 +11,7 @@ import ProductSurfaces from "@/components/ProductSurfaces";
 import { getCaseStudyBySlug, getSiteSettings } from "@/sanity/queries";
 import { constructMetadata, generateArticleJsonLd, getBaseUrl } from "@/lib/seo";
 import { normalizeExternalUrl } from "@/lib/url";
+import { formatDisplayDate } from "@/lib/formatDate";
 import { PortableText } from "next-sanity";
 import type { PortableTextBlock } from "next-sanity";
 import ExpandableText from "@/components/ExpandableText";
@@ -204,7 +205,7 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
               </span>
             )}
             <span className="text-xs text-foreground/50 font-mono ml-auto">
-              {study.date || "2024"}
+              {formatDisplayDate(study.date)}
             </span>
           </div>
 
@@ -271,7 +272,7 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
                 </div>
                 <div className="flex justify-between border-b border-card-border/60 pb-2">
                   <span className="text-foreground/50">Date</span>
-                  <span className="text-foreground font-semibold">{study.date || "2024"}</span>
+                  <span className="text-foreground font-semibold">{formatDisplayDate(study.date)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-foreground/50">Read Time</span>
@@ -560,7 +561,7 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
                   {results.map((res: any, idx: number) => {
                     const text = typeof res === "string" ? res : res?.metric || res?.title || res?.description || String(res);
                     return (
-                      <div key={idx} className="p-4 rounded-xl bg-card border border-card-border text-xs sm:text-sm font-medium text-foreground flex items-start gap-3">
+                      <div key={idx} className="p-4 rounded-xl bg-card border border-card-border text-xs sm:text-sm font-medium text-foreground flex items-start gap-3 sm:last:odd:col-span-2">
                         <span className="w-2 h-2 rounded-full bg-accent-teal flex-shrink-0 mt-1.5"></span>
                         <div className="leading-relaxed break-words flex-1">
                           <ExpandableText text={text} collapsedLines={3} />
@@ -584,7 +585,7 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
                     const title = typeof lessonItem === "string" ? lessonItem : lessonItem?.title || `Lesson ${idx + 1}`;
                     const description = typeof lessonItem === "object" ? lessonItem?.description : undefined;
                     return (
-                      <div key={idx} className="p-5 sm:p-6 rounded-xl bg-card border border-card-border flex flex-col justify-between">
+                      <div key={idx} className="p-5 sm:p-6 rounded-xl bg-card border border-card-border flex flex-col justify-between sm:last:odd:col-span-2">
                         <div>
                           <div className="flex items-start gap-3 mb-2">
                             <span className="w-2 h-2 rounded-full bg-accent-cyan flex-shrink-0 mt-1.5"></span>
@@ -617,7 +618,7 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
                     <Link
                       key={idx}
                       href={`/case-studies/${rel.slug}`}
-                      className="group flex flex-col justify-between p-6 rounded-2xl border border-card-border glass-panel hover:border-accent-teal/50 hover:shadow-lg transition-all"
+                      className="group flex flex-col justify-between p-6 rounded-2xl border border-card-border glass-panel hover:border-accent-teal/50 hover:shadow-lg transition-all sm:last:odd:col-span-2"
                     >
                       <div>
                         {rel.category && (
@@ -625,13 +626,17 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
                             {rel.category}
                           </span>
                         )}
-                        <h3 className="text-base sm:text-lg font-bold text-foreground group-hover:text-accent-teal transition-colors line-clamp-2 min-h-[3.25rem]">
+                        <h3 className="text-base sm:text-lg font-bold text-foreground group-hover:text-accent-teal transition-colors leading-snug break-words">
                           {rel.title}
                         </h3>
                         {rel.summary && (
-                          <p className="text-xs sm:text-sm text-foreground/70 line-clamp-2 mt-2 leading-relaxed">
-                            {rel.summary}
-                          </p>
+                          <div className="mt-2">
+                            <ExpandableText
+                              text={rel.summary}
+                              collapsedLines={2}
+                              className="text-xs sm:text-sm text-foreground/70 leading-relaxed"
+                            />
+                          </div>
                         )}
                       </div>
                       <div className="mt-4 pt-3 border-t border-card-border/40 flex items-center justify-between text-xs font-semibold text-accent-teal">

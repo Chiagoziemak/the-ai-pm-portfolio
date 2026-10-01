@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight, Sparkles, Filter } from "lucide-react";
+import ExpandableText from "@/components/ExpandableText";
+import { formatDisplayDate } from "@/lib/formatDate";
 import { Teardown } from "@/data/mockData";
 
 interface TeardownsListProps {
@@ -91,13 +93,19 @@ export default function TeardownsList({ initialTeardowns }: TeardownsListProps) 
               {/* Info body */}
               <div className="p-6 flex-grow flex flex-col justify-between">
                 <div>
-                  <span className="text-xs text-foreground/50 font-semibold">{teardown.date}</span>
-                  <h3 className="text-lg font-bold text-foreground mt-2 mb-3 leading-snug group-hover:text-accent-teal transition-colors line-clamp-2 min-h-[3.25rem]">
+                  <span className="text-xs text-foreground/50 font-semibold">{formatDisplayDate(teardown.date)}</span>
+                  <h3 className="text-lg font-bold text-foreground mt-2 mb-3 leading-snug group-hover:text-accent-teal transition-colors break-words">
                     {teardown.title}
                   </h3>
-                  <p className="text-sm text-foreground/75 line-clamp-3 leading-relaxed min-h-[3.75rem]">
-                    {teardown.summary}
-                  </p>
+                  {teardown.summary && (
+                    <div className="mb-4">
+                      <ExpandableText
+                        text={teardown.summary}
+                        collapsedLines={3}
+                        className="text-sm text-foreground/75 leading-relaxed"
+                      />
+                    </div>
+                  )}
                 </div>
                 <div className="mt-auto pt-4 border-t border-card-border/30">
                   <Link

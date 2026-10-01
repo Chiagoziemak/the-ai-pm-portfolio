@@ -157,7 +157,7 @@ export default function RecommendationsCarousel({
               <span className="text-accent-teal text-xs font-mono font-bold px-2 py-0.5 rounded bg-accent-teal/10 border border-accent-teal/20 flex-shrink-0">
                 0{currentIndex + 1}
               </span>
-              <h4 className="font-bold text-base sm:text-lg text-foreground truncate">
+              <h4 className="font-bold text-base sm:text-lg text-foreground break-words">
                 {activeRec.title}
               </h4>
             </div>

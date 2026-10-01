@@ -785,7 +785,7 @@ export async function getCaseStudies(): Promise<CaseStudy[]> {
   }
   try {
     const caseStudies = await sanityClient.fetch(
-      `*[_type == "caseStudy"] | order(date desc) {
+      `*[_type == "caseStudy" && !(_id in path("drafts.**"))] | order(featured desc, date desc, _updatedAt desc) {
         title,
         metaTitle,
         metaDescription,
@@ -841,6 +841,71 @@ export async function getCaseStudies(): Promise<CaseStudy[]> {
   } catch (error) {
     console.error("Failed to fetch case studies from Sanity:", error);
     return [];
+  }
+}
+
+export async function getFeaturedCaseStudy(): Promise<CaseStudy | null> {
+  if (!sanityConfigured) {
+    return null;
+  }
+  try {
+    const res = await sanityClient.fetch(
+      `*[_type == "caseStudy" && featured == true && !(_id in path("drafts.**"))] | order(_updatedAt desc, date desc)[0] {
+        title,
+        metaTitle,
+        metaDescription,
+        "slug": slug.current,
+        date,
+        category,
+        summary,
+        liveUrl,
+        liveUrlLabel,
+        readTime,
+        badgeLabel,
+        cardStats,
+        featured,
+        isPlaceholder,
+        "tools": stackMethods,
+        "coverImage": coverImage.asset->url,
+        "coverImageAlt": coverImage.alt,
+        results,
+        lessonsLearned,
+        productDecisions[] {
+          decision,
+          context,
+          options,
+          chosenOption,
+          rationale,
+          tradeoffs,
+          outcome
+        },
+        beforeAfter[] {
+          beforeLabel,
+          beforeDescription,
+          "beforeImageUrl": beforeImage.asset->url,
+          afterLabel,
+          afterDescription,
+          "afterImageUrl": afterImage.asset->url,
+          impact
+        },
+        surfacesIcon,
+        productSurfaces[] {
+          "name": select(defined(name) => name, label),
+          description,
+          accessType,
+          platformType,
+          url,
+          "buttonLabel": select(defined(buttonLabel) => buttonLabel, linkLabel),
+          enabled
+        }
+      }`,
+      {},
+      fetchOptions
+    );
+    return res || null;
+  } catch (error) {
+    console.error("Failed to fetch featured case study from Sanity:", error);
+    return null;
   }
 }
 

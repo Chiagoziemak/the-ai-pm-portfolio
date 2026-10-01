@@ -11,6 +11,7 @@ import ExpandableText from "@/components/ExpandableText";
 import { getTeardowns, getTeardownBySlug, getSiteSettings } from "@/sanity/queries";
 import { constructMetadata, generateArticleJsonLd, getBaseUrl } from "@/lib/seo";
 import { normalizeExternalUrl } from "@/lib/url";
+import { formatDisplayDate } from "@/lib/formatDate";
 import { ArrowLeft, Clock, Calendar, Tag, ArrowUpRight, Layers } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -164,7 +165,7 @@ export default async function TeardownDetailPage({ params }: PageProps) {
           <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-foreground/60 text-xs sm:text-sm font-medium">
             <span className="flex items-center gap-1.5">
               <Calendar size={14} className="text-accent-teal" />
-              {teardown.date}
+              {formatDisplayDate(teardown.date)}
             </span>
             <span className="flex items-center gap-1.5">
               <Clock size={14} className="text-accent-cyan" />
@@ -433,13 +434,17 @@ export default async function TeardownDetailPage({ params }: PageProps) {
                     <span className="text-[10px] font-mono text-accent-teal uppercase tracking-wider block mb-2 font-bold">
                       {item.category}
                     </span>
-                    <h4 className="font-bold text-sm sm:text-base text-foreground group-hover:text-accent-teal transition-colors mb-2 leading-snug">
+                    <h4 className="font-bold text-sm sm:text-base text-foreground group-hover:text-accent-teal transition-colors mb-2 leading-snug break-words">
                       {item.title}
                     </h4>
                     {item.summary && (
-                      <p className="text-xs text-foreground/70 line-clamp-2 leading-relaxed mb-4">
-                        {item.summary}
-                      </p>
+                      <div className="mb-4">
+                        <ExpandableText
+                          text={item.summary}
+                          collapsedLines={2}
+                          className="text-xs text-foreground/70 leading-relaxed"
+                        />
+                      </div>
                     )}
                   </div>
                   <span className="inline-flex items-center gap-1 text-xs font-semibold text-accent-cyan group-hover:underline">
