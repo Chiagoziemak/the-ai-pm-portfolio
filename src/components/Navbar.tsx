@@ -18,6 +18,7 @@ export interface NavbarProps {
   productsPageEnabled?: boolean;
   teardownsPageEnabled?: boolean;
   contactPageEnabled?: boolean;
+  resourcesPageEnabled?: boolean;
 }
 
 export default function Navbar({
@@ -32,6 +33,7 @@ export default function Navbar({
   productsPageEnabled,
   teardownsPageEnabled,
   contactPageEnabled,
+  resourcesPageEnabled,
 }: NavbarProps) {
   const { theme, toggleTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
@@ -47,11 +49,13 @@ export default function Navbar({
   const isProductsEnabled = productsPageEnabled !== false;
   const isTeardownsEnabled = teardownsPageEnabled !== false;
   const isContactEnabled = contactPageEnabled !== false;
+  const isResourcesEnabled = resourcesPageEnabled === true;
 
   const defaultLinks = [
     { name: "Teardowns", path: "/teardowns" },
     { name: "Case Studies", path: "/case-studies" },
     { name: "Products", path: "/products" },
+    { name: "Resources", path: "/resources" },
     { name: "About", path: "/about" },
     { name: "Contact", path: "/contact" },
   ];
@@ -67,6 +71,7 @@ export default function Navbar({
       if (!isAboutEnabled && (path === "/about" || path.startsWith("/about/"))) return false;
       if (!isCaseStudiesEnabled && (path === "/case-studies" || path.startsWith("/case-studies/"))) return false;
       if (!isProductsEnabled && (path === "/products" || path.startsWith("/products/"))) return false;
+      if (!isResourcesEnabled && (path === "/resources" || path.startsWith("/resources/"))) return false;
       if (!isTeardownsEnabled && (path === "/teardowns" || path.startsWith("/teardowns/"))) return false;
       if (!isContactEnabled && (path === "/contact" || path.startsWith("/contact/"))) return false;
       return true;

@@ -1,5 +1,5 @@
 import { MetadataRoute } from "next";
-import { getTeardowns, getCaseStudies, getSiteSettings } from "@/sanity/queries";
+import { getTeardowns, getCaseStudies, getResources, getSiteSettings } from "@/sanity/queries";
 import { getBaseUrl } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -14,10 +14,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const isProductsEnabled = siteSettings.productsPageEnabled !== false;
   const isTeardownsEnabled = siteSettings.teardownsPageEnabled !== false;
   const isContactEnabled = siteSettings.contactPageEnabled !== false;
+  const isResourcesEnabled = siteSettings.enableResourcesPage === true;
 
-  const [teardowns, caseStudies] = await Promise.all([
+  const [teardowns, caseStudies, resources] = await Promise.all([
     isTeardownsEnabled ? getTeardowns() : Promise.resolve([]),
     isCaseStudiesEnabled ? getCaseStudies() : Promise.resolve([]),
+    isResourcesEnabled ? getResources() : Promise.resolve([]),
   ]);
 
   const staticRoutes: MetadataRoute.Sitemap = [
@@ -50,6 +52,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   if (isProductsEnabled) {
     staticRoutes.push({
       url: `${baseUrl}/products`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.85,
+    });
+  }
+
+  if (isResourcesEnabled) {
+    staticRoutes.push({
+      url: `${baseUrl}/resources`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.85,
@@ -92,5 +103,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }))
     : [];
 
-  return [...staticRoutes, ...teardownRoutes, ...caseStudyRoutes];
+  const resourceRoutes: MetadataRoute.Sitemap = isResourcesEnabled
+    ? resources.map((r) => ({
+        url: `${baseUrl}/resources/${r.slug}`,
+        lastModified: new Date(),
+        changeFrequency: "monthly",
+        priority: 0.8,
+      }))
+    : [];
+
+  return [...staticRoutes, ...teardownRoutes, ...caseStudyRoutes, ...resourceRoutes];
 }

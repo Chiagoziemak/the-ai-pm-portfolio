@@ -7,11 +7,11 @@ import DynamicIcon from "@/components/DynamicIcon";
 import StatGrid from "@/components/StatGrid";
 import TestimonialsCarousel from "@/components/TestimonialsCarousel";
 import ExpandableText from "@/components/ExpandableText";
-import { getTeardowns, getCaseStudies, getHomePageData, getSiteSettings, MarqueeItem } from "@/sanity/queries";
+import { getTeardowns, getCaseStudies, getHomePageData, getSiteSettings, getFeaturedResource, MarqueeItem } from "@/sanity/queries";
 import { urlForImage } from "@/sanity/image";
 import { constructMetadata, generatePersonJsonLd } from "@/lib/seo";
 import { formatDisplayDate } from "@/lib/formatDate";
-import { ArrowUpRight, Brain, Compass } from "lucide-react";
+import { ArrowUpRight, Brain, Compass, BookOpen } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -44,6 +44,18 @@ export default async function HomePage() {
     getSiteSettings(),
   ]);
 
+  const isAboutEnabled = siteSettings.aboutPageEnabled !== false;
+  const isCaseStudiesEnabled = siteSettings.caseStudiesPageEnabled !== false;
+  const isProductsEnabled = siteSettings.productsPageEnabled !== false;
+  const isTeardownsEnabled = siteSettings.teardownsPageEnabled !== false;
+  const isContactEnabled = siteSettings.contactPageEnabled !== false;
+  const isResourcesEnabled = siteSettings.enableResourcesPage === true;
+  const showFeaturedResource = siteSettings.showFeaturedResourceOnHomepage !== false;
+
+  const featuredResource = (isResourcesEnabled && showFeaturedResource)
+    ? await getFeaturedResource()
+    : null;
+
   const teardowns = Array.isArray(homeData.featuredTeardowns) && homeData.featuredTeardowns.length > 0
     ? homeData.featuredTeardowns.filter(Boolean)
     : (Array.isArray(teardownsData) ? teardownsData : []);
@@ -54,18 +66,13 @@ export default async function HomePage() {
 
   const caseStudies = rawCaseStudies.filter(Boolean);
 
-  const isAboutEnabled = siteSettings.aboutPageEnabled !== false;
-  const isCaseStudiesEnabled = siteSettings.caseStudiesPageEnabled !== false;
-  const isProductsEnabled = siteSettings.productsPageEnabled !== false;
-  const isTeardownsEnabled = siteSettings.teardownsPageEnabled !== false;
-  const isContactEnabled = siteSettings.contactPageEnabled !== false;
-
   const isUrlAllowed = (url?: string) => {
     if (!url) return true;
     const path = url.trim().toLowerCase();
     if (!isAboutEnabled && (path === "/about" || path.startsWith("/about/"))) return false;
     if (!isCaseStudiesEnabled && (path === "/case-studies" || path.startsWith("/case-studies/"))) return false;
     if (!isProductsEnabled && (path === "/products" || path.startsWith("/products/"))) return false;
+    if (!isResourcesEnabled && (path === "/resources" || path.startsWith("/resources/"))) return false;
     if (!isTeardownsEnabled && (path === "/teardowns" || path.startsWith("/teardowns/"))) return false;
     if (!isContactEnabled && (path === "/contact" || path.startsWith("/contact/"))) return false;
     return true;
@@ -94,10 +101,19 @@ export default async function HomePage() {
   const learningTrack = Array.isArray(homeData.learningTrack) ? homeData.learningTrack : [];
 
   // Reorderable section list
-  const defaultOrder = ["featuredWorkStrip", "caseStudies", "teardowns", "howIWork", "testimonials", "learningTrack"];
-  const orderToUse = (Array.isArray(homeData.sectionOrder) && homeData.sectionOrder.length > 0)
+  const defaultOrder = ["featuredWorkStrip", "caseStudies", "featuredResource", "teardowns", "howIWork", "testimonials", "learningTrack"];
+  let orderToUse = (Array.isArray(homeData.sectionOrder) && homeData.sectionOrder.length > 0)
     ? homeData.sectionOrder
     : defaultOrder;
+
+  if (isResourcesEnabled && featuredResource && !orderToUse.includes("featuredResource")) {
+    const csIdx = orderToUse.indexOf("caseStudies");
+    if (csIdx !== -1) {
+      orderToUse = [...orderToUse.slice(0, csIdx + 1), "featuredResource", ...orderToUse.slice(csIdx + 1)];
+    } else {
+      orderToUse = ["featuredResource", ...orderToUse];
+    }
+  }
 
   // Marquee items (Sanity or default fallback)
   const defaultMarqueeItems: MarqueeItem[] = [
@@ -359,6 +375,140 @@ export default async function HomePage() {
           </section>
         ) : null;
 
+      case "featuredResource":
+        if (!isResourcesEnabled || !featuredResource) return null;
+        return (
+          <section key="featuredResource" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-12 gap-3">
+              <div>
+                <span className="text-xs uppercase tracking-widest text-accent-teal font-extrabold">
+                  {featuredResource.badge || "Featured Resource"}
+                </span>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mt-1.5 sm:mt-2 tracking-tight">
+                  Featured E-Book &amp; Framework
+                </h2>
+              </div>
+              <Link
+                href="/resources"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-accent-teal hover:underline min-h-[36px]"
+              >
+                Browse all resources <ArrowUpRight size={14} />
+              </Link>
+            </div>
+
+            <div className="w-full group rounded-3xl overflow-hidden glass-panel border-card-border/60 hover:border-accent-teal/40 hover:-translate-y-1 hover:shadow-2xl transition-all duration-500 relative bg-gradient-to-br from-card/90 via-card/50 to-background">
+              <div className="absolute top-0 right-0 w-80 h-80 rounded-full blur-3xl bg-accent-teal/10 pointer-events-none"></div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-10 p-6 sm:p-8 lg:p-10 items-center">
+                {/* Media column (Cover image / 3D book mockup) */}
+                <div className="lg:col-span-5 w-full h-[260px] sm:h-[340px] lg:h-[400px] rounded-2xl overflow-hidden bg-gradient-to-br from-slate-900/90 via-slate-950 to-background border border-card-border/40 p-3 sm:p-4 flex items-center justify-center relative shadow-inner">
+                  {featuredResource.coverImage ? (
+                    <img
+                      src={featuredResource.coverImage}
+                      alt={featuredResource.coverImageAlt || `${featuredResource.title} — Resource Cover`}
+                      className="w-full h-full object-contain rounded-xl drop-shadow-2xl group-hover:scale-[1.02] transition-transform duration-500"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-accent-teal/15 via-card to-background flex flex-col items-center justify-center gap-3">
+                      <BookOpen size={48} className="text-accent-teal/40" />
+                      <span className="text-xs font-mono text-accent-teal/60 uppercase tracking-widest">{featuredResource.resourceType || "E-Book"}</span>
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-tr from-accent-cyan/10 to-transparent pointer-events-none"></div>
+                </div>
+
+                {/* Content column */}
+                <div className="lg:col-span-7 flex flex-col justify-between">
+                  <div>
+                    <div className="flex flex-wrap gap-2 items-center mb-3 sm:mb-4">
+                      <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-accent-teal text-background">
+                        {featuredResource.resourceType?.toUpperCase() || "E-BOOK"}
+                      </span>
+                      {featuredResource.status && (
+                        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-mono font-bold tracking-wider">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                          <span>{featuredResource.status}</span>
+                        </div>
+                      )}
+                      {featuredResource.priceText && (
+                        <span className="px-3 py-1 rounded-full text-[10px] font-mono font-black tracking-wider bg-accent-cyan/15 text-accent-cyan border border-accent-cyan/30">
+                          {featuredResource.originalPriceText && (
+                            <span className="line-through opacity-60 mr-1.5 font-normal">{featuredResource.originalPriceText}</span>
+                          )}
+                          {featuredResource.priceText}
+                        </span>
+                      )}
+                    </div>
+
+                    <h3 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-foreground group-hover:text-accent-teal transition-colors mb-2 leading-tight break-words">
+                      {featuredResource.title}
+                    </h3>
+
+                    {featuredResource.subtitle && (
+                      <p className="text-xs sm:text-sm font-medium text-accent-cyan/90 mb-3 leading-snug">
+                        {featuredResource.subtitle}
+                      </p>
+                    )}
+
+                    {featuredResource.summary && (
+                      <div className="mb-5">
+                        <ExpandableText
+                          text={featuredResource.summary}
+                          collapsedLines={3}
+                          className="text-xs sm:text-sm text-foreground/75 leading-relaxed"
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  <div>
+                    {/* Format Details Highlights */}
+                    {Array.isArray(featuredResource.formatDetails) && featuredResource.formatDetails.length > 0 && (
+                      <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {featuredResource.formatDetails.slice(0, 4).map((detail, idx) => (
+                          <div key={idx} className="px-3 py-2 rounded-xl bg-card-border/20 border border-card-border/30 text-xs text-foreground/80 font-medium flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-accent-teal flex-shrink-0"></span>
+                            <span>{detail}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* CTAs */}
+                    <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-card-border/30">
+                      {featuredResource.ctaUrl ? (
+                        <a
+                          href={featuredResource.ctaUrl.startsWith("http") ? featuredResource.ctaUrl : `https://${featuredResource.ctaUrl}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-accent-teal to-accent-cyan text-background font-extrabold text-xs sm:text-sm shadow-md shadow-accent-teal/20 hover:shadow-accent-teal/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 min-h-[42px]"
+                        >
+                          {featuredResource.ctaText || "Get E-Book"} <ArrowUpRight size={15} />
+                        </a>
+                      ) : (
+                        <Link
+                          href={`/resources/${featuredResource.slug}`}
+                          className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-accent-teal to-accent-cyan text-background font-extrabold text-xs sm:text-sm shadow-md shadow-accent-teal/20 hover:shadow-accent-teal/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 min-h-[42px]"
+                        >
+                          {featuredResource.ctaText || "Get E-Book"} <ArrowUpRight size={15} />
+                        </Link>
+                      )}
+
+                      <Link
+                        href={`/resources/${featuredResource.slug}`}
+                        className="inline-flex items-center gap-1.5 px-4 py-3 rounded-xl glass-panel text-foreground/90 font-bold text-xs hover:text-accent-teal hover:border-accent-teal/40 transition-all min-h-[42px]"
+                      >
+                        <span>Learn More &amp; Overview</span>
+                        <ArrowUpRight size={13} />
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        );
+
       case "teardowns":
         if (!isTeardownsEnabled) return null;
         return featuredTeardowns.length > 0 ? (
@@ -569,6 +719,7 @@ export default async function HomePage() {
         productsPageEnabled={siteSettings.productsPageEnabled}
         teardownsPageEnabled={siteSettings.teardownsPageEnabled}
         contactPageEnabled={siteSettings.contactPageEnabled}
+        resourcesPageEnabled={siteSettings.enableResourcesPage}
       />
 
       <main className="flex-grow z-10">
@@ -803,6 +954,7 @@ export default async function HomePage() {
         productsPageEnabled={siteSettings.productsPageEnabled}
         teardownsPageEnabled={siteSettings.teardownsPageEnabled}
         contactPageEnabled={siteSettings.contactPageEnabled}
+        resourcesPageEnabled={siteSettings.enableResourcesPage}
       />
     </div>
   );

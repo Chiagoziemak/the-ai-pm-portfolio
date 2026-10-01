@@ -3,6 +3,7 @@ import { structureTool } from "sanity/structure";
 import teardown from "./src/sanity/schemas/teardowns";
 import caseStudy from "./src/sanity/schemas/caseStudies";
 import product from "./src/sanity/schemas/products";
+import resource from "./src/sanity/schemas/resource";
 import siteSettings from "./src/sanity/schemas/siteSettings";
 import { reusableObjects } from "./src/sanity/schemas/objects";
 import { pageSchemas } from "./src/sanity/schemas/pages";
@@ -46,6 +47,7 @@ export default defineConfig({
             S.documentTypeListItem("teardown").title("Product Teardowns"),
             S.documentTypeListItem("caseStudy").title("Case Studies"),
             S.documentTypeListItem("product").title("Products"),
+            S.documentTypeListItem("resource").title("Resources & E-Books"),
             S.divider(),
             // Submissions
             S.documentTypeListItem("contactSubmission").title("Contact Form Submissions"),
@@ -58,6 +60,7 @@ export default defineConfig({
       teardown,
       caseStudy,
       product,
+      resource,
       ...pageSchemas,
       ...reusableObjects,
     ],

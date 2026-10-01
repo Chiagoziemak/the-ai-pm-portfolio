@@ -15,7 +15,72 @@ import type {
   LessonLearned,
 } from "@/data/mockData";
 
+import type { PortableTextBlock } from "next-sanity";
+
 export type { ProductSurface, HeroMediaItem, HeroDisplayMode, LessonLearned };
+
+export interface LearningOutcome {
+  title: string;
+  description?: string;
+}
+
+export interface TableOfContentsItem {
+  chapterNumber?: string;
+  title: string;
+  topics?: string[];
+}
+
+export interface ResourceBonus {
+  title: string;
+  description?: string;
+  valueBadge?: string;
+}
+
+export interface ResourceFaq {
+  question: string;
+  answer: string;
+}
+
+export interface ResourceClosingCta {
+  headline?: string;
+  subtext?: string;
+  ctaText?: string;
+  ctaUrl?: string;
+}
+
+export interface Resource {
+  title: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  slug: string;
+  subtitle?: string;
+  resourceType?: string;
+  status?: string;
+  badge?: string;
+  heroBadge?: string;
+  resourceEnabled?: boolean;
+  featured?: boolean;
+  order?: number;
+  priceText?: string;
+  originalPriceText?: string;
+  ctaText?: string;
+  ctaUrl?: string;
+  secondaryCtaText?: string;
+  secondaryCtaUrl?: string;
+  coverImage?: string;
+  coverImageAlt?: string;
+  summary?: string;
+  formatDetails?: string[];
+  targetAudience?: string[];
+  learningOutcomes?: LearningOutcome[];
+  tableOfContents?: TableOfContentsItem[];
+  bonuses?: ResourceBonus[];
+  authorNoteHeading?: string;
+  whyIWroteThis?: PortableTextBlock[] | string;
+  testimonials?: Testimonial[];
+  faqs?: ResourceFaq[];
+  closingCta?: ResourceClosingCta;
+}
 
 export interface NavLink {
   label: string;
@@ -45,12 +110,15 @@ export interface SiteSettings {
   productsPageEnabled?: boolean;
   teardownsPageEnabled?: boolean;
   contactPageEnabled?: boolean;
+  enableResourcesPage?: boolean;
+  showFeaturedResourceOnHomepage?: boolean;
   navLabels?: {
     home?: string;
     about?: string;
     teardowns?: string;
     caseStudies?: string;
     products?: string;
+    resources?: string;
     contact?: string;
   };
   socialLinks?: {
@@ -189,6 +257,8 @@ export async function getSiteSettings(): Promise<SiteSettings> {
         productsPageEnabled,
         teardownsPageEnabled,
         contactPageEnabled,
+        enableResourcesPage,
+        showFeaturedResourceOnHomepage,
         navLabels,
         socialLinks,
         "resumeUrl": resumeFile.asset->url,
@@ -1090,3 +1160,232 @@ export async function getProducts(): Promise<Product[]> {
     return [];
   }
 }
+
+export async function getResources(): Promise<Resource[]> {
+  if (!sanityConfigured) {
+    return [];
+  }
+  try {
+    const resources = await sanityClient.fetch(
+      `*[_type == "resource" && resourceEnabled == true && !(_id in path("drafts.**"))] | order(featured desc, order asc, _createdAt desc) {
+        title,
+        metaTitle,
+        metaDescription,
+        "slug": slug.current,
+        subtitle,
+        resourceType,
+        status,
+        badge,
+        heroBadge,
+        resourceEnabled,
+        featured,
+        order,
+        priceText,
+        originalPriceText,
+        ctaText,
+        ctaUrl,
+        secondaryCtaText,
+        secondaryCtaUrl,
+        "coverImage": coverImage.asset->url,
+        "coverImageAlt": coverImage.alt,
+        summary,
+        formatDetails,
+        targetAudience,
+        learningOutcomes[] {
+          title,
+          description
+        },
+        tableOfContents[] {
+          chapterNumber,
+          title,
+          topics
+        },
+        bonuses[] {
+          title,
+          description,
+          valueBadge
+        },
+        authorNoteHeading,
+        whyIWroteThis,
+        testimonials[] {
+          quote,
+          authorName,
+          authorRole,
+          authorCompany,
+          "authorPhotoUrl": authorPhoto.asset->url,
+          linkedinUrl,
+          context
+        },
+        faqs[] {
+          question,
+          answer
+        },
+        closingCta {
+          headline,
+          subtext,
+          ctaText,
+          ctaUrl
+        }
+      }`,
+      {},
+      fetchOptions
+    );
+    return Array.isArray(resources) ? resources : [];
+  } catch (error) {
+    console.error("Failed to fetch resources from Sanity:", error);
+    return [];
+  }
+}
+
+export async function getResourceBySlug(slug: string): Promise<Resource | null> {
+  if (!sanityConfigured) {
+    return null;
+  }
+  try {
+    const res = await sanityClient.fetch(
+      `*[_type == "resource" && slug.current == $slug && !(_id in path("drafts.**"))][0] {
+        title,
+        metaTitle,
+        metaDescription,
+        "slug": slug.current,
+        subtitle,
+        resourceType,
+        status,
+        badge,
+        heroBadge,
+        resourceEnabled,
+        featured,
+        order,
+        priceText,
+        originalPriceText,
+        ctaText,
+        ctaUrl,
+        secondaryCtaText,
+        secondaryCtaUrl,
+        "coverImage": coverImage.asset->url,
+        "coverImageAlt": coverImage.alt,
+        summary,
+        formatDetails,
+        targetAudience,
+        learningOutcomes[] {
+          title,
+          description
+        },
+        tableOfContents[] {
+          chapterNumber,
+          title,
+          topics
+        },
+        bonuses[] {
+          title,
+          description,
+          valueBadge
+        },
+        authorNoteHeading,
+        whyIWroteThis,
+        testimonials[] {
+          quote,
+          authorName,
+          authorRole,
+          authorCompany,
+          "authorPhotoUrl": authorPhoto.asset->url,
+          linkedinUrl,
+          context
+        },
+        faqs[] {
+          question,
+          answer
+        },
+        closingCta {
+          headline,
+          subtext,
+          ctaText,
+          ctaUrl
+        }
+      }`,
+      { slug },
+      fetchOptions
+    );
+    return res || null;
+  } catch (error) {
+    console.error(`Failed to fetch resource for slug ${slug}:`, error);
+    return null;
+  }
+}
+
+export async function getFeaturedResource(): Promise<Resource | null> {
+  if (!sanityConfigured) {
+    return null;
+  }
+  try {
+    const res = await sanityClient.fetch(
+      `*[_type == "resource" && resourceEnabled == true && featured == true && !(_id in path("drafts.**"))] | order(order asc, _updatedAt desc)[0] {
+        title,
+        metaTitle,
+        metaDescription,
+        "slug": slug.current,
+        subtitle,
+        resourceType,
+        status,
+        badge,
+        heroBadge,
+        resourceEnabled,
+        featured,
+        order,
+        priceText,
+        originalPriceText,
+        ctaText,
+        ctaUrl,
+        secondaryCtaText,
+        secondaryCtaUrl,
+        "coverImage": coverImage.asset->url,
+        "coverImageAlt": coverImage.alt,
+        summary,
+        formatDetails,
+        targetAudience,
+        learningOutcomes[] {
+          title,
+          description
+        },
+        tableOfContents[] {
+          chapterNumber,
+          title,
+          topics
+        },
+        bonuses[] {
+          title,
+          description,
+          valueBadge
+        },
+        authorNoteHeading,
+        whyIWroteThis,
+        testimonials[] {
+          quote,
+          authorName,
+          authorRole,
+          authorCompany,
+          "authorPhotoUrl": authorPhoto.asset->url,
+          linkedinUrl,
+          context
+        },
+        faqs[] {
+          question,
+          answer
+        },
+        closingCta {
+          headline,
+          subtext,
+          ctaText,
+          ctaUrl
+        }
+      }`,
+      {},
+      fetchOptions
+    );
+    return res || null;
+  } catch (error) {
+    console.error("Failed to fetch featured resource from Sanity:", error);
+    return null;
+  }
+}
+

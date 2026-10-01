@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import TeardownsList from "./TeardownsList";
-import { getTeardowns, getSiteSettings } from "@/sanity/queries";
+import ResourcesList from "./ResourcesList";
+import { getResources, getSiteSettings } from "@/sanity/queries";
 import { constructMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -13,34 +13,34 @@ export const revalidate = 0;
 export async function generateMetadata(): Promise<Metadata> {
   const siteSettings = await getSiteSettings();
 
-  if (siteSettings.teardownsPageEnabled === false) {
+  if (siteSettings.enableResourcesPage !== true) {
     notFound();
   }
 
   return constructMetadata({
-    title: "Product Teardowns & Strategy Analyses | Chiagoziem Melvin Akobundu",
+    title: "AI PM Resources, E-Books & Frameworks | Chiagoziem Melvin Akobundu",
     description:
-      "Comprehensive product management teardowns analyzing user research, friction points, RICE prioritization, and strategic product roadmaps for leading AI and consumer platforms.",
-    urlPath: "/teardowns",
+      "Actionable e-books, PRD blueprints, AI prompt frameworks, and portfolio guides designed for ambitious AI Product Managers and technical leaders.",
+    urlPath: "/resources",
     siteSettings,
   });
 }
 
-export default async function TeardownsPage() {
+export default async function ResourcesPage() {
   const siteSettings = (await getSiteSettings()) || {};
 
-  if (siteSettings.teardownsPageEnabled === false) {
+  if (siteSettings.enableResourcesPage !== true) {
     notFound();
   }
 
-  const data = await getTeardowns();
-  const teardowns = Array.isArray(data) ? data : [];
+  const data = await getResources();
+  const resources = Array.isArray(data) ? data : [];
 
   return (
-    <div className="flex flex-col min-h-screen relative overflow-hidden page-bg-teardowns text-foreground transition-colors duration-300">
+    <div className="flex flex-col min-h-screen relative overflow-hidden page-bg-resources text-foreground transition-colors duration-300">
       {/* Background glow effects */}
-      <div className="absolute top-[10%] right-[-10%] w-[350px] sm:w-[500px] h-[350px] sm:h-[500px] rounded-full blur-[100px] glow-bg opacity-30 z-0 pointer-events-none"></div>
-      <div className="absolute bottom-[20%] left-[-10%] w-[300px] sm:w-[450px] h-[300px] sm:h-[450px] rounded-full blur-[120px] glow-bg opacity-30 z-0 pointer-events-none"></div>
+      <div className="absolute top-[10%] left-[-10%] w-[350px] sm:w-[500px] h-[350px] sm:h-[500px] rounded-full blur-[100px] glow-bg opacity-35 z-0 pointer-events-none"></div>
+      <div className="absolute bottom-[20%] right-[-10%] w-[300px] sm:w-[450px] h-[300px] sm:h-[450px] rounded-full blur-[120px] glow-bg opacity-25 z-0 pointer-events-none"></div>
 
       <Navbar
         navTitleText={siteSettings.navTitleText}
@@ -57,7 +57,7 @@ export default async function TeardownsPage() {
         resourcesPageEnabled={siteSettings.enableResourcesPage}
       />
 
-      <TeardownsList initialTeardowns={teardowns} />
+      <ResourcesList resources={resources} />
 
       <Footer
         footerName={siteSettings.footerName}

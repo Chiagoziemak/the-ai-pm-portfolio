@@ -20,6 +20,7 @@ export interface FooterProps {
   productsPageEnabled?: boolean;
   teardownsPageEnabled?: boolean;
   contactPageEnabled?: boolean;
+  resourcesPageEnabled?: boolean;
 }
 
 export default function Footer({
@@ -37,6 +38,7 @@ export default function Footer({
   productsPageEnabled,
   teardownsPageEnabled,
   contactPageEnabled,
+  resourcesPageEnabled,
 }: FooterProps) {
   const currentYear = new Date().getFullYear();
 
@@ -98,6 +100,7 @@ export default function Footer({
   const isProductsEnabled = productsPageEnabled !== false;
   const isTeardownsEnabled = teardownsPageEnabled !== false;
   const isContactEnabled = contactPageEnabled !== false;
+  const isResourcesEnabled = resourcesPageEnabled === true;
 
   const validFooterLinks = Array.isArray(footerLinks)
     ? footerLinks.filter((link) => {
@@ -106,6 +109,7 @@ export default function Footer({
         if (!isAboutEnabled && (path === "/about" || path.startsWith("/about/"))) return false;
         if (!isCaseStudiesEnabled && (path === "/case-studies" || path.startsWith("/case-studies/"))) return false;
         if (!isProductsEnabled && (path === "/products" || path.startsWith("/products/"))) return false;
+        if (!isResourcesEnabled && (path === "/resources" || path.startsWith("/resources/"))) return false;
         if (!isTeardownsEnabled && (path === "/teardowns" || path.startsWith("/teardowns/"))) return false;
         if (!isContactEnabled && (path === "/contact" || path.startsWith("/contact/"))) return false;
         return true;

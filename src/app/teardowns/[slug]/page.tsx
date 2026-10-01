@@ -148,6 +148,7 @@ export default async function TeardownDetailPage({ params }: PageProps) {
         productsPageEnabled={siteSettings.productsPageEnabled}
         teardownsPageEnabled={siteSettings.teardownsPageEnabled}
         contactPageEnabled={siteSettings.contactPageEnabled}
+        resourcesPageEnabled={siteSettings.enableResourcesPage}
       />
 
       {/* Reading Progress Bar */}
@@ -473,6 +474,7 @@ export default async function TeardownDetailPage({ params }: PageProps) {
         productsPageEnabled={siteSettings.productsPageEnabled}
         teardownsPageEnabled={siteSettings.teardownsPageEnabled}
         contactPageEnabled={siteSettings.contactPageEnabled}
+        resourcesPageEnabled={siteSettings.enableResourcesPage}
       />
     </div>
   );

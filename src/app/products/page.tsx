@@ -59,6 +59,7 @@ export default async function ProductsPage() {
         productsPageEnabled={siteSettings.productsPageEnabled}
         teardownsPageEnabled={siteSettings.teardownsPageEnabled}
         contactPageEnabled={siteSettings.contactPageEnabled}
+        resourcesPageEnabled={siteSettings.enableResourcesPage}
       />
       
       <main className="flex-grow pt-24 sm:pt-28 md:pt-32 pb-16 md:pb-24 px-4 sm:px-6 md:px-12 lg:px-16 max-w-[1280px] mx-auto w-full">
@@ -323,6 +324,7 @@ export default async function ProductsPage() {
         productsPageEnabled={siteSettings.productsPageEnabled}
         teardownsPageEnabled={siteSettings.teardownsPageEnabled}
         contactPageEnabled={siteSettings.contactPageEnabled}
+        resourcesPageEnabled={siteSettings.enableResourcesPage}
       />
     </div>
   );

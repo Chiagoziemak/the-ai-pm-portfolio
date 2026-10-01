@@ -174,6 +174,7 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
         productsPageEnabled={siteSettings.productsPageEnabled}
         teardownsPageEnabled={siteSettings.teardownsPageEnabled}
         contactPageEnabled={siteSettings.contactPageEnabled}
+        resourcesPageEnabled={siteSettings.enableResourcesPage}
       />
 
       <main className="flex-grow pt-8 sm:pt-12 pb-16 sm:pb-24">
@@ -791,6 +792,7 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
         productsPageEnabled={siteSettings.productsPageEnabled}
         teardownsPageEnabled={siteSettings.teardownsPageEnabled}
         contactPageEnabled={siteSettings.contactPageEnabled}
+        resourcesPageEnabled={siteSettings.enableResourcesPage}
       />
     </div>
   );
