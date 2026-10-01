@@ -148,7 +148,7 @@ export default async function CaseStudiesPage() {
               
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 p-6 sm:p-10 lg:p-12 items-center">
                 {/* Image side */}
-                <div className="lg:col-span-5 h-[200px] sm:h-[300px] rounded-2xl overflow-hidden bg-gradient-to-br from-indigo-950/80 via-slate-900 to-slate-950 border border-card-border/40 flex items-center justify-center relative shadow-inner">
+                <div className="lg:col-span-5 h-[220px] sm:h-[300px] lg:h-[380px] rounded-2xl overflow-hidden bg-gradient-to-br from-indigo-950/80 via-slate-900 to-slate-950 border border-card-border/40 flex items-center justify-center relative shadow-inner">
                   {featuredCaseStudy.coverImage ? (
                     <img 
                       src={featuredCaseStudy.coverImage} 
@@ -181,7 +181,7 @@ export default async function CaseStudiesPage() {
                       <span className="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider glass-panel text-foreground/80 border-card-border">
                         {featuredCaseStudy.category}
                       </span>
-                      <span className="text-xs text-foreground/50 ml-auto">{formatDisplayDate(featuredCaseStudy.date)}</span>
+                      <span className="text-xs text-foreground/50 ml-auto font-mono">{formatDisplayDate(featuredCaseStudy.date)}</span>
                     </div>
 
                     <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground group-hover:text-accent-teal transition-colors mb-3 leading-snug break-words">
@@ -210,7 +210,7 @@ export default async function CaseStudiesPage() {
                           {featuredCaseStudy.results.map((res, i) => (
                             <div key={i} className="px-3.5 py-2.5 rounded-xl bg-card-border/20 border border-card-border/40 text-xs text-foreground/90 font-medium flex items-center gap-2 sm:last:odd:col-span-2">
                               <span className="w-1.5 h-1.5 rounded-full bg-accent-teal flex-shrink-0"></span>
-                              <span>{res}</span>
+                              <span className="break-words">{res}</span>
                             </div>
                           ))}
                         </div>
@@ -248,16 +248,17 @@ export default async function CaseStudiesPage() {
         {/* Other Case Studies Grid (Equal Width CSS Grid with Odd Item Span) */}
         {otherCaseStudies.length > 0 && (
           <section className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-            {otherCaseStudies.map((study) => {
+            {otherCaseStudies.map((study, idx) => {
               const tools = Array.isArray(study.tools) ? study.tools.filter(Boolean) : [];
               const initialTools = tools.slice(0, 5);
               const extraToolsCount = tools.length - initialTools.length;
+              const isLastOdd = idx === otherCaseStudies.length - 1 && otherCaseStudies.length % 2 !== 0;
 
               return (
                 <Link
                   key={study.slug}
                   href={`/case-studies/${study.slug}`}
-                  className="group rounded-3xl p-6 sm:p-8 glass-panel border-card-border/60 hover:border-accent-teal/40 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 flex flex-col justify-between h-full w-full md:last:odd:col-span-2"
+                  className={`group rounded-3xl p-6 sm:p-8 glass-panel border-card-border/60 hover:border-accent-teal/40 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 flex flex-col justify-between h-full w-full ${isLastOdd ? "md:col-span-2" : ""}`}
                 >
                   <div>
                     <div className="flex items-center justify-between text-[11px] font-mono text-foreground/50 mb-4">
@@ -295,9 +296,9 @@ export default async function CaseStudiesPage() {
                       Array.isArray(study.results) && study.results.length > 0 && (
                         <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-2">
                           {study.results.slice(0, 2).map((res, i) => (
-                            <div key={i} className="px-3 py-2 rounded-xl bg-card-border/20 border border-card-border/30 text-xs text-foreground/80 font-medium flex items-center gap-2 sm:last:odd:col-span-2">
+                            <div key={i} className="px-3 py-2 rounded-xl bg-card-border/20 border border-card-border/30 text-xs text-foreground/80 font-medium flex items-center gap-2">
                               <span className="w-1.5 h-1.5 rounded-full bg-accent-teal flex-shrink-0"></span>
-                              <span className="truncate">{res}</span>
+                              <span className="break-words">{res}</span>
                             </div>
                           ))}
                         </div>

@@ -560,8 +560,9 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   {results.map((res: any, idx: number) => {
                     const text = typeof res === "string" ? res : res?.metric || res?.title || res?.description || String(res);
+                    const isLastOdd = idx === results.length - 1 && results.length % 2 !== 0;
                     return (
-                      <div key={idx} className="p-4 rounded-xl bg-card border border-card-border text-xs sm:text-sm font-medium text-foreground flex items-start gap-3 sm:last:odd:col-span-2">
+                      <div key={idx} className={`p-4 rounded-xl bg-card border border-card-border text-xs sm:text-sm font-medium text-foreground flex items-start gap-3 ${isLastOdd ? "sm:col-span-2" : ""}`}>
                         <span className="w-2 h-2 rounded-full bg-accent-teal flex-shrink-0 mt-1.5"></span>
                         <div className="leading-relaxed break-words flex-1">
                           <ExpandableText text={text} collapsedLines={3} />
@@ -584,8 +585,9 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
                   {lessons.map((lessonItem: any, idx: number) => {
                     const title = typeof lessonItem === "string" ? lessonItem : lessonItem?.title || `Lesson ${idx + 1}`;
                     const description = typeof lessonItem === "object" ? lessonItem?.description : undefined;
+                    const isLastOdd = idx === lessons.length - 1 && lessons.length % 2 !== 0;
                     return (
-                      <div key={idx} className="p-5 sm:p-6 rounded-xl bg-card border border-card-border flex flex-col justify-between sm:last:odd:col-span-2">
+                      <div key={idx} className={`p-5 sm:p-6 rounded-xl bg-card border border-card-border flex flex-col justify-between ${isLastOdd ? "sm:col-span-2" : ""}`}>
                         <div>
                           <div className="flex items-start gap-3 mb-2">
                             <span className="w-2 h-2 rounded-full bg-accent-cyan flex-shrink-0 mt-1.5"></span>
@@ -613,39 +615,110 @@ export default async function CaseStudyDetailPage({ params }: PageProps) {
                   <DynamicIcon name="FiGrid" size={22} className="text-accent-teal" />
                   Related Case Studies
                 </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
-                  {relatedCaseStudies.map((rel: any, idx: number) => (
-                    <Link
-                      key={idx}
-                      href={`/case-studies/${rel.slug}`}
-                      className="group flex flex-col justify-between p-6 rounded-2xl border border-card-border glass-panel hover:border-accent-teal/50 hover:shadow-lg transition-all sm:last:odd:col-span-2"
-                    >
-                      <div>
-                        {rel.category && (
-                          <span className="text-[10px] uppercase font-mono tracking-widest text-accent-teal font-bold block mb-2">
-                            {rel.category}
+                {relatedCaseStudies.length === 1 ? (
+                  <Link
+                    href={`/case-studies/${relatedCaseStudies[0].slug}`}
+                    className="group block p-6 sm:p-8 rounded-2xl border border-card-border glass-panel hover:border-accent-teal/50 hover:shadow-xl transition-all w-full"
+                  >
+                    <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                      <div className="flex flex-wrap items-center gap-2">
+                        {relatedCaseStudies[0].category && (
+                          <span className="text-xs uppercase font-mono tracking-widest text-accent-teal font-bold px-2.5 py-0.5 rounded-full bg-accent-teal/10 border border-accent-teal/20">
+                            {relatedCaseStudies[0].category}
                           </span>
                         )}
-                        <h3 className="text-base sm:text-lg font-bold text-foreground group-hover:text-accent-teal transition-colors leading-snug break-words">
-                          {rel.title}
-                        </h3>
-                        {rel.summary && (
-                          <div className="mt-2">
-                            <ExpandableText
-                              text={rel.summary}
-                              collapsedLines={2}
-                              className="text-xs sm:text-sm text-foreground/70 leading-relaxed"
-                            />
-                          </div>
+                        {relatedCaseStudies[0].badgeLabel && (
+                          <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-accent-cyan/15 text-accent-cyan border border-accent-cyan/30">
+                            {relatedCaseStudies[0].badgeLabel}
+                          </span>
                         )}
                       </div>
-                      <div className="mt-4 pt-3 border-t border-card-border/40 flex items-center justify-between text-xs font-semibold text-accent-teal">
-                        <span>Read Case Study</span>
-                        <ArrowUpRight size={16} className="text-foreground/50 group-hover:text-accent-teal group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all flex-shrink-0" />
+                      {relatedCaseStudies[0].date && (
+                        <span className="text-xs font-mono text-foreground/50">
+                          {formatDisplayDate(relatedCaseStudies[0].date)}
+                        </span>
+                      )}
+                    </div>
+
+                    <h3 className="text-xl sm:text-2xl font-extrabold text-foreground group-hover:text-accent-teal transition-colors leading-snug break-words mb-3">
+                      {relatedCaseStudies[0].title}
+                    </h3>
+
+                    {relatedCaseStudies[0].summary && (
+                      <div className="mb-4">
+                        <ExpandableText
+                          text={relatedCaseStudies[0].summary}
+                          collapsedLines={3}
+                          className="text-xs sm:text-sm text-foreground/75 leading-relaxed"
+                        />
                       </div>
-                    </Link>
-                  ))}
-                </div>
+                    )}
+
+                    {Array.isArray(relatedCaseStudies[0].cardStats) && relatedCaseStudies[0].cardStats.length > 0 ? (
+                      <div className="my-4">
+                        <StatGrid stats={relatedCaseStudies[0].cardStats} />
+                      </div>
+                    ) : Array.isArray(relatedCaseStudies[0].results) && relatedCaseStudies[0].results.length > 0 ? (
+                      <div className="my-4 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {relatedCaseStudies[0].results.slice(0, 2).map((res: any, i: number) => (
+                          <div key={i} className="px-3 py-2 rounded-xl bg-card border border-card-border text-xs text-foreground/85 font-medium flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-accent-teal flex-shrink-0"></span>
+                            <span>{typeof res === "string" ? res : res?.metric || res?.title || String(res)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : null}
+
+                    <div className="mt-4 pt-4 border-t border-card-border/40 flex items-center justify-between text-xs sm:text-sm font-semibold text-accent-teal group-hover:text-accent-cyan">
+                      <span>Read Full Case Study</span>
+                      <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                    </div>
+                  </Link>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
+                    {relatedCaseStudies.map((rel: any, idx: number) => {
+                      const isLastOdd = idx === relatedCaseStudies.length - 1 && relatedCaseStudies.length % 2 !== 0;
+                      return (
+                        <Link
+                          key={idx}
+                          href={`/case-studies/${rel.slug}`}
+                          className={`group flex flex-col justify-between p-6 rounded-2xl border border-card-border glass-panel hover:border-accent-teal/50 hover:shadow-lg transition-all ${isLastOdd ? "sm:col-span-2" : ""}`}
+                        >
+                          <div>
+                            <div className="flex items-center justify-between gap-2 mb-2">
+                              {rel.category && (
+                                <span className="text-[10px] uppercase font-mono tracking-widest text-accent-teal font-bold block">
+                                  {rel.category}
+                                </span>
+                              )}
+                              {rel.date && (
+                                <span className="text-xs font-mono text-foreground/50">
+                                  {formatDisplayDate(rel.date)}
+                                </span>
+                              )}
+                            </div>
+                            <h3 className="text-base sm:text-lg font-bold text-foreground group-hover:text-accent-teal transition-colors leading-snug break-words">
+                              {rel.title}
+                            </h3>
+                            {rel.summary && (
+                              <div className="mt-2">
+                                <ExpandableText
+                                  text={rel.summary}
+                                  collapsedLines={3}
+                                  className="text-xs sm:text-sm text-foreground/70 leading-relaxed"
+                                />
+                              </div>
+                            )}
+                          </div>
+                          <div className="mt-4 pt-3 border-t border-card-border/40 flex items-center justify-between text-xs font-semibold text-accent-teal">
+                            <span>Read Case Study</span>
+                            <ArrowUpRight size={16} className="text-foreground/50 group-hover:text-accent-teal group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all flex-shrink-0" />
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
               </section>
             )}
 

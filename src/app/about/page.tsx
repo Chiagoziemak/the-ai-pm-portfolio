@@ -192,23 +192,42 @@ export default async function AboutPage() {
               </h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {learningVector.map((skill, idx) => (
-                <div
-                  key={idx}
-                  className="w-full h-full p-5 sm:p-6 rounded-2xl border border-card-border glass-panel shadow-sm sm:last:odd:col-span-2"
-                >
-                  <div className="flex justify-between items-center mb-2 font-mono text-xs sm:text-sm">
-                    <span className="font-bold text-foreground">{skill.name}</span>
-                    <span className="text-accent-teal font-semibold">{skill.percent}%</span>
+              {learningVector.map((skill: any, idx: number) => {
+                const rawPercent = skill.percent;
+                const numPercent =
+                  typeof rawPercent === "number"
+                    ? rawPercent
+                    : typeof rawPercent === "string" && rawPercent.trim() !== ""
+                    ? parseFloat(rawPercent)
+                    : NaN;
+                const hasValidPercent = typeof numPercent === "number" && !isNaN(numPercent) && numPercent >= 0;
+                const clampedPercent = hasValidPercent ? Math.min(100, Math.max(0, numPercent)) : null;
+                const isLastOdd = idx === learningVector.length - 1 && learningVector.length % 2 !== 0;
+
+                return (
+                  <div
+                    key={idx}
+                    className={`w-full h-full p-5 sm:p-6 rounded-2xl border border-card-border glass-panel shadow-sm flex flex-col justify-between ${
+                      isLastOdd ? "sm:col-span-2" : ""
+                    }`}
+                  >
+                    <div className="flex justify-between items-center font-mono text-xs sm:text-sm">
+                      <span className="font-bold text-foreground">{skill.name}</span>
+                      {hasValidPercent && (
+                        <span className="text-accent-teal font-semibold">{clampedPercent}%</span>
+                      )}
+                    </div>
+                    {hasValidPercent && (
+                      <div className="w-full bg-card-border/30 h-2 rounded-full overflow-hidden mt-3">
+                        <div
+                          className="bg-gradient-to-r from-accent-teal to-accent-cyan h-full rounded-full transition-all duration-500"
+                          style={{ width: `${clampedPercent}%` }}
+                        ></div>
+                      </div>
+                    )}
                   </div>
-                  <div className="w-full bg-card-border/30 h-2 rounded-full overflow-hidden">
-                    <div
-                      className="bg-gradient-to-r from-accent-teal to-accent-cyan h-full rounded-full transition-all duration-500"
-                      style={{ width: `${Math.min(100, Math.max(0, skill.percent))}%` }}
-                    ></div>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </section>
         )}

@@ -170,115 +170,188 @@ export default async function HomePage() {
               </Link>
             </div>
 
-            <div className={otherCaseStudy ? "grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8" : "flex justify-center"}>
-              {/* Main Featured Case Study */}
+            <div className="space-y-6 sm:space-y-8">
+              {/* Main Featured Case Study (Okeyson) - Full Container Width Banner */}
               {featuredCaseStudy && (
-                <div className={`${otherCaseStudy ? "lg:col-span-7" : "w-full max-w-4xl"} group rounded-3xl overflow-hidden glass-panel border-card-border/60 hover:border-accent-teal/40 hover:-translate-y-1 hover:shadow-2xl transition-all duration-500 flex flex-col justify-between p-6 sm:p-8 relative`}>
-                  <div className="absolute top-0 right-0 w-48 h-48 rounded-full blur-3xl bg-accent-teal/5 pointer-events-none"></div>
-                  <div>
-                    <div className="flex flex-wrap gap-2 items-center mb-4">
-                      <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-accent-teal text-background">
-                        Featured AI Product
-                      </span>
-                      {featuredCaseStudy.badgeLabel && (
-                        <span className="px-3 py-1 rounded-full text-[10px] font-mono tracking-wider bg-accent-cyan/20 text-accent-cyan border border-accent-cyan/30">
-                          {featuredCaseStudy.badgeLabel}
-                        </span>
+                <div className="w-full group rounded-3xl overflow-hidden glass-panel border-card-border/60 hover:border-accent-teal/40 hover:-translate-y-1 hover:shadow-2xl transition-all duration-500 relative">
+                  <div className="absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl bg-accent-teal/5 pointer-events-none"></div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-10 p-6 sm:p-8 lg:p-10 items-center">
+                    {/* Media column (approx 45% on desktop) */}
+                    <div className="lg:col-span-5 w-full h-[220px] sm:h-[300px] lg:h-[380px] rounded-2xl overflow-hidden bg-gradient-to-br from-indigo-950/80 via-slate-900 to-slate-950 border border-card-border/40 flex items-center justify-center relative shadow-inner">
+                      {featuredCaseStudy.coverImage ? (
+                        <img
+                          src={featuredCaseStudy.coverImage}
+                          alt={featuredCaseStudy.coverImageAlt || `${featuredCaseStudy.title} — Case Study Cover`}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-accent-teal/15 via-card to-background flex items-center justify-center">
+                          <span className="text-accent-teal/20 text-6xl">✦</span>
+                        </div>
                       )}
-                      {featuredCaseStudy.category && (
-                        <span className="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider glass-panel text-foreground/80 border-card-border">
-                          {featuredCaseStudy.category}
-                        </span>
-                      )}
+                      <div className="absolute inset-0 bg-gradient-to-tr from-accent-cyan/10 to-transparent pointer-events-none"></div>
                     </div>
 
-                    <h3 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-foreground group-hover:text-accent-teal transition-colors mb-3 leading-snug break-words">
-                      {featuredCaseStudy.title}
-                    </h3>
-
-                    {featuredCaseStudy.summary && (
-                      <div className="mb-6">
-                        <ExpandableText
-                          text={featuredCaseStudy.summary}
-                          collapsedLines={6}
-                          className="text-xs sm:text-sm md:text-base text-foreground/70 leading-relaxed"
-                        />
-                      </div>
-                    )}
-                  </div>
-
-                  <div>
-                    {/* Card Stat-Pair Blocks if present */}
-                    {Array.isArray(featuredCaseStudy.cardStats) && featuredCaseStudy.cardStats.length > 0 ? (
-                      <StatGrid stats={featuredCaseStudy.cardStats} />
-                    ) : (
-                      /* Fallback to results preview */
-                      Array.isArray(featuredCaseStudy.results) && featuredCaseStudy.results.length > 0 && (
-                        <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-2">
-                          {featuredCaseStudy.results.slice(0, 2).map((res, i) => (
-                            <div key={i} className="px-3 py-2 rounded-xl bg-card-border/20 border border-card-border/30 text-xs text-foreground/80 font-medium flex items-center gap-2 sm:last:odd:col-span-2">
-                              <span className="w-1.5 h-1.5 rounded-full bg-accent-teal flex-shrink-0"></span>
-                              <span className="truncate">{res}</span>
-                            </div>
-                          ))}
+                    {/* Content column (approx 55% on desktop) */}
+                    <div className="lg:col-span-7 flex flex-col justify-between">
+                      <div>
+                        <div className="flex flex-wrap gap-2 items-center mb-3 sm:mb-4">
+                          <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-accent-teal text-background">
+                            Featured AI Product
+                          </span>
+                          {featuredCaseStudy.badgeLabel && (
+                            <span className="px-3 py-1 rounded-full text-[10px] font-mono tracking-wider bg-accent-cyan/20 text-accent-cyan border border-accent-cyan/30">
+                              {featuredCaseStudy.badgeLabel}
+                            </span>
+                          )}
+                          {featuredCaseStudy.category && (
+                            <span className="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider glass-panel text-foreground/80 border-card-border">
+                              {featuredCaseStudy.category}
+                            </span>
+                          )}
+                          <span className="text-xs text-foreground/50 ml-auto font-mono">{formatDisplayDate(featuredCaseStudy.date)}</span>
                         </div>
-                      )
-                    )}
 
-                    <Link
-                      href={`/case-studies/${featuredCaseStudy.slug}`}
-                      className="inline-flex items-center gap-2 text-xs font-extrabold text-accent-cyan hover:text-accent-teal transition-colors group-hover:translate-x-1 duration-300 min-h-[36px]"
-                    >
-                      Read Full Case Study <ArrowUpRight size={14} />
-                    </Link>
+                        <h3 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-foreground group-hover:text-accent-teal transition-colors mb-3 leading-tight break-words">
+                          {featuredCaseStudy.title}
+                        </h3>
+
+                        {featuredCaseStudy.summary && (
+                          <div className="mb-5">
+                            <ExpandableText
+                              text={featuredCaseStudy.summary}
+                              collapsedLines={4}
+                              className="text-xs sm:text-sm text-foreground/75 leading-relaxed"
+                            />
+                          </div>
+                        )}
+                      </div>
+
+                      <div>
+                        {/* Card Stat-Pair Blocks if present */}
+                        {Array.isArray(featuredCaseStudy.cardStats) && featuredCaseStudy.cardStats.length > 0 ? (
+                          <div className="mb-5">
+                            <StatGrid stats={featuredCaseStudy.cardStats} />
+                          </div>
+                        ) : (
+                          /* Fallback to results preview */
+                          Array.isArray(featuredCaseStudy.results) && featuredCaseStudy.results.length > 0 && (
+                            <div className="mb-5 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                              {featuredCaseStudy.results.slice(0, 2).map((res, i) => (
+                                <div key={i} className="px-3 py-2 rounded-xl bg-card-border/20 border border-card-border/30 text-xs text-foreground/80 font-medium flex items-center gap-2">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-accent-teal flex-shrink-0"></span>
+                                  <span>{res}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )
+                        )}
+
+                        <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-card-border/30">
+                          {Array.isArray(featuredCaseStudy.tools) && featuredCaseStudy.tools.length > 0 && (
+                            <div className="flex flex-wrap items-center gap-1.5">
+                              {featuredCaseStudy.tools.slice(0, 5).map((tool) => (
+                                <span key={tool} className="text-[10px] font-mono px-2.5 py-0.5 rounded-md bg-accent-teal/10 text-accent-teal border border-accent-teal/20">
+                                  {tool}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                          <Link
+                            href={`/case-studies/${featuredCaseStudy.slug}`}
+                            className="inline-flex items-center gap-2 text-xs font-extrabold text-accent-cyan hover:text-accent-teal transition-colors group-hover:translate-x-1 duration-300 min-h-[36px] ml-auto"
+                          >
+                            Read Full Case Study <ArrowUpRight size={14} />
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
 
-              {/* Secondary Featured Case Study */}
+              {/* Secondary Case Study (SchSpark) - Full Container Width with 2-Column Composition */}
               {otherCaseStudy && (
-                <div className="lg:col-span-5 group rounded-3xl overflow-hidden glass-panel border-card-border/60 hover:border-accent-teal/40 hover:-translate-y-1 hover:shadow-2xl transition-all duration-500 flex flex-col justify-between p-6 sm:p-8 relative">
-                  <div>
-                    <div className="flex flex-wrap gap-2 items-center mb-4">
-                      {otherCaseStudy.badgeLabel && (
-                        <span className="px-3 py-1 rounded-full text-[10px] font-mono tracking-wider bg-accent-cyan/20 text-accent-cyan border border-accent-cyan/30">
-                          {otherCaseStudy.badgeLabel}
-                        </span>
-                      )}
-                      {otherCaseStudy.category && (
-                        <span className="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider glass-panel text-foreground/80 border-card-border">
-                          {otherCaseStudy.category}
-                        </span>
-                      )}
+                <div className="w-full group rounded-3xl overflow-hidden glass-panel border-card-border/60 hover:border-accent-teal/40 hover:-translate-y-1 hover:shadow-2xl transition-all duration-500 relative">
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 p-6 sm:p-8 lg:p-10 items-center">
+                    {/* Left Column (Info, Summary, Tools, CTA) */}
+                    <div className="lg:col-span-7 flex flex-col justify-between">
+                      <div>
+                        <div className="flex flex-wrap gap-2 items-center mb-3 sm:mb-4">
+                          {otherCaseStudy.category && (
+                            <span className="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider glass-panel text-foreground/80 border-card-border">
+                              {otherCaseStudy.category}
+                            </span>
+                          )}
+                          {otherCaseStudy.badgeLabel && (
+                            <span className="px-3 py-1 rounded-full text-[10px] font-mono tracking-wider bg-accent-cyan/20 text-accent-cyan border border-accent-cyan/30">
+                              {otherCaseStudy.badgeLabel}
+                            </span>
+                          )}
+                          <span className="text-xs text-foreground/50 ml-auto font-mono">{formatDisplayDate(otherCaseStudy.date)}</span>
+                        </div>
+
+                        <h3 className="text-xl sm:text-2xl font-extrabold text-foreground group-hover:text-accent-teal transition-colors mb-3 leading-snug break-words">
+                          {otherCaseStudy.title}
+                        </h3>
+
+                        {otherCaseStudy.summary && (
+                          <div className="mb-5">
+                            <ExpandableText
+                              text={otherCaseStudy.summary}
+                              collapsedLines={3}
+                              className="text-xs sm:text-sm text-foreground/70 leading-relaxed"
+                            />
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-card-border/30">
+                        {Array.isArray(otherCaseStudy.tools) && otherCaseStudy.tools.length > 0 && (
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            {otherCaseStudy.tools.slice(0, 5).map((tool) => (
+                              <span key={tool} className="text-[10px] font-mono px-2.5 py-0.5 rounded-md bg-accent-teal/10 text-accent-teal border border-accent-teal/20">
+                                {tool}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                        <Link
+                          href={`/case-studies/${otherCaseStudy.slug}`}
+                          className="inline-flex items-center gap-2 text-xs font-extrabold text-accent-cyan hover:text-accent-teal transition-colors group-hover:translate-x-1 duration-300 min-h-[36px] ml-auto"
+                        >
+                          Read Case Study <ArrowUpRight size={14} />
+                        </Link>
+                      </div>
                     </div>
 
-                    <h3 className="text-xl sm:text-2xl font-extrabold text-foreground group-hover:text-accent-teal transition-colors mb-3 leading-snug break-words">
-                      {otherCaseStudy.title}
-                    </h3>
-
-                    {otherCaseStudy.summary && (
-                      <div className="mb-6">
-                        <ExpandableText
-                          text={otherCaseStudy.summary}
-                          collapsedLines={4}
-                          className="text-xs sm:text-sm text-foreground/70 leading-relaxed"
-                        />
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="mt-auto space-y-4">
-                    {/* Card Stat-Pair Blocks if present */}
-                    {Array.isArray(otherCaseStudy.cardStats) && otherCaseStudy.cardStats.length > 0 && (
-                      <StatGrid stats={otherCaseStudy.cardStats} />
-                    )}
-
-                    <Link
-                      href={`/case-studies/${otherCaseStudy.slug}`}
-                      className="inline-flex items-center gap-2 text-xs font-extrabold text-accent-cyan hover:text-accent-teal transition-colors group-hover:translate-x-1 duration-300 min-h-[36px]"
-                    >
-                      Read Case Study <ArrowUpRight size={14} />
-                    </Link>
+                    {/* Right Column (Stats / Highlights / Awards) */}
+                    <div className="lg:col-span-5 flex flex-col justify-center">
+                      {Array.isArray(otherCaseStudy.cardStats) && otherCaseStudy.cardStats.length > 0 ? (
+                        <div className="p-4 sm:p-6 rounded-2xl bg-card/40 border border-card-border/60">
+                          <StatGrid stats={otherCaseStudy.cardStats} className="mb-0" />
+                        </div>
+                      ) : Array.isArray(otherCaseStudy.results) && otherCaseStudy.results.length > 0 ? (
+                        <div className="p-4 sm:p-6 rounded-2xl bg-card/40 border border-card-border/60 space-y-2.5">
+                          <span className="text-[10px] font-mono uppercase tracking-wider text-accent-teal font-bold block mb-2">Key Outcomes:</span>
+                          {otherCaseStudy.results.map((res, i) => (
+                            <div key={i} className="px-3 py-2 rounded-xl bg-card border border-card-border text-xs text-foreground/85 font-medium flex items-center gap-2">
+                              <span className="w-1.5 h-1.5 rounded-full bg-accent-teal flex-shrink-0"></span>
+                              <span>{res}</span>
+                            </div>
+                          ))}
+                        </div>
+                      ) : otherCaseStudy.coverImage ? (
+                        <div className="w-full h-[200px] rounded-2xl overflow-hidden border border-card-border/40">
+                          <img
+                            src={otherCaseStudy.coverImage}
+                            alt={otherCaseStudy.coverImageAlt || `${otherCaseStudy.title} cover`}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ) : null}
+                    </div>
                   </div>
                 </div>
               )}

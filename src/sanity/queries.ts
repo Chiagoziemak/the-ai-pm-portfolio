@@ -990,9 +990,13 @@ export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null
         "relatedCaseStudies": relatedCaseStudies[]-> {
           title,
           "slug": slug.current,
+          date,
           category,
+          summary,
           badgeLabel,
           cardStats,
+          results,
+          "tools": stackMethods,
           "coverImage": coverImage.asset->url,
           "coverImageAlt": coverImage.alt
         }

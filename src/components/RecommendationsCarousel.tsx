@@ -141,40 +141,43 @@ export default function RecommendationsCarousel({
         </div>
       </div>
 
-      {/* Contained Active Recommendation Card */}
-      <div
-        className="relative overflow-hidden w-full rounded-xl min-h-[140px]"
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      >
+        {/* Contained Active Recommendation Card */}
         <div
-          key={currentIndex}
-          className="p-5 sm:p-6 rounded-xl border border-card-border bg-card/60 shadow-sm animate-fadeIn"
+          className="relative overflow-hidden w-full rounded-xl"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
         >
-          <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-            <div className="flex items-center gap-2 min-w-0">
-              <span className="text-accent-teal text-xs font-mono font-bold px-2 py-0.5 rounded bg-accent-teal/10 border border-accent-teal/20 flex-shrink-0">
-                0{currentIndex + 1}
-              </span>
-              <h4 className="font-bold text-base sm:text-lg text-foreground break-words">
-                {activeRec.title}
-              </h4>
+          <div
+            key={currentIndex}
+            className="p-5 sm:p-6 rounded-xl border border-card-border bg-card/60 shadow-sm animate-fadeIn w-full min-h-[160px] flex flex-col justify-between"
+            style={{ flex: "0 0 100%", width: "100%" }}
+          >
+            <div>
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-accent-teal text-xs font-mono font-bold px-2 py-0.5 rounded bg-accent-teal/10 border border-accent-teal/20 flex-shrink-0">
+                    0{currentIndex + 1}
+                  </span>
+                  <h4 className="font-bold text-base sm:text-lg text-foreground break-words">
+                    {activeRec.title}
+                  </h4>
+                </div>
+                {activeRec.priority && (
+                  <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-accent-teal/10 text-accent-teal border border-accent-teal/20 font-bold flex-shrink-0">
+                    {activeRec.priority.toLowerCase().includes("priority") ? activeRec.priority : `${activeRec.priority} Priority`}
+                  </span>
+                )}
+              </div>
+              <ExpandableText text={activeRec.description} collapsedLines={4} />
             </div>
-            {activeRec.priority && (
-              <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-accent-teal/10 text-accent-teal border border-accent-teal/20 font-bold flex-shrink-0">
-                {activeRec.priority.toLowerCase().includes("priority") ? activeRec.priority : `${activeRec.priority} Priority`}
-              </span>
+            {activeRec.riceScore && (
+              <div className="mt-2.5 pt-2 border-t border-card-border/30 text-xs font-mono text-accent-cyan font-semibold">
+                RICE Score: {activeRec.riceScore}
+              </div>
             )}
           </div>
-          <ExpandableText text={activeRec.description} collapsedLines={4} />
-          {activeRec.riceScore && (
-            <div className="mt-2.5 pt-2 border-t border-card-border/30 text-xs font-mono text-accent-cyan font-semibold">
-              RICE Score: {activeRec.riceScore}
-            </div>
-          )}
         </div>
-      </div>
 
       {/* Indicator Dots */}
       <div className="flex items-center justify-center gap-2 mt-5">
