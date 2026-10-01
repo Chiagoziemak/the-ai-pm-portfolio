@@ -18,6 +18,39 @@ export interface TestimonialsCarouselProps {
   scrollInterval?: number; // In seconds. Default 5. 0 = disabled.
 }
 
+const LONG_QUOTE_THRESHOLD = 260;
+
+function getQuoteDisplay(
+  quote: string | undefined,
+  isExpanded: boolean
+): { isLong: boolean; displayText: string } {
+  if (!quote) return { isLong: false, displayText: "" };
+  const trimmed = quote.trim();
+
+  // Check if quote exceeds threshold or contains multiple paragraphs
+  const hasMultiParagraphs = trimmed.includes("\n\n");
+  const isLong = trimmed.length > LONG_QUOTE_THRESHOLD || hasMultiParagraphs;
+
+  if (!isLong || isExpanded) {
+    return { isLong, displayText: trimmed };
+  }
+
+  // First paragraph check
+  const firstPara = trimmed.split(/\n\s*\n/)[0];
+  if (firstPara.length <= LONG_QUOTE_THRESHOLD && firstPara.length >= 120) {
+    return { isLong: true, displayText: firstPara };
+  }
+
+  // Substring up to threshold, cutting cleanly at a word boundary
+  const sub = trimmed.slice(0, LONG_QUOTE_THRESHOLD);
+  const lastSpace = sub.lastIndexOf(" ");
+  const cleanCut = lastSpace > 140 ? sub.slice(0, lastSpace) : sub;
+  return {
+    isLong: true,
+    displayText: `${cleanCut.replace(/[.,;:]+$/, "")}...`,
+  };
+}
+
 export default function TestimonialsCarousel({
   testimonials = [],
   scrollInterval = 5,
@@ -25,6 +58,7 @@ export default function TestimonialsCarousel({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [isFading, setIsFading] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const touchStartX = useRef<number | null>(null);
@@ -32,7 +66,7 @@ export default function TestimonialsCarousel({
 
   const total = testimonials.length;
   const intervalSeconds = typeof scrollInterval === "number" ? scrollInterval : 5;
-  const shouldAutoScroll = total > 1 && intervalSeconds > 0 && !isPaused;
+  const shouldAutoScroll = total > 1 && intervalSeconds > 0 && !isPaused && !isExpanded;
 
   const resetTimer = () => {
     if (timerRef.current) {
@@ -44,6 +78,7 @@ export default function TestimonialsCarousel({
   const handleNext = () => {
     if (total <= 1) return;
     setIsFading(true);
+    setIsExpanded(false);
     setTimeout(() => {
       setCurrentIndex((prev) => (prev + 1) % total);
       setIsFading(false);
@@ -53,6 +88,7 @@ export default function TestimonialsCarousel({
   const handlePrev = () => {
     if (total <= 1) return;
     setIsFading(true);
+    setIsExpanded(false);
     setTimeout(() => {
       setCurrentIndex((prev) => (prev - 1 + total) % total);
       setIsFading(false);
@@ -62,6 +98,7 @@ export default function TestimonialsCarousel({
   const handleSelect = (idx: number) => {
     if (idx === currentIndex) return;
     setIsFading(true);
+    setIsExpanded(false);
     setTimeout(() => {
       setCurrentIndex(idx);
       setIsFading(false);
@@ -76,7 +113,7 @@ export default function TestimonialsCarousel({
       }, intervalSeconds * 1000);
     }
     return () => resetTimer();
-  }, [currentIndex, isPaused, intervalSeconds, total]);
+  }, [currentIndex, isPaused, isExpanded, intervalSeconds, total]);
 
   // Keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -120,6 +157,7 @@ export default function TestimonialsCarousel({
   if (total === 0) return null;
 
   const currentItem = testimonials[currentIndex] || testimonials[0];
+  const { isLong, displayText } = getQuoteDisplay(currentItem.quote, isExpanded);
 
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
@@ -149,40 +187,61 @@ export default function TestimonialsCarousel({
         aria-live="polite"
         className="relative w-full overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-teal/40 rounded-3xl"
       >
-        {/* Active Testimonial Card (Single card rendered with clean containment) */}
-        <div className="w-full flex justify-center px-1 sm:px-4">
+        {/* Active Testimonial Card (Guaranteed 100% mobile slide width, shared initial min-height, centered) */}
+        <div className="w-full flex justify-center px-0 sm:px-4">
           <div
             key={currentIndex}
-            className={`w-full max-w-3xl p-6 sm:p-9 md:p-11 rounded-3xl glass-panel border-card-border/80 bg-card/50 flex flex-col justify-between shadow-xl transition-all duration-300 transform ${
+            style={{ flex: "0 0 100%" }}
+            className={`w-full max-w-3xl min-h-[380px] sm:min-h-[340px] md:min-h-[320px] p-6 sm:p-8 md:p-10 rounded-3xl glass-panel border border-card-border/80 bg-card/50 flex flex-col justify-between shadow-xl transition-all duration-300 transform ${
               isFading ? "opacity-0 scale-[0.99] translate-y-1" : "opacity-100 scale-100 translate-y-0"
             }`}
           >
-            {/* Context Badge & Quote */}
-            <div className="mb-6 sm:mb-8">
+            {/* Context Badge & Quote & Expandable Section */}
+            <div className="flex-1 flex flex-col justify-start mb-6 sm:mb-8">
               {currentItem.context && (
-                <span className="inline-block text-[11px] sm:text-xs font-mono text-accent-teal bg-accent-teal/10 border border-accent-teal/20 px-3 py-1 rounded-full mb-3 sm:mb-4 font-semibold">
-                  ✦ {currentItem.context}
-                </span>
+                <div className="mb-3 sm:mb-4">
+                  <span className="inline-block text-[11px] sm:text-xs font-mono text-accent-teal bg-accent-teal/10 border border-accent-teal/20 px-3 py-1 rounded-full font-semibold">
+                    ✦ {currentItem.context}
+                  </span>
+                </div>
               )}
+
               {currentItem.quote && (
-                <blockquote className="text-base sm:text-lg md:text-xl text-foreground/90 italic leading-relaxed font-serif">
-                  "{currentItem.quote}"
+                <blockquote className="text-base sm:text-lg md:text-xl text-foreground/90 italic leading-relaxed font-serif whitespace-pre-line">
+                  "{displayText}"
                 </blockquote>
+              )}
+
+              {/* See More / See Less Toggle for Long Testimonials */}
+              {isLong && (
+                <div className="mt-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsExpanded((prev) => !prev);
+                      resetTimer();
+                    }}
+                    className="inline-flex items-center gap-1 text-xs sm:text-sm font-bold text-accent-teal hover:text-accent-cyan underline underline-offset-4 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-teal/50 rounded transition-colors"
+                    aria-expanded={isExpanded}
+                  >
+                    {isExpanded ? "See less" : "See more"}
+                  </button>
+                </div>
               )}
             </div>
 
-            {/* Author Information Area */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pt-5 sm:pt-6 border-t border-card-border/40 gap-4">
+            {/* Author Information Area (Always aligned at the bottom with mt-auto) */}
+            <div className="mt-auto flex flex-col sm:flex-row sm:items-center sm:justify-between pt-5 sm:pt-6 border-t border-card-border/40 gap-4">
               <div className="flex items-center gap-3 sm:gap-4 min-w-0">
                 {currentItem.authorPhotoUrl ? (
                   <img
                     src={currentItem.authorPhotoUrl}
                     alt={currentItem.authorName || "Author"}
-                    className="w-11 h-11 sm:w-12 sm:h-12 rounded-full object-cover border border-card-border/80 shadow-sm flex-shrink-0"
+                    className="w-12 h-12 rounded-full object-cover border border-card-border/80 shadow-sm flex-shrink-0"
                   />
                 ) : (
                   currentItem.authorName && (
-                    <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-accent-teal/20 border border-accent-teal/40 flex items-center justify-center font-bold text-accent-teal text-base shadow-sm flex-shrink-0">
+                    <div className="w-12 h-12 rounded-full bg-accent-teal/20 border border-accent-teal/40 flex items-center justify-center font-bold text-accent-teal text-base shadow-sm flex-shrink-0">
                       {currentItem.authorName.charAt(0)}
                     </div>
                   )
@@ -218,7 +277,7 @@ export default function TestimonialsCarousel({
           </div>
         </div>
 
-        {/* Carousel Navigation Controls (Placed cleanly underneath the card) */}
+        {/* Carousel Navigation Controls (Centered underneath card with ~44px touch targets) */}
         {total > 1 && (
           <div className="flex items-center justify-center gap-4 sm:gap-6 mt-6 sm:mt-8">
             {/* Previous Arrow Button */}
@@ -234,7 +293,7 @@ export default function TestimonialsCarousel({
             </button>
 
             {/* Centered Pagination Dots */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               {testimonials.map((_, idx) => (
                 <button
                   key={idx}
@@ -244,7 +303,7 @@ export default function TestimonialsCarousel({
                   }}
                   aria-label={`Go to testimonial ${idx + 1}`}
                   aria-current={idx === currentIndex ? "true" : undefined}
-                  className="p-1 min-h-[44px] flex items-center justify-center cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-teal/50 rounded-full"
+                  className="p-2 min-w-[32px] min-h-[44px] flex items-center justify-center cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-teal/50 rounded-full"
                 >
                   <span
                     className={`h-2.5 rounded-full transition-all duration-300 block ${

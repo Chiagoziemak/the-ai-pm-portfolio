@@ -581,7 +581,7 @@ export default async function ResourceDetailPage({ params }: ResourcePageProps) 
                   <p className="text-xs sm:text-sm text-foreground/85 italic leading-relaxed mb-6">
                     "{t.quote}"
                   </p>
-                  <div className="flex items-center gap-3 pt-4 border-t border-card-border/30">
+                  <div className="mt-auto flex items-center gap-3 pt-4 border-t border-card-border/30">
                     {t.authorPhotoUrl && (
                       <img
                         src={t.authorPhotoUrl}
