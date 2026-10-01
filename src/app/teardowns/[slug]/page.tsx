@@ -156,6 +156,16 @@ export default async function TeardownDetailPage({ params }: PageProps) {
       <div className="fixed top-0 left-0 h-1 bg-accent-teal z-[60] w-0 transition-all" id="progress-bar"></div>
 
       <main className="flex-grow pt-8 sm:pt-12 pb-16 sm:pb-20">
+        {/* Back Link */}
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 mb-6 sm:mb-8">
+          <Link
+            href="/teardowns"
+            className="inline-flex items-center gap-2 text-xs sm:text-sm text-foreground/60 hover:text-accent-teal transition-colors font-medium min-h-[36px]"
+          >
+            <ArrowLeft size={16} /> Back to Teardowns
+          </Link>
+        </div>
+
         {/* Article Header */}
         <header className="max-w-4xl mx-auto px-4 sm:px-6 text-center mb-8 sm:mb-12">
           <div className="inline-block glass-panel text-accent-teal px-3.5 py-1 sm:px-4 sm:py-1.5 rounded-full text-xs font-mono mb-4 sm:mb-6 tracking-widest uppercase border border-accent-teal/30">
@@ -193,16 +203,6 @@ export default async function TeardownDetailPage({ params }: PageProps) {
           title={teardown.title}
           variant="teardown"
         />
-
-        {/* Back Link */}
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 mb-8">
-          <Link
-            href="/teardowns"
-            className="inline-flex items-center gap-2 text-xs sm:text-sm text-foreground/60 hover:text-accent-teal transition-colors font-medium min-h-[36px]"
-          >
-            <ArrowLeft size={16} /> Back to all Teardowns
-          </Link>
-        </div>
 
         {/* Article Body Content */}
         <div className="max-w-3xl mx-auto px-4 sm:px-6 space-y-8 sm:space-y-12">
